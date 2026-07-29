@@ -1,0 +1,14 @@
+# Agent working files — verification captures, browser-tool artifacts, scratch
+# copies. These can contain screenshots of app screens and console output, so
+# they must never reach a public repo.
+_agent-scratch/
+_shot.html
+
+# Browser automation output
+.playwright-mcp/
+
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes

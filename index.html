@@ -1,0 +1,1973 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="RouteRush is a gamified fitness tracker for iOS. Run or ride, conquer H3 hex cells on a 3D globe, earn Rush Points and climb weekly cohort leagues.">
+<meta name="theme-color" content="#000000">
+<title>RouteRush — Running is how you take ground</title>
+<link rel="icon" href="assets/routerush-appicon.png">
+<style>
+  /* ============================================================
+     RouteRush landing — design tokens
+     Palette is verified from Core/Constants/AppColors.swift
+     ------------------------------------------------------------
+     THE CYAN LAW: the language is monochrome-white-first.
+     --run-accent (#00E0FF) is permitted ONLY as:
+       route/pace sport visuals, hairline neon strokes, glow.
+     Icons are white. Primary CTA is a white capsule / black label.
+     ============================================================ */
+  :root {
+    color-scheme: dark;
+    --bg:          #000000;
+    --surface:     #1A1F2E;
+    --run-accent:  #00E0FF;
+    --ride-accent: #ABF301;
+    --neon-green:  #CCFF00;
+    --verified:    #00C8FF;
+    --text:        #FFFFFF;
+    --text-2:      rgba(255,255,255,.70);
+    --text-3:      rgba(255,255,255,.58);
+    --text-4:      rgba(255,255,255,.34);
+    --hair:        rgba(255,255,255,.12);
+    --hair-soft:   rgba(255,255,255,.07);
+    /* NOTE: the old --glass / --glass-2 white-lift tints are gone. The glass
+       material no longer lightens the surface to fake itself into existence;
+       it tints, blurs and lenses. See the LIQUID GLASS MATERIAL block. */
+
+    --ff: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --ff-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+
+    /* Motion: critically damped springs (damping 1.0, response ~0.4) — settle,
+       never overshoot. Overshoot is reserved for momentum-carrying gestures,
+       and nothing on this page is a throw. */
+    --spring: linear(
+      0, 0.0088, 0.0344, 0.0754, 0.1305, 0.1982, 0.2769, 0.3648, 0.46, 0.5605,
+      0.6414, 0.7169, 0.7859, 0.8477, 0.9019, 0.9484, 0.9873, 1.0143, 1.0273,
+      1.0316, 1.0301, 1.0253, 1.019, 1.0126, 1.0071, 1.0028, 1
+    );
+    --ease-out: cubic-bezier(.22, 1, .36, 1);
+    --press: 100ms ease-out;
+
+    /* ------------------------------------------------------------------
+       LIQUID GLASS — material tokens from apple-liquid-glass-ds/src/shared.css
+       (.dark context), taken verbatim: alpha .45 / .62 tint, rim .55 and .14,
+       blur 30px, saturate 180%, the lifted shadow pair.
+       Only the tint HUE is reconciled to RouteRush: the system's neutral grey
+       rgba(40,40,45,.45) becomes the app's own surface #1A1F2E at the same
+       alpha, so the material stays cool instead of going warm. The app is the
+       source of truth for colour; the design system for material behaviour.
+       ------------------------------------------------------------------ */
+    --glass-tint:        rgba(26, 31, 46, 0.45);
+    --glass-tint-strong: rgba(31, 37, 54, 0.62);
+    --glass-blur:        30px;
+    --glass-sat:         180%;
+    --glass-rim:         rgba(255,255,255,0.55);
+    --glass-rim-soft:    rgba(255,255,255,0.14);
+    --glass-shadow:      0 14px 50px rgba(0,0,0,0.55), 0 2px 10px rgba(0,0,0,0.40);
+    --glass-on:          rgba(255,255,255,0.95);
+    --glass-on-2:        rgba(235,235,245,0.62);
+
+    --gut: clamp(20px, 4.4vw, 68px);
+    --maxw: 1320px;
+
+    --p: 0; /* normalized sequence progress, written by JS */
+  }
+
+  * { box-sizing: border-box; }
+  /* NOTE: never set overflow-x here. Any overflow value on <html> makes it the
+     sticky element's scroll container and silently kills the hero's sticky
+     pinning. Horizontal overflow is contained on <body> plus svg clipping. */
+  html { background: var(--bg); -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; min-width: 320px; overflow-x: hidden;
+    background: var(--bg); color: var(--text);
+    font-family: var(--ff);
+    font-size: 16px; line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-optical-sizing: auto;
+    font-synthesis-weight: none;
+  }
+  img, svg, canvas { display: block; max-width: 100%; }
+  svg { overflow: hidden; }   /* preserveAspectRatio="slice" art must not push the page wider */
+  a { color: inherit; text-decoration: none; }
+  button, a, input { font: inherit; }
+  h1, h2, h3, h4, p, ul, ol, figure, blockquote { margin: 0; }
+  ul, ol { padding: 0; list-style: none; }
+  :focus-visible { outline: 2px solid #FFFFFF; outline-offset: 3px; border-radius: 4px; }
+
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  .skip {
+    position: fixed; z-index: 200; left: 16px; top: -80px;
+    padding: 12px 18px; background: #fff; color: #000; font-weight: 650;
+    border-radius: 999px; transition: top .18s ease;
+  }
+  .skip:focus { top: 16px; }
+
+  .wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut); }
+
+  /* ============================================================
+     LIQUID GLASS MATERIAL
+     Complete port of .lg from apple-liquid-glass-ds/src/shared.css.
+     ------------------------------------------------------------
+     FOUR layers. Dropping any one of them is what made earlier
+     attempts read as a dark rounded rectangle:
+
+       1. base     tint + backdrop-filter blur/saturate + a three-part
+                   box-shadow (top specular line, hairline rim, bottom
+                   bounce) plus the lifted drop shadow.
+       2. ::before specular sheen at 160deg, .45 -> .10 -> 0, composited
+                   with mix-blend-mode: screen so it ADDS light instead
+                   of painting a grey film over the tint.        z-index 1
+       3. ::after  EDGE LENSING — the signature of Liquid Glass. A 1px
+                   masked gradient ring whose brightness runs unevenly
+                   around the shape (hot top-left, dark through the
+                   middle, catching again bottom-right), so the rim
+                   behaves like the thick edge of a lens.         z-index 2
+       4. content                                                 z-index 3
+
+     THE SURFACE LIST below is the single definition of "a glass surface
+     on this page". prefers-reduced-transparency and prefers-contrast
+     override exactly this list — if a surface is added or renamed, it
+     must be added or renamed in all four places.
+     ============================================================ */
+  .lg,
+  .nav .wrap,
+  .btn-ghost,
+  .gcard,
+  .tabbar,
+  .board,
+  .tile,
+  .liveact {
+    position: relative;
+    isolation: isolate;
+    color: var(--glass-on);
+    background: var(--glass-tint);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-rim),                  /* top specular line */
+      inset 0 0 0 1px var(--glass-rim-soft),             /* hairline rim      */
+      inset 0 -10px 24px -12px rgba(255,255,255,.30),    /* bottom bounce     */
+      var(--glass-shadow);                                /* lifted shadow    */
+  }
+  .lg::before,
+  .nav .wrap::before,
+  .btn-ghost::before,
+  .gcard::before,
+  .tabbar::before,
+  .board::before,
+  .tile::before,
+  .liveact::before {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    background: linear-gradient(160deg,
+      rgba(255,255,255,.45) 0%,
+      rgba(255,255,255,.10) 22%,
+      rgba(255,255,255,0)   45%);
+    mix-blend-mode: screen;
+    pointer-events: none; z-index: 1;
+  }
+  .lg::after,
+  .nav .wrap::after,
+  .btn-ghost::after,
+  .gcard::after,
+  .tabbar::after,
+  .board::after,
+  .tile::after,
+  .liveact::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(140deg,
+      rgba(255,255,255,.9),
+      rgba(255,255,255,.05) 35%,
+      rgba(255,255,255,0)   60%,
+      rgba(255,255,255,.25));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+            mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            mask-composite: exclude;
+    pointer-events: none; z-index: 2;
+  }
+  .lg > *,
+  .nav .wrap > *,
+  .gcard > *,
+  .tabbar > *,
+  .board > *,
+  .tile > *,
+  .liveact > * { position: relative; z-index: 3; }
+
+  /* HONEST COST.
+     These three sit on the flat #000 sections with nothing behind them, so a
+     backdrop blur would snapshot and blur pure black: a per-frame cost for zero
+     transmitted information. They keep all four material layers — the rim pair,
+     the screen-blended sheen, the lens ring and the lift are what make them read
+     as glass here, and none of those need a blur.
+     Everything with something genuinely behind it keeps the blur: .nav .wrap
+     (content scrolls under it continuously), .gcard and .tabbar (over the phone
+     screen art), .btn-ghost (over the final CTA's glow). */
+  .board, .tile, .liveact {
+    -webkit-backdrop-filter: none;
+            backdrop-filter: none;
+  }
+
+  /* DS variants */
+  .lg-clear { --glass-tint: rgba(26,31,46,.28); --glass-blur: 16px; }
+  .lg-thick { --glass-tint: var(--glass-tint-strong); --glass-blur: 40px; }
+
+  /* ---------- type ---------- */
+  .eyebrow {
+    font-size: 10.5px; letter-spacing: .19em; text-transform: uppercase;
+    color: var(--text-3); font-weight: 560;
+  }
+  .display {
+    font-weight: 620; letter-spacing: -.045em; line-height: .98;
+    font-size: clamp(38px, 5.5vw, 78px);
+  }
+  .h2 {
+    font-weight: 620; letter-spacing: -.038em; line-height: 1.02;
+    font-size: clamp(31px, 4.6vw, 60px);
+  }
+  .h3 { font-weight: 600; letter-spacing: -.022em; font-size: clamp(18px, 1.5vw, 21px); line-height: 1.25; }
+  .lede { color: var(--text-2); font-size: clamp(15.5px, 1.35vw, 19px); line-height: 1.58; letter-spacing: -.011em; }
+  .small { font-size: 14px; color: var(--text-3); line-height: 1.55; }
+  .mono { font-family: var(--ff-mono); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+  .num { font-variant-numeric: tabular-nums; }
+
+  /* ---------- buttons: white capsule = primary (house pattern) ---------- */
+  .btn {
+    display: inline-flex; align-items: center; gap: 9px; justify-content: center;
+    height: 48px; padding: 0 22px; border-radius: 999px;
+    font-size: 15px; font-weight: 640; letter-spacing: -.012em;
+    border: 1px solid transparent; cursor: pointer; white-space: nowrap;
+    transition: transform .42s var(--spring), background-color .32s ease, border-color .32s ease;
+  }
+  /* Feedback on pointer-DOWN, not on release, and fast enough to feel direct. */
+  .btn:active { transform: scale(.97); transition: transform var(--press); }
+  .btn-primary { background: #fff; color: #000; }
+  .btn-primary svg { fill: #000; }
+  .btn-primary:hover { background: rgba(255,255,255,.9); }
+  /* glass capsule, white label — the app's secondary control. Full material
+     from the surface list; only the blur radius is scaled to the smaller shape.
+     The label is a text node, so it paints below the z-index:1 sheen — which is
+     safe precisely because the sheen is `screen`: it can only add light, and
+     white text screened with white is still white. */
+  .btn-ghost {
+    --glass-blur: 20px;
+    color: #fff; border-color: transparent;
+  }
+  .btn-ghost:hover { background: var(--glass-tint-strong); }
+  .btn-sm { height: 38px; padding: 0 16px; font-size: 13.5px; }
+
+  /* ---------- nav ---------- */
+  /* A floating glass capsule, not an edge-to-edge bar — this is the app's own
+     tab bar geometry (see .tabbar in apple-liquid-glass-ds: inset from the
+     edges, fully rounded, lifted off the content). The material is always on:
+     the capsule floats over the hero canvas and the section content that
+     scrolls beneath it, so the backdrop-filter has real texture to refract
+     instead of blurring flat black. */
+  .nav {
+    position: fixed; z-index: 100; top: 12px; left: 0; right: 0;
+    display: flex; justify-content: center;
+    padding-inline: 12px;
+    pointer-events: none;              /* only the capsule itself is hittable */
+  }
+  /* Geometry only — the material comes from the glass surface list above,
+     unmodified. The capsule is the app's tab-bar geometry: inset from the
+     edges, fully rounded, lifted off the content it floats over. */
+  .nav .wrap {
+    /* Clearer than the default surface: this is the one capsule that has to
+       show a 1320px-wide backdrop ramp through itself, and every 0.01 of tint
+       alpha is transmission it loses. The DS's own --clear variant is .28. */
+    --glass-tint: rgba(26, 31, 46, .34);
+    pointer-events: auto;
+    display: flex; align-items: center; gap: 20px;
+    height: 58px; padding-inline: 20px;
+    max-width: min(var(--maxw), 100%);
+    border-radius: 999px;
+    transition: background-color .45s ease, box-shadow .45s ease,
+                max-width .5s cubic-bezier(.32,.72,.24,1),
+                height .5s cubic-bezier(.32,.72,.24,1),
+                padding .5s cubic-bezier(.32,.72,.24,1),
+                gap .5s cubic-bezier(.32,.72,.24,1);
+  }
+  /* Condensing capsule — iOS 26 tab bar behaviour: full width while the page
+     is at rest at the top, shrinking to a compact floating pill the moment
+     scrolling starts. Width animates between two concrete values (fit-content
+     cannot transition); 760px seats logo + links + CTA at desktop sizes, and
+     min() keeps it inside small viewports where the links are hidden anyway. */
+  .nav.is-scrolled .wrap {
+    max-width: min(760px, 100%);
+    height: 50px;
+    padding-inline: 16px;
+    gap: 14px;
+  }
+  /* SHEEN ANGLE, and why the nav is the one surface that changes it.
+     The design system's 160deg is measured on near-square surfaces (its navbar
+     is 340x137). CSS resolves a gradient's line length from the angle AND the
+     box, so on this capsule — 1320x58, a 23:1 ratio — the same 160deg produces
+     a 505px gradient line that is almost entirely horizontal: the 45% stop
+     lands 290px in, and the whole left end becomes one flat light-grey area.
+     That is a grey film, not a specular highlight.
+     Even 176deg does not fix it: the gradient line length is |W·sinN| +
+     |H·cosN|, so at 4deg off vertical the horizontal run is still 92px of a
+     150px line — 61% of the sheen is spent travelling left to right. Only a
+     true 180deg makes the line the capsule's own height (58px), which puts the
+     DS's 0 / 22% / 45% stops at 0 / 13px / 26px: a specular band along the lit
+     top edge, falling off fast, reinforcing the 1px rim line above it. That is
+     the DS's appearance on a 23:1 shape. The stops and alphas are untouched —
+     only the direction is re-derived, and the directional asymmetry the DS gets
+     from this gradient is carried here by the ::after lens ring instead.
+     Every other glass surface on the page is near-square and keeps 160deg.
+
+     The tail deliberately stops at the DS's 45%. Running it to 100% lifts the
+     whole capsule uniformly, and over the flat black panels that uniform lift
+     IS a grey film — the thing being complained about. Ending at 45% keeps the
+     sheen a specular on the top edge and leaves the lower two thirds of the
+     capsule showing whatever is actually passing beneath it. */
+  .nav .wrap::before { background: linear-gradient(180deg,
+      rgba(255,255,255,.45) 0%,
+      rgba(255,255,255,.10) 22%,
+      rgba(255,255,255,0)   45%); }
+
+  /* Scrolled: the capsule thickens as content builds up behind it. Keeps all
+     four shadow parts — only the tint and the lift change. */
+  /* Condensing changes geometry only. The material does not thicken: swapping
+     to the strong tint on scroll read as a colour change (owner rejected it),
+     and the refractive path needs the same transmission at every size anyway.
+     Only the lift shadow deepens slightly — the pill floats a little higher. */
+  .nav.is-scrolled .wrap {
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-rim),
+      inset 0 0 0 1px var(--glass-rim-soft),
+      inset 0 -10px 24px -12px rgba(255,255,255,.30),
+      0 18px 54px rgba(0,0,0,.62),
+      0 2px 10px rgba(0,0,0,.42);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; }
+  .brand img { width: 30px; height: 30px; object-fit: contain; }
+  .brand span { font-weight: 620; letter-spacing: -.03em; font-size: 17px; }
+  .nav-links { display: flex; gap: 28px; margin-right: 8px; }
+  .nav-links a { font-size: 14px; color: var(--text-2); transition: color .3s ease; }
+  .nav-links a:hover { color: #fff; }
+  @media (max-width: 860px) { .nav-links { display: none; } }
+  /* Keep the download CTA in the capsule at every width — it is the primary
+     action, and without it the capsule is a wide bar holding only a logo. */
+  @media (max-width: 420px) {
+    .nav .wrap { padding-inline: 14px; gap: 10px; }
+    .nav .btn-sm { height: 34px; padding: 0 13px; font-size: 12.5px; }
+    .brand span { font-size: 15.5px; }
+    .brand img { width: 26px; height: 26px; }
+  }
+
+  /* ============================================================
+     HERO — scroll-scrubbed sequence
+     Section height comes from sequence.scrollVh (set by JS).
+     ============================================================ */
+  .sequence { position: relative; }
+  .stage {
+    position: sticky; top: 0; height: 100svh; min-height: 600px;
+    display: grid; grid-template-columns: minmax(330px, .92fr) 1.08fr;
+    overflow: hidden;
+  }
+  .stage-copy {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column;
+    padding: 104px var(--gut) clamp(28px, 4vh, 52px) var(--gut);
+    border-right: 1px solid var(--hair-soft);
+    min-width: 0;
+  }
+  .stage-copy > .eyebrow { display: flex; justify-content: space-between; gap: 16px; }
+  .hero-h1 { margin: auto 0 clamp(18px, 2.6vh, 30px); max-width: 100%; }
+  .hero-h1 em { font-style: normal; color: var(--text-3); }
+
+  .states { position: relative; border-top: 1px solid var(--hair); padding-top: 18px; min-height: 132px; }
+  .state {
+    position: absolute; inset: 18px 0 auto 0; max-width: 46ch;
+    opacity: 0; transform: translateY(9px);
+    transition: opacity .28s linear, transform .38s cubic-bezier(.22,1,.36,1);
+    pointer-events: none;
+  }
+  .state.is-active { opacity: 1; transform: none; pointer-events: auto; }
+  .state b { display: block; font-size: 11px; letter-spacing: .17em; text-transform: uppercase; margin-bottom: 9px; font-weight: 600; }
+  .state p { color: var(--text-2); font-size: clamp(14.5px, 1.15vw, 17px); line-height: 1.55; }
+
+  .readout { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; margin-top: clamp(18px, 3vh, 30px); }
+  .track { height: 2px; background: rgba(255,255,255,.14); overflow: hidden; border-radius: 2px; }
+  .track i { display: block; height: 100%; background: #fff; transform: scaleX(var(--p)); transform-origin: left; }
+  .readout .mono { font-size: 11px; color: var(--text-3); }
+
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: clamp(18px, 3vh, 28px); }
+
+  /* visual stage */
+  .stage-visual { position: relative; min-width: 0; overflow: hidden; background: #000; }
+  .stage-visual canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .hud {
+    position: absolute; z-index: 2; pointer-events: none;
+    font-family: var(--ff-mono); font-size: 10px; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--text-4); font-variant-numeric: tabular-nums;
+  }
+  .hud-tl { left: 46px; top: 86px; }
+  .hud-br { right: 24px; bottom: 24px; text-align: right; }
+  .hud b { color: rgba(255,255,255,.72); font-weight: 500; }
+  .cue {
+    position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+    writing-mode: vertical-rl; font-family: var(--ff-mono);
+    font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--text-4);
+  }
+
+  @media (max-width: 900px) {
+    .stage { grid-template-columns: 1fr; grid-template-rows: auto 1fr; min-height: 660px; }
+    .stage-copy { border-right: 0; border-bottom: 1px solid var(--hair-soft); padding-top: 92px; padding-bottom: 22px; }
+    .hero-h1 { margin-top: 0; }
+    .states { min-height: 112px; }
+    .cue, .hud-tl { display: none; }
+  }
+
+  /* ============================================================
+     shared section furniture
+     ============================================================ */
+  .sec { position: relative; padding-block: clamp(72px, 11vh, 148px); }
+  .rule { height: 1px; background: var(--hair-soft); }
+  .sec-head { display: grid; gap: 20px; grid-template-columns: minmax(0,1fr) minmax(0,.78fr); align-items: end; }
+  @media (max-width: 860px) { .sec-head { grid-template-columns: 1fr; } }
+
+  /* claim band */
+  .claim { display: grid; gap: clamp(28px, 4vw, 56px); grid-template-columns: minmax(0,1.15fr) minmax(0,.85fr); align-items: start; }
+  @media (max-width: 900px) { .claim { grid-template-columns: 1fr; } }
+  .specs { display: grid; gap: 0; }
+  .spec { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: baseline; padding: 18px 0; border-top: 1px solid var(--hair-soft); }
+  .spec:last-child { border-bottom: 1px solid var(--hair-soft); }
+  .spec dt { font-size: clamp(26px, 3.1vw, 40px); font-weight: 600; letter-spacing: -.04em; min-width: 4.6ch; }
+  .spec dd { margin: 0; color: var(--text-2); font-size: 14.5px; line-height: 1.5; }
+  .spec dd b { display: block; color: #fff; font-weight: 570; margin-bottom: 3px; font-size: 15px; letter-spacing: -.01em; }
+
+  /* ============================================================
+     device mockups (hand-authored, no screenshots)
+     ============================================================ */
+  .phone {
+    width: 100%; max-width: 296px; aspect-ratio: 393 / 852;
+    border-radius: 46px; padding: 9px;
+    background: linear-gradient(168deg, rgba(255,255,255,.20), rgba(255,255,255,.05) 34%, rgba(255,255,255,.015) 70%);
+    box-shadow: 0 44px 90px -32px rgba(0,0,0,.95), 0 0 0 .5px rgba(255,255,255,.10);
+    flex: none;
+  }
+  .screen {
+    position: relative; height: 100%; border-radius: 38px; overflow: hidden;
+    background: #000; border: 1px solid rgba(255,255,255,.07);
+    display: flex; flex-direction: column;
+  }
+
+  /* ------------------------------------------------------------------
+     REAL SCREENSHOT SLOT.
+     Every phone frame is 393 x 852 (9:19.5), so an iPhone capture drops
+     in with no cropping; drop files into assets/screens/ at 1179x2556.
+
+     TO ACTIVATE A SCREENSHOT: on that frame's <img class="shot">, rename
+     the data-src attribute to src. One attribute, one frame. Until then
+     the img is hidden and makes no request, so the console stays clean
+     and the authored placeholder underneath shows instead.
+     ------------------------------------------------------------------ */
+  .shot {
+    position: absolute; inset: 0; z-index: 6;
+    width: 100%; height: 100%; object-fit: cover; object-position: center top;
+    background: #000;
+  }
+  .shot:not([src]) { display: none; }
+  .statusbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 20px 4px; font-size: 11px; font-weight: 620; color: #fff; letter-spacing: -.01em;
+    position: relative; z-index: 3;
+  }
+  .statusbar .sb-icons { display: flex; gap: 4px; align-items: center; opacity: .92; }
+  .island {
+    position: absolute; z-index: 4; left: 50%; top: 10px; transform: translateX(-50%);
+    height: 27px; width: 88px; border-radius: 999px; background: #000;
+  }
+  .screen-body { flex: 1; min-height: 0; position: relative; padding: 10px 12px 12px; display: flex; flex-direction: column; gap: 9px; }
+
+  /* real glass: these sit over the screen art behind them */
+  .gcard { --glass-blur: 20px; border-radius: 18px; padding: 12px 13px; }
+  .gcard.tight { padding: 10px 11px; border-radius: 15px; }
+
+  /* align-items: end so a label that wraps to two lines ("Rush Points" at this
+     size) pushes itself up rather than pushing its value down out of line with
+     the other two. The values share a baseline at every width. */
+  .metric-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; align-items: end; }
+  .metric { text-align: left; }
+  .metric i { display: block; font-style: normal; font-size: 8.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-4); margin-bottom: 3px; }
+  .metric b { display: block; font-size: 17px; font-weight: 630; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .metric b s { text-decoration: none; font-size: 9.5px; font-weight: 500; color: var(--text-3); margin-left: 2px; }
+
+  /* A floating capsule, not an edge-to-edge bar — this is what the app
+     actually ships (see assets/screens/en-01-globe.png), and it lets the tab
+     bar carry the same full material as every other glass surface. */
+  .tabbar {
+    --glass-blur: 24px;
+    display: flex; justify-content: space-around; align-items: center;
+    padding: 9px 6px; margin: 0 4px 6px; border-radius: 999px;
+  }
+  .tabbar svg { width: 19px; height: 19px; stroke: #fff; opacity: .38; }
+  .tabbar svg.on { opacity: 1; }
+
+  /* Boldi — the one deliberate non-glass surface (AppColors.coachBubbleFill) */
+  .boldi { display: flex; gap: 8px; align-items: flex-end; }
+  .boldi-avatar {
+    width: 30px; height: 30px; border-radius: 50%; flex: none;
+    background: #F5F3EC; border: 1.5px solid #1A1A1A;
+    display: grid; place-items: center;
+  }
+  .boldi-avatar svg { width: 15px; height: 15px; stroke: #1A1A1A; }
+  .bubble {
+    position: relative; background: #F5F3EC; color: #1A1A1A;
+    border: 1.5px solid #1A1A1A; border-radius: 14px; padding: 8px 11px;
+    font-size: 11.5px; line-height: 1.34; font-weight: 540; letter-spacing: -.008em;
+  }
+  .bubble::after {
+    content: ""; position: absolute; left: -6px; bottom: 8px;
+    width: 9px; height: 9px; background: #F5F3EC;
+    border-left: 1.5px solid #1A1A1A; border-bottom: 1.5px solid #1A1A1A;
+    transform: rotate(45deg);
+  }
+
+  /* icons: ALWAYS white. never cyan. */
+  .ico { width: 20px; height: 20px; stroke: #fff; stroke-width: 1.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+  .ico-sm { width: 15px; height: 15px; }
+
+  /* ============================================================
+     feature rows — alternating, not a card grid
+     ============================================================ */
+  .frow { display: grid; gap: clamp(30px, 5vw, 76px); grid-template-columns: minmax(0,1fr) minmax(0,1fr); align-items: center; }
+  .frow.flip .frow-media { order: -1; }
+  .frow-media { display: flex; justify-content: center; position: relative; }
+  @media (max-width: 900px) {
+    .frow { grid-template-columns: 1fr; gap: 34px; }
+    .frow.flip .frow-media { order: 0; }
+  }
+  .fpoints { display: grid; gap: 14px; margin-top: 26px; }
+  .fpoint { display: grid; grid-template-columns: auto 1fr; gap: 13px; align-items: start; }
+  .fpoint p { color: var(--text-2); font-size: 14.5px; line-height: 1.5; }
+  .fpoint b { color: #fff; font-weight: 570; }
+
+  /* Glow behind the device — cyan is allowed as glow.
+     THE 1px HORIZONTAL SCROLL LIVED HERE. This was `inset: 18% -6% 12%`, a 6%
+     bleed on each side. At 390px the .wrap content box is 350px, so 6% = 21px:
+     the pseudo-element's right edge landed at 350 + 21 = 371, which is 391 in
+     viewport coordinates against a 390px client width — exactly the reported
+     scrollWidth 391. It never showed up in a scan of overflowing elements
+     because a ::before is not in querySelectorAll('*').
+     The fix is to keep the box inside its container and let the blur do the
+     bleeding: `filter` produces ink overflow, which paints outside the box but
+     — unlike layout overflow — contributes nothing to scrollable overflow. The
+     glow looks the same and the page no longer scrolls sideways. */
+  .glow-run::before {
+    content: ""; position: absolute; z-index: -1; inset: 18% 0 12%;
+    background: radial-gradient(72% 50% at 50% 50%, rgba(0,224,255,.17), transparent 74%);
+    filter: blur(30px);
+  }
+
+  /* ============================================================
+     league / leaderboard
+     ============================================================ */
+  .league { display: grid; gap: clamp(30px, 5vw, 70px); grid-template-columns: minmax(0,.86fr) minmax(0,1.14fr); align-items: center; }
+  @media (max-width: 940px) { .league { grid-template-columns: 1fr; } }
+  .board { border-radius: 24px; overflow: hidden; }
+  .board-head {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 18px; border-bottom: 1px solid var(--hair-soft);
+  }
+  .board-head .h3 { margin-right: auto; }
+  .tierpill {
+    display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px;
+    border-radius: 999px; border: 1px solid var(--hair); background: rgba(255,255,255,.05);
+    font-size: 11.5px; font-weight: 580; letter-spacing: .02em;
+  }
+  .zone-label {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 18px; font-family: var(--ff-mono); font-size: 9.5px;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--text-3);
+    background: rgba(255,255,255,.022);
+  }
+  .zone-label.up   { border-left: 2px solid var(--neon-green); }
+  .zone-label.down { border-left: 2px solid rgba(255,255,255,.28); }
+  .row {
+    display: grid; grid-template-columns: 30px 1fr auto; gap: 12px; align-items: center;
+    padding: 11px 18px; border-top: 1px solid rgba(255,255,255,.045); position: relative;
+  }
+  .row.up   { border-left: 2px solid var(--neon-green); }
+  .row.down { border-left: 2px solid rgba(255,255,255,.28); }
+  .row.me { background: rgba(255,255,255,.06); }
+  .row .rank { font-family: var(--ff-mono); font-size: 12px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+  .row.me .rank { color: #fff; }
+  .row .who { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .av {
+    width: 26px; height: 26px; border-radius: 50%; flex: none; display: grid; place-items: center;
+    background: rgba(255,255,255,.08); border: 1px solid var(--hair);
+    font-size: 10px; font-weight: 640; letter-spacing: -.01em;
+  }
+  .row .name { font-size: 14px; font-weight: 540; letter-spacing: -.012em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .rp { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text-2); }
+  .row.me .rp { color: #fff; font-weight: 600; }
+  .bar { grid-column: 1 / -1; height: 2px; background: rgba(255,255,255,.09); border-radius: 2px; overflow: hidden; margin-top: 2px; }
+  .bar i { display: block; height: 100%; background: rgba(255,255,255,.55); transform: scaleX(0); transform-origin: left; transition: transform .95s var(--spring); }
+  .row.me .bar i { background: #fff; }
+  .is-in .bar i { transform: scaleX(var(--v)); }
+  .gap-row { padding: 7px 18px; color: var(--text-4); font-family: var(--ff-mono); font-size: 11px; letter-spacing: .2em; border-top: 1px solid rgba(255,255,255,.045); }
+  .verified-tick { width: 13px; height: 13px; flex: none; }
+
+  /* ---------- product tour: frames sized for real device captures ---------- */
+  .tour { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 3vw, 44px); }
+  .tour figure { margin: 0; display: grid; gap: 16px; justify-items: center; }
+  .tour .phone { max-width: 252px; }
+  .tour figcaption { text-align: center; max-width: 32ch; }
+  .tour figcaption b { display: block; font-weight: 580; letter-spacing: -.015em; margin-bottom: 5px; }
+  @media (max-width: 900px) { .tour { grid-template-columns: 1fr; } .tour .phone { max-width: 232px; } }
+  .pending {
+    position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; align-content: center; gap: 10px;
+    background:
+      radial-gradient(70% 42% at 50% 34%, rgba(255,255,255,.05), transparent 70%), #000;
+    font-family: var(--ff-mono); font-size: 9.5px; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--text-4); text-align: center; padding: 20px;
+  }
+  .pending svg { width: 22px; height: 22px; stroke: rgba(255,255,255,.4); stroke-width: 1.4; fill: none; }
+
+  /* ============================================================
+     bento
+     ============================================================ */
+  .bento { display: grid; gap: 12px; grid-template-columns: repeat(6, 1fr); }
+  .tile {
+    overflow: hidden;
+    border-radius: 20px; padding: 22px;
+    display: flex; flex-direction: column; gap: 11px; min-width: 0;
+    transition: transform .5s var(--spring), box-shadow .4s ease, background-color .4s ease;
+  }
+  /* Hover thickens the material and lifts it further — same four shadow parts. */
+  .tile:hover {
+    transform: translateY(-3px); background: var(--glass-tint-strong);
+    box-shadow:
+      inset 0 1px 0 0 var(--glass-rim),
+      inset 0 0 0 1px rgba(255,255,255,.22),
+      inset 0 -10px 24px -12px rgba(255,255,255,.34),
+      0 22px 60px rgba(0,0,0,.6), 0 2px 10px rgba(0,0,0,.42);
+  }
+  .tile .h3 { letter-spacing: -.02em; }
+  .tile p { color: var(--text-2); font-size: 14px; line-height: 1.5; }
+  .t-wide { grid-column: span 3; }
+  .t-half { grid-column: span 3; }
+  .t-third { grid-column: span 2; }
+  @media (max-width: 900px) { .bento { grid-template-columns: repeat(2, 1fr); } .t-wide, .t-half, .t-third { grid-column: span 1; } }
+  @media (max-width: 560px) { .bento { grid-template-columns: 1fr; } }
+
+  .vs {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center;
+    border: 1px solid var(--hair); border-radius: 14px; padding: 12px; margin-top: 4px;
+    background: rgba(255,255,255,.03);
+  }
+  .vs .side { text-align: center; min-width: 0; }
+  .vs .side b { display: block; font-size: 19px; font-weight: 630; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .vs .side i { font-style: normal; font-size: 10px; color: var(--text-4); letter-spacing: .1em; text-transform: uppercase; }
+  .vs .mid { font-family: var(--ff-mono); font-size: 10px; color: var(--text-4); letter-spacing: .1em; }
+
+  .widget {
+    width: 118px; height: 118px; border-radius: 26px; padding: 13px;
+    background: linear-gradient(165deg, #14181f, #05070a);
+    border: 1px solid var(--hair); display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .widget img { width: 26px; height: 26px; }
+  .widget b { font-size: 13px; font-weight: 620; letter-spacing: -.02em; }
+  .widget i { font-style: normal; font-size: 10px; color: var(--text-3); }
+
+  .liveact {
+    border-radius: 20px; padding: 13px 15px;
+    display: grid; gap: 10px; width: 100%; max-width: 300px;
+  }
+  .liveact-top { display: flex; align-items: center; gap: 9px; }
+  .liveact-top b { font-size: 12.5px; font-weight: 600; margin-right: auto; }
+  .liveact-top span { font-family: var(--ff-mono); font-size: 10px; color: var(--text-3); }
+  .island-pill {
+    display: flex; align-items: center; gap: 10px; justify-content: space-between;
+    background: #000; border-radius: 999px; padding: 9px 15px; width: 100%; max-width: 300px;
+    border: 1px solid rgba(255,255,255,.09);
+  }
+  .island-pill .lhs { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; }
+  .island-pill .rhs { font-family: var(--ff-mono); font-size: 12px; color: #fff; font-variant-numeric: tabular-nums; }
+
+  /* ============================================================
+     final CTA + footer
+     ============================================================ */
+  .final { position: relative; text-align: center; padding-block: clamp(84px, 15vh, 180px); overflow: hidden; }
+  .final::before {
+    content: ""; position: absolute; inset: auto 0 -55% 0; height: 110%;
+    background: radial-gradient(52% 50% at 50% 100%, rgba(0,224,255,.13), transparent 70%);
+    pointer-events: none;
+  }
+  .final .wrap { position: relative; }
+  .final .display { margin-inline: auto; max-width: 16ch; }
+  .final .lede { margin: 20px auto 0; max-width: 48ch; }
+  .final-cta { display: flex; gap: 11px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+
+  footer { border-top: 1px solid var(--hair-soft); padding-block: 44px 40px; }
+  .foot { display: grid; gap: 28px; grid-template-columns: minmax(0,1.2fr) repeat(2, minmax(0,1fr)); align-items: start; }
+  @media (max-width: 720px) { .foot { grid-template-columns: 1fr 1fr; } .foot > :first-child { grid-column: 1 / -1; } }
+  .foot h4 { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-4); font-weight: 560; margin-bottom: 13px; }
+  .foot li + li { margin-top: 9px; }
+  .foot a { font-size: 14px; color: var(--text-2); transition: color .3s ease; }
+  .foot a:hover { color: #fff; }
+  .foot-bottom {
+    display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center;
+    margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair-soft);
+    font-size: 12.5px; color: var(--text-4);
+  }
+  .foot-bottom .dom { margin-left: auto; }
+
+  /* ============================================================
+     reveal motion (native IntersectionObserver, no libraries)
+     ============================================================ */
+  [data-reveal] { opacity: 0; transform: translateY(20px); }
+  html.has-motion [data-reveal] {
+    transition: opacity .55s ease-out, transform .75s var(--spring);
+    transition-delay: var(--d, 0ms);
+    will-change: transform, opacity;
+  }
+  [data-reveal].is-in { will-change: auto; }
+  html:not(.has-motion) [data-reveal] { opacity: 1; transform: none; }
+  [data-reveal].is-in { opacity: 1; transform: none; }
+
+  /* Translucency is a preference, not a given: frost the material solid and
+     drop the sheen and the lens ring, which only mean anything when something
+     is being transmitted. The selector list is THE GLASS SURFACE LIST from the
+     material block — keep the two in sync. */
+  @media (prefers-reduced-transparency: reduce) {
+    :root { --glass-tint: var(--surface); --glass-tint-strong: #222839; }
+    .lg, .nav .wrap, .btn-ghost, .gcard, .tabbar, .board, .tile, .liveact {
+      backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
+    }
+    .lg::before,      .nav .wrap::before, .btn-ghost::before, .gcard::before,
+    .tabbar::before,  .board::before,     .tile::before,      .liveact::before,
+    .lg::after,       .nav .wrap::after,  .btn-ghost::after,  .gcard::after,
+    .tabbar::after,   .board::after,      .tile::after,       .liveact::after { display: none; }
+    .nav .wrap, .nav.is-scrolled .wrap { background: #0a0d14; }
+  }
+  @media (prefers-contrast: more) {
+    :root {
+      --text-2: rgba(255,255,255,.92); --text-3: rgba(255,255,255,.82);
+      --hair: rgba(255,255,255,.42);
+      --glass-tint: #000; --glass-tint-strong: #000;
+      --glass-rim: rgba(255,255,255,.9); --glass-rim-soft: rgba(255,255,255,.5);
+    }
+    .hero-h1 em { color: #fff; }
+    /* the sheen would lift the tint back off pure black */
+    .lg::before,     .nav .wrap::before, .btn-ghost::before, .gcard::before,
+    .tabbar::before, .board::before,     .tile::before,      .liveact::before { display: none; }
+  }
+
+  /* ============================================================
+     REDUCED MOTION — pinning and scrubbing removed entirely
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+    .sequence { height: auto !important; }
+    .stage { position: relative; height: auto; min-height: 0; }
+    .stage-visual { aspect-ratio: 4 / 3; min-height: 340px; }
+    .cue { display: none; }
+    .states { min-height: 0; display: grid; gap: 18px; }
+    .state { position: relative; inset: auto; opacity: 1; transform: none; pointer-events: auto; }
+    .track i { transform: scaleX(1); }
+    [data-reveal] { opacity: 1 !important; transform: none !important; }
+    .bar i { transform: scaleX(var(--v)); }
+  }
+</style>
+<style>
+  /* ============================================================
+     REFRACTIVE LIQUID GLASS — nav capsule
+     ------------------------------------------------------------
+     The frosted material (blur + rim + sheen) is the fallback. When the
+     runtime can do it, the nav upgrades to true refraction: an SVG
+     feDisplacementMap inside backdrop-filter bends the page content
+     passing under the capsule, strongest at the rim, neutral in the
+     middle — the iOS 26 Liquid Glass behaviour, not a blur layer.
+     The displacement map is generated at runtime to the capsule's exact
+     size (see the script by the #lgLens filter). Chromium only —
+     Safari/Firefox can't take an SVG filter in backdrop-filter and
+     keep the frosted fallback declared on .nav .wrap.
+     With refraction doing the work, the decorative chrome quiets down:
+     no sheen, hairline ring only. The lensing IS the effect.
+     ============================================================ */
+  .nav .wrap.lg-refract {
+    -webkit-backdrop-filter: url(#lgLens) blur(2px) saturate(1.5) brightness(1.04);
+    backdrop-filter: url(#lgLens) blur(2px) saturate(1.5) brightness(1.04);
+    --glass-tint: rgba(24, 28, 40, .22);   /* clearer: refraction needs transmission */
+  }
+  .nav .wrap.lg-refract::before { display: none; }          /* no sheen film */
+  .nav .wrap.lg-refract::after {                            /* whisper of a ring */
+    background: linear-gradient(140deg,
+      rgba(255,255,255,.28), rgba(255,255,255,.03) 35%,
+      rgba(255,255,255,0) 60%, rgba(255,255,255,.10));
+  }
+  .nav .wrap.lg-refract {
+    box-shadow:
+      inset 0 1px 0 0 rgba(255,255,255,.16),
+      inset 0 0 0 .5px rgba(255,255,255,.08),
+      0 10px 34px rgba(0,0,0,.55),
+      0 2px 8px rgba(0,0,0,.35);
+  }
+  @media (prefers-reduced-transparency: reduce) {
+    .nav .wrap.lg-refract {
+      -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
+      background: #0a0d14;
+    }
+  }
+  /* Smooth anchor navigation. Position-driven work (the hero scrub, the nav
+     condensing) is unaffected: smooth scrolling only animates the journey,
+     and every frame of it still resolves through the same scroll position —
+     so a nav click glides through the hero sequence instead of teleporting.
+     Gated on reduced-motion: an instant jump IS the reduced-motion behaviour. */
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+  /* The nav floats over content, so anchored sections need breathing room —
+     otherwise their headings land hidden underneath the fixed capsule. */
+  [id] { scroll-margin-top: 92px; }
+</style>
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="RouteRush home">
+      <img src="assets/routerush-logo.png" alt="RouteRush logo" width="30" height="30">
+      <span>RouteRush</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#territory">Territory</a>
+      <a href="#coach">Coach</a>
+      <a href="#leagues">Leagues</a>
+      <a href="#more">Features</a>
+    </nav>
+    <a class="btn btn-primary btn-sm" href="#download">Get the app</a>
+  </div>
+</header>
+
+<main id="main">
+  <div id="top"></div>
+
+  <!-- ============================================================
+       HERO — scroll-scrubbed visual sequence
+       ============================================================ -->
+  <section class="sequence" id="sequence" aria-labelledby="hero-title">
+    <div class="stage">
+      <div class="stage-copy">
+        <p class="eyebrow"><span>RouteRush for iOS</span><span class="mono" id="hud-frame">000 / 120</span></p>
+
+        <h1 class="hero-h1 display" id="hero-title">Running is how<br>you take <em>ground.</em></h1>
+
+        <!-- The sequence communicates ordered information, so the same three
+             states also exist as readable text for assistive technology. -->
+        <ol class="sr-only">
+          <li>Step one. Record a run or a ride with GPS tracking that survives lost signal.</li>
+          <li>Step two. Every hexagonal cell your route passes through is claimed as your territory.</li>
+          <li>Step three. Claimed territory becomes Rush Points, and Rush Points decide your weekly league rank.</li>
+        </ol>
+
+        <div class="states" id="states">
+          <div class="state is-active">
+            <b>01 — Record</b>
+            <p>Start a run or a ride. RouteRush follows your line at street resolution, and keeps recording when the signal drops out.</p>
+          </div>
+          <div class="state">
+            <b>02 — Conquer</b>
+            <p>Every hex your route touches turns yours. Resolution&#8209;11 cells, roughly 25&nbsp;metres across, claimed the moment you pass through one.</p>
+          </div>
+          <div class="state">
+            <b>03 — Hold it</b>
+            <p>Territory becomes Rush Points, Rush Points become rank, and rank resets every week. The map is only yours while you keep running.</p>
+          </div>
+        </div>
+
+        <div class="readout">
+          <div class="track" aria-hidden="true"><i></i></div>
+          <span class="mono" id="hud-pct">00%</span>
+        </div>
+
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#download">
+            <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.47 2.24-1.23 3.04-.82.87-2.16 1.54-3.28 1.45-.14-1.1.42-2.27 1.16-3.02.83-.86 2.27-1.49 3.35-1.47zM20.9 17.2c-.55 1.27-.82 1.84-1.53 2.96-.99 1.56-2.39 3.5-4.12 3.52-1.54.01-1.93-1-4.02-.99-2.09.01-2.52 1.01-4.06.99-1.73-.02-3.06-1.77-4.05-3.33-2.77-4.36-3.06-9.48-1.35-12.2 1.21-1.93 3.13-3.06 4.93-3.06 1.84 0 2.99 1.01 4.51 1.01 1.47 0 2.37-1.01 4.49-1.01 1.61 0 3.31.88 4.53 2.39-3.98 2.18-3.33 7.86.67 9.72z"/></svg>
+            Download on the App Store
+          </a>
+          <a class="btn btn-ghost" href="#territory">See how territory works</a>
+        </div>
+      </div>
+
+      <div class="stage-visual" id="stage-visual">
+        <canvas id="seq-canvas" aria-hidden="true"></canvas>
+        <p class="hud hud-tl" aria-hidden="true">H3 · Resolution 11<br><b id="hud-mode">Surface grid</b></p>
+        <p class="hud hud-br" aria-hidden="true">Cells claimed <b id="hud-cells">0</b><br>Rush Points <b id="hud-rp">0</b></p>
+        <span class="cue" aria-hidden="true">Scroll to claim</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CLAIM BAND
+       ============================================================ -->
+  <section class="sec" aria-labelledby="claim-title">
+    <div class="wrap claim">
+      <div>
+        <p class="eyebrow" data-reveal>The difference</p>
+        <h2 class="h2" id="claim-title" data-reveal style="--d:60ms; margin-top:18px">A tracker tells you where you went.<br>RouteRush tells you what you took.</h2>
+        <p class="lede" data-reveal style="--d:120ms; max-width:52ch; margin-top:22px">
+          The same run, scored differently. Distance and pace are the receipt. The map is the score —
+          a permanent record of the streets you have actually covered, cell by cell, against everyone
+          else covering theirs.
+        </p>
+      </div>
+      <dl class="specs" data-reveal style="--d:160ms">
+        <div class="spec">
+          <dt>25<span style="font-size:.5em; letter-spacing:0"> m</span></dt>
+          <dd><b>Cell edge, roughly</b>H3 resolution 11. Fine enough that one side of a street is not the other.</dd>
+        </div>
+        <div class="spec">
+          <dt>3D</dt>
+          <dd><b>Mapbox globe</b>Your territory rendered on a real globe, not a flat tile sheet.</dd>
+        </div>
+        <div class="spec">
+          <dt>0</dt>
+          <dd><b>Bars of signal required</b>Activities queue offline and sync themselves the moment you are back.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="rule"></div></div>
+
+  <!-- ============================================================
+       TERRITORY
+       ============================================================ -->
+  <section class="sec" id="territory" aria-labelledby="territory-title">
+    <div class="wrap frow">
+      <div>
+        <p class="eyebrow" data-reveal>Hex conquest</p>
+        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="territory-title">The map remembers every street you have taken.</h2>
+        <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
+          Your GPS line is matched to a hexagonal grid the moment it is recorded. Pass through a cell and
+          it is yours. Come back a different way and the shape of what you own changes.
+        </p>
+        <div class="fpoints" data-reveal style="--d:160ms">
+          <div class="fpoint">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6 20.1 7v10L12 21.4 3.9 17V7z"/><path d="M12 8.4 16.2 11v4.2L12 17.6 7.8 15.2V11z"/></svg>
+            <p><b>Cell-level scoring.</b> Rush Points are awarded per activity from the ground you actually covered, not from a step count.</p>
+          </div>
+          <div class="fpoint">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M2.8 12h18.4"/><path d="M12 2.8c2.4 2.6 3.7 5.8 3.7 9.2s-1.3 6.6-3.7 9.2c-2.4-2.6-3.7-5.8-3.7-9.2S9.6 5.4 12 2.8z"/></svg>
+            <p><b>Contested ground.</b> Cells have a dominance record. Someone else running your route puts your claim under pressure.</p>
+          </div>
+          <div class="fpoint">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17.5 9.2 12l3.4 3.4L20 7.4"/><path d="M20 12.4V7.4h-5"/></svg>
+            <p><b>It compounds.</b> Territory carries between runs, so a neighbourhood is something you build over months.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="frow-media glow-run" data-reveal style="--d:120ms">
+        <div class="phone">
+          <div class="screen">
+            <!-- SWAP: point src at the real globe/territory capture -->
+            <img class="shot" data-src="assets/screens/territory.png" alt="RouteRush map screen showing conquered hex cells on a 3D globe">
+            <div class="island" aria-hidden="true"></div>
+            <div class="statusbar"><span>9:41</span><span class="sb-icons">
+              <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
+              <svg width="19" height="10" viewBox="0 0 19 10" aria-hidden="true"><rect x=".5" y=".5" width="15" height="9" rx="2.6" stroke="#fff" fill="none" opacity=".5"/><rect x="2" y="2" width="10.5" height="6" rx="1.4" fill="#fff"/><path d="M17 3.6v2.8c.9-.3 1.4-.8 1.4-1.4s-.5-1.1-1.4-1.4z" fill="#fff" opacity=".5"/></svg>
+            </span></div>
+
+            <div class="screen-body">
+              <!-- globe with claimed hex patch -->
+              <div style="position:relative; flex:1; min-height:0; border-radius:16px; overflow:hidden; border:1px solid var(--hair-soft); background:radial-gradient(120% 90% at 50% 20%, #0b1016, #000 70%)">
+                <svg viewBox="0 0 240 300" style="width:100%; height:100%" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+                  <defs>
+                    <radialGradient id="globeShade" cx="38%" cy="30%" r="78%">
+                      <stop offset="0%" stop-color="#1d2530"/><stop offset="100%" stop-color="#04070b"/>
+                    </radialGradient>
+                    <clipPath id="globeClip"><circle cx="120" cy="150" r="86"/></clipPath>
+                  </defs>
+                  <circle cx="120" cy="150" r="86" fill="url(#globeShade)" stroke="rgba(255,255,255,.16)"/>
+                  <g clip-path="url(#globeClip)" stroke="rgba(255,255,255,.12)" fill="none">
+                    <ellipse cx="120" cy="150" rx="86" ry="30"/><ellipse cx="120" cy="150" rx="86" ry="60"/>
+                    <ellipse cx="120" cy="150" rx="28" ry="86"/><ellipse cx="120" cy="150" rx="58" ry="86"/>
+                    <line x1="34" y1="150" x2="206" y2="150"/>
+                  </g>
+                  <!-- claimed territory patch: white fills, cyan hairline frame -->
+                  <g clip-path="url(#globeClip)">
+                    <g fill="rgba(255,255,255,.13)" stroke="rgba(255,255,255,.42)" stroke-width=".8">
+                      <path d="M96 120l9-5 9 5v10l-9 5-9-5z"/><path d="M114 110l9-5 9 5v10l-9 5-9-5z"/>
+                      <path d="M114 130l9-5 9 5v10l-9 5-9-5z"/><path d="M132 120l9-5 9 5v10l-9 5-9-5z"/>
+                      <path d="M96 140l9-5 9 5v10l-9 5-9-5z"/><path d="M114 150l9-5 9 5v10l-9 5-9-5z"/>
+                      <path d="M132 140l9-5 9 5v10l-9 5-9-5z"/><path d="M78 130l9-5 9 5v10l-9 5-9-5z"/>
+                      <path d="M96 160l9-5 9 5v10l-9 5-9-5z"/><path d="M132 160l9-5 9 5v10l-9 5-9-5z"/>
+                    </g>
+                    <g fill="none" stroke="rgba(255,255,255,.10)" stroke-width=".7">
+                      <path d="M60 140l9-5 9 5v10l-9 5-9-5z"/><path d="M150 130l9-5 9 5v10l-9 5-9-5z"/>
+                      <path d="M78 170l9-5 9 5v10l-9 5-9-5z"/><path d="M150 170l9-5 9 5v10l-9 5-9-5z"/>
+                      <path d="M114 190l9-5 9 5v10l-9 5-9-5z"/><path d="M60 110l9-5 9 5v10l-9 5-9-5z"/>
+                    </g>
+                    <!-- the run line: sport accent, the earned cyan -->
+                    <path d="M74 176c14-14 18-30 34-38s30 6 44-6 20-18 30-16" fill="none" stroke="#00E0FF" stroke-width="4.5" opacity=".18" stroke-linecap="round"/>
+                    <path d="M74 176c14-14 18-30 34-38s30 6 44-6 20-18 30-16" fill="none" stroke="#00E0FF" stroke-width="1.6" stroke-linecap="round"/>
+                    <circle cx="182" cy="116" r="3" fill="#fff"/>
+                  </g>
+                </svg>
+              </div>
+
+              <div class="gcard">
+                <div class="metric-row">
+                  <div class="metric"><i>Cells</i><b>1 284</b></div>
+                  <div class="metric"><i>Rush Points</i><b>8 420</b></div>
+                  <div class="metric"><i>This week</i><b>+312</b></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="tabbar" aria-hidden="true">
+              <svg class="ico on" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 21.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>
+              <svg class="ico" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+              <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 8v8M8 12h8"/></svg>
+              <svg class="ico" viewBox="0 0 24 24"><path d="M6 20v-1.5A3.5 3.5 0 0 1 9.5 15h5a3.5 3.5 0 0 1 3.5 3.5V20"/><circle cx="12" cy="8" r="3.6"/></svg>
+              <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="rule"></div></div>
+
+  <!-- ============================================================
+       BOLDI
+       ============================================================ -->
+  <section class="sec" id="coach" aria-labelledby="coach-title">
+    <div class="wrap frow flip">
+      <div>
+        <p class="eyebrow" data-reveal>Boldi, the in-run coach</p>
+        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="coach-title">A coach in your ear, not a podcast.</h2>
+        <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
+          Boldi watches the run as it happens — your pace, the cells ahead, how much you have left — and
+          says something when it is worth saying. The rest of the time he is quiet.
+        </p>
+        <div class="fpoints" data-reveal style="--d:160ms">
+          <div class="fpoint">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 12.4c0 4.1-3.8 7.4-8.5 7.4a10 10 0 0 1-2.6-.34L4.6 21l1.2-3.4A7 7 0 0 1 3.5 12.4C3.5 8.3 7.3 5 12 5s8.5 3.3 8.5 7.4z"/></svg>
+            <p><b>Timed to the effort.</b> Prompts arrive at splits and decision points, not on a fixed timer.</p>
+          </div>
+          <div class="fpoint">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.5"/><path d="M8.6 6.4 12 3l3.4 3.4"/><circle cx="12" cy="17.6" r="3.4"/></svg>
+            <p><b>Aware of the map.</b> He knows which cells are still unclaimed on the route in front of you.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="frow-media" data-reveal style="--d:120ms">
+        <div class="phone">
+          <div class="screen">
+            <!-- SWAP: point src at the real in-run / tracking capture -->
+            <img class="shot" data-src="assets/screens/run-coach.png" alt="RouteRush in-run screen with the Boldi coach speaking">
+            <div class="island" aria-hidden="true"></div>
+            <div class="statusbar"><span>9:41</span><span class="sb-icons">
+              <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
+              <svg width="19" height="10" viewBox="0 0 19 10" aria-hidden="true"><rect x=".5" y=".5" width="15" height="9" rx="2.6" stroke="#fff" fill="none" opacity=".5"/><rect x="2" y="2" width="10.5" height="6" rx="1.4" fill="#fff"/><path d="M17 3.6v2.8c.9-.3 1.4-.8 1.4-1.4s-.5-1.1-1.4-1.4z" fill="#fff" opacity=".5"/></svg>
+            </span></div>
+
+            <div class="screen-body">
+              <div style="text-align:center; padding:16px 0 10px">
+                <p style="font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--text-4)">Elapsed</p>
+                <p style="font-size:46px; font-weight:640; letter-spacing:-.05em; line-height:1; font-variant-numeric:tabular-nums; margin-top:5px">32:14</p>
+              </div>
+              <div class="gcard">
+                <div class="metric-row">
+                  <div class="metric"><i>Distance</i><b>6.42<s>km</s></b></div>
+                  <div class="metric"><i>Pace</i><b>5:01<s>/km</s></b></div>
+                  <div class="metric"><i>Heart</i><b>158<s>bpm</s></b></div>
+                </div>
+              </div>
+
+              <!-- run track: sport accent -->
+              <div class="gcard tight" style="flex:1; min-height:74px; display:grid; place-items:center; padding:0; overflow:hidden">
+                <svg viewBox="0 0 240 96" style="width:100%; height:100%" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+                  <g fill="none" stroke="rgba(255,255,255,.09)" stroke-width=".7">
+                    <path d="M24 30l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M40 21l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M56 30l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M72 21l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M88 30l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M104 21l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M120 30l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M136 21l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M152 30l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M168 21l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M184 30l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M200 21l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M24 48l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M40 57l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M56 48l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M72 57l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M88 48l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M104 57l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M120 48l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M136 57l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M152 48l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M168 57l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M184 48l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M200 57l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                  </g>
+                  <g fill="rgba(255,255,255,.12)" stroke="rgba(255,255,255,.38)" stroke-width=".8">
+                    <path d="M40 57l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M56 48l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M72 57l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M88 48l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M104 57l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/><path d="M120 48l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                    <path d="M136 57l8-4.6 8 4.6v9.2l-8 4.6-8-4.6z"/>
+                  </g>
+                  <path d="M30 66c22 0 26-18 48-18s26 18 48 18 26-18 48-18" fill="none" stroke="#00E0FF" stroke-width="5" opacity=".16" stroke-linecap="round"/>
+                  <path d="M30 66c22 0 26-18 48-18s26 18 48 18 26-18 48-18" fill="none" stroke="#00E0FF" stroke-width="1.7" stroke-linecap="round"/>
+                  <circle cx="174" cy="48" r="3.1" fill="#fff"/>
+                </svg>
+              </div>
+
+              <div class="boldi">
+                <span class="boldi-avatar" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2.5 5 13.5h5.5L10 21.5l8.5-11H13z"/></svg>
+                </span>
+                <p class="bubble">Nine unclaimed cells on the loop ahead. Hold this pace and they are all yours.</p>
+              </div>
+            </div>
+
+            <div class="tabbar" aria-hidden="true">
+              <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 21.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>
+              <svg class="ico" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+              <svg class="ico on" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M10 8.6 16 12l-6 3.4z"/></svg>
+              <svg class="ico" viewBox="0 0 24 24"><path d="M6 20v-1.5A3.5 3.5 0 0 1 9.5 15h5a3.5 3.5 0 0 1 3.5 3.5V20"/><circle cx="12" cy="8" r="3.6"/></svg>
+              <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="rule"></div></div>
+
+  <!-- ============================================================
+       LIVE ACTIVITY / WIDGET
+       ============================================================ -->
+  <section class="sec" aria-labelledby="live-title">
+    <div class="wrap frow">
+      <div>
+        <p class="eyebrow" data-reveal>Live Activity &amp; widget</p>
+        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="live-title">Most of a run happens with the app closed.</h2>
+        <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
+          Time, distance and pace stay on the Lock Screen and in the Dynamic Island, and stay interactive —
+          pause and resume without unlocking. Starting is one tap from the Home Screen.
+        </p>
+      </div>
+      <div class="frow-media" data-reveal style="--d:120ms">
+        <div style="display:grid; gap:16px; justify-items:center; width:100%; max-width:340px">
+          <div class="island-pill">
+            <span class="lhs">
+              <svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.4 2"/></svg>
+              32:14
+            </span>
+            <span class="rhs">6.42 km · 5:01</span>
+          </div>
+          <div class="liveact">
+            <div class="liveact-top">
+              <img src="assets/routerush-appicon.png" alt="" width="20" height="20" style="border-radius:5px">
+              <b>Morning run</b>
+              <span>LIVE</span>
+            </div>
+            <div class="metric-row">
+              <div class="metric"><i>Time</i><b>32:14</b></div>
+              <div class="metric"><i>Distance</i><b>6.42<s>km</s></b></div>
+              <div class="metric"><i>Cells</i><b>+41</b></div>
+            </div>
+            <div style="display:flex; gap:8px">
+              <span class="btn btn-primary" style="height:32px; font-size:12.5px; flex:1; padding:0 12px" role="img" aria-label="Pause control">Pause</span>
+              <span class="btn btn-ghost" style="height:32px; font-size:12.5px; flex:1; padding:0 12px" role="img" aria-label="Finish control">Finish</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; justify-content:center">
+            <div class="widget">
+              <img src="assets/routerush-logo.png" alt="" width="26" height="26">
+              <div><b>Quick Start</b><br><i>Run · Ride</i></div>
+            </div>
+            <p class="small" style="max-width:170px">Home Screen widget. One tap opens straight into a tracked run.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="rule"></div></div>
+
+  <!-- ============================================================
+       LEAGUES
+       ============================================================ -->
+  <section class="sec" id="leagues" aria-labelledby="leagues-title">
+    <div class="wrap league">
+      <div>
+        <p class="eyebrow" data-reveal>Cohort leagues</p>
+        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="leagues-title">Thirty runners.<br>One week.<br>Five go up.</h2>
+        <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:42ch">
+          Every week you are placed in a cohort of thirty at your tier. The top fifth is promoted, the
+          bottom fifth is relegated, and everyone starts again on Monday. Bronze, Silver and Gold,
+          each with three divisions.
+        </p>
+        <p class="small" data-reveal style="--d:150ms; margin-top:18px; max-width:42ch">
+          New to a tier? A newbie shield covers your first week, so a bad one cannot send you straight
+          back down.
+        </p>
+      </div>
+
+      <div class="board" data-reveal style="--d:120ms" id="board">
+        <div class="board-head">
+          <h3 class="h3">Silver II · Cohort #14</h3>
+          <span class="tierpill">
+            <svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5.4"/><path d="M8.4 13.6 7 21.5l5-2.6 5 2.6-1.4-7.9"/></svg>
+            4d 07h left
+          </span>
+        </div>
+
+        <p class="zone-label up"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V6"/><path d="M6.5 11.5 12 6l5.5 5.5"/></svg> Promotion zone · top 5</p>
+
+        <div class="row up" style="--v:1"><span class="rank">1</span>
+          <span class="who"><span class="av">MK</span><span class="name">M. Kaya</span></span>
+          <span class="rp">4 820</span><span class="bar"><i></i></span></div>
+        <div class="row up" style="--v:.93"><span class="rank">2</span>
+          <span class="who"><span class="av">JD</span><span class="name">J. Duarte</span>
+            <svg class="verified-tick" viewBox="0 0 24 24" aria-label="Verified"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="rp">4 512</span><span class="bar"><i></i></span></div>
+        <div class="row up" style="--v:.86"><span class="rank">3</span>
+          <span class="who"><span class="av">AR</span><span class="name">A. Rossi</span></span>
+          <span class="rp">4 140</span><span class="bar"><i></i></span></div>
+
+        <p class="gap-row">· · ·</p>
+
+        <div class="row me" style="--v:.62"><span class="rank">12</span>
+          <span class="who"><span class="av">YO</span><span class="name">You</span></span>
+          <span class="rp">2 986</span><span class="bar"><i></i></span></div>
+        <div class="row" style="--v:.59"><span class="rank">13</span>
+          <span class="who"><span class="av">LN</span><span class="name">L. Novak</span></span>
+          <span class="rp">2 830</span><span class="bar"><i></i></span></div>
+
+        <p class="gap-row">· · ·</p>
+
+        <div class="row down" style="--v:.24"><span class="rank">29</span>
+          <span class="who"><span class="av">PB</span><span class="name">P. Bauer</span></span>
+          <span class="rp">1 140</span><span class="bar"><i></i></span></div>
+        <div class="row down" style="--v:.19"><span class="rank">30</span>
+          <span class="who"><span class="av">SC</span><span class="name">S. Chen</span></span>
+          <span class="rp">905</span><span class="bar"><i></i></span></div>
+
+        <p class="zone-label down"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v13"/><path d="M17.5 12.5 12 18l-5.5-5.5"/></svg> Relegation zone · bottom 5</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="rule"></div></div>
+
+  <!-- ============================================================
+       PRODUCT TOUR — frames built to take real device captures.
+       Each .shot img is a one-line src swap; until the file exists the
+       img removes itself and the quiet placeholder below shows.
+       ============================================================ -->
+  <section class="sec" id="tour" aria-labelledby="tour-title">
+    <div class="wrap">
+      <div class="sec-head" style="margin-bottom:44px">
+        <h2 class="h2" id="tour-title" data-reveal>Inside the app.</h2>
+        <p class="lede" data-reveal style="--d:80ms">Captured on iPhone, running the shipping build.</p>
+      </div>
+
+      <div class="tour">
+        <figure data-reveal>
+          <div class="phone">
+            <div class="screen">
+              <img class="shot" src="assets/screens/en-01-globe.png"
+                   alt="RouteRush home screen: a 3D globe over a starfield with glass map controls and a Start button">
+            </div>
+          </div>
+          <figcaption class="small"><b>The globe you run on</b>Home is a real 3D globe, not a flat tile sheet. Your ground fills in as you cover it.</figcaption>
+        </figure>
+
+        <figure data-reveal style="--d:90ms">
+          <div class="phone">
+            <div class="screen">
+              <img class="shot" src="assets/screens/en-02-plans-boldi.png"
+                   alt="RouteRush Plans screen featuring Boldi the coach and structured training plans">
+            </div>
+          </div>
+          <figcaption class="small"><b>Boldi and a plan to follow</b>Structured plans from first run to 5K, with the coach attached to them.</figcaption>
+        </figure>
+
+        <figure data-reveal style="--d:180ms">
+          <div class="phone">
+            <div class="screen">
+              <img class="shot" data-src="assets/screens/leaderboard.png" alt="Weekly cohort league standings screen">
+              <div class="pending" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M6 20V11M12 20V5M18 20v-6"/></svg>
+                League standings
+              </div>
+            </div>
+          </div>
+          <figcaption class="small"><b>Where you stand</b>Your cohort, live, with the promotion line in sight.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap"><div class="rule"></div></div>
+
+  <!-- ============================================================
+       BENTO — remaining shipped features
+       ============================================================ -->
+  <section class="sec" id="more" aria-labelledby="more-title">
+    <div class="wrap">
+      <div class="sec-head" style="margin-bottom:38px">
+        <h2 class="h2" id="more-title" data-reveal>Everything else that ships in the box.</h2>
+        <p class="lede" data-reveal style="--d:80ms">No roadmap items. These are in the app today.</p>
+      </div>
+
+      <div class="bento">
+        <article class="tile t-wide" data-reveal>
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20v-1.6A3.4 3.4 0 0 1 9.4 15h1.8"/><circle cx="9" cy="8.4" r="3"/><path d="M14.5 20v-1.6A3.4 3.4 0 0 1 17.9 15"/><circle cx="16.6" cy="8.4" r="3"/><path d="M11 20h9"/></svg>
+          <h3 class="h3">Clubs and a feed worth reading</h3>
+          <p>Join a club, post the run, comment on someone else's. The social feed is built around activities, so there is always something on the map behind the picture.</p>
+        </article>
+
+        <article class="tile t-half" data-reveal style="--d:70ms">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 8.6c0 4.6-8.4 10.4-8.4 10.4S3.6 13.2 3.6 8.6a4.4 4.4 0 0 1 8.4-1.8 4.4 4.4 0 0 1 8.4 1.8z"/></svg>
+          <h3 class="h3">Head-to-head challenges</h3>
+          <p>Pick someone, pick a metric, set the window. The VS card tracks both of you until it closes.</p>
+          <div class="vs" aria-hidden="true">
+            <div class="side"><b>18.4</b><i>You · km</i></div>
+            <div class="mid">VS</div>
+            <div class="side"><b>16.1</b><i>M. Kaya · km</i></div>
+          </div>
+        </article>
+
+        <article class="tile t-third" data-reveal style="--d:120ms">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12.5h4l2-4.5 3 9 2.5-4.5h5.5"/></svg>
+          <h3 class="h3">HealthKit, both ways</h3>
+          <p>Steps, weight and heart rate read in. Workouts written back out.</p>
+        </article>
+
+        <article class="tile t-third" data-reveal style="--d:170ms">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7.5 12 3.6l7.5 3.9v5c0 4.3-3.1 7.4-7.5 8.9-4.4-1.5-7.5-4.6-7.5-8.9z"/><path d="m9 12 2.2 2.2L15.4 10"/></svg>
+          <h3 class="h3">Verified badge</h3>
+          <p>Premium accounts carry a checkmark across the feed, clubs and leaderboards.</p>
+        </article>
+
+        <article class="tile t-third" data-reveal style="--d:220ms">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19.5h.01"/><path d="M4.5 9a10.6 10.6 0 0 1 15 0"/><path d="M7.8 12.6a6 6 0 0 1 8.4 0"/><path d="m3 3 18 18"/></svg>
+          <h3 class="h3">Offline queue</h3>
+          <p>Tracking survives no signal. Activities queue on device and sync when the network returns.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FINAL CTA
+       ============================================================ -->
+  <section class="final" id="download" aria-labelledby="dl-title">
+    <div class="wrap">
+      <img src="assets/routerush-appicon.png" alt="" width="76" height="76" data-reveal
+           style="border-radius:18px; margin:0 auto 26px; border:1px solid var(--hair)">
+      <h2 class="display" id="dl-title" data-reveal style="--d:60ms">Go take some ground.</h2>
+      <p class="lede" data-reveal style="--d:110ms">
+        RouteRush is free to start. iPhone, iOS&nbsp;17 or later. Your first run claims its first cell about
+        twenty seconds in.
+      </p>
+      <div class="final-cta" data-reveal style="--d:160ms">
+        <a class="btn btn-primary" href="#download">
+          <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.47 2.24-1.23 3.04-.82.87-2.16 1.54-3.28 1.45-.14-1.1.42-2.27 1.16-3.02.83-.86 2.27-1.49 3.35-1.47zM20.9 17.2c-.55 1.27-.82 1.84-1.53 2.96-.99 1.56-2.39 3.5-4.12 3.52-1.54.01-1.93-1-4.02-.99-2.09.01-2.52 1.01-4.06.99-1.73-.02-3.06-1.77-4.05-3.33-2.77-4.36-3.06-9.48-1.35-12.2 1.21-1.93 3.13-3.06 4.93-3.06 1.84 0 2.99 1.01 4.51 1.01 1.47 0 2.37-1.01 4.49-1.01 1.61 0 3.31.88 4.53 2.39-3.98 2.18-3.33 7.86.67 9.72z"/></svg>
+          Download on the App Store
+        </a>
+        <a class="btn btn-ghost" href="#territory">Watch the map fill</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a class="brand" href="#top" aria-label="RouteRush home">
+          <img src="assets/routerush-logo.png" alt="RouteRush logo" width="30" height="30">
+          <span>RouteRush</span>
+        </a>
+        <p class="small" style="margin-top:14px; max-width:34ch">
+          Gamified run and ride tracking for iOS. Conquer the map one hex at a time.
+        </p>
+      </div>
+      <nav aria-label="Product">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#territory">Territory</a></li>
+          <li><a href="#coach">Boldi coach</a></li>
+          <li><a href="#leagues">Leagues</a></li>
+          <li><a href="#more">Features</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Legal and support">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#download">Privacy</a></li>
+          <li><a href="#download">Terms</a></li>
+          <li><a href="#download">Support</a></li>
+          <li><a href="#download">Press kit</a></li>
+        </ul>
+      </nav>
+    </div>
+    <p class="foot-bottom">
+      <span>© 2026 RouteRush. All rights reserved.</span>
+      <span class="dom"><a href="https://routerush.app">routerush.app</a></span>
+    </p>
+  </div>
+</footer>
+
+<script>
+/* ================================================================
+   RouteRush — scroll-scrubbed hero sequence
+   ----------------------------------------------------------------
+   Contract:
+     • ONE normalized progress value (0..1) from native scroll position.
+     • Native scroll is the only source of truth — no wheel deltas,
+       no elapsed time, no autoplay. Deterministically reversible.
+     • rAF-coalesced measurement, one render per frame, redraw only
+       when progress (or layout) actually changed.
+     • prefers-reduced-motion: no pinning, no scrubbing, static state.
+     • Full teardown of listeners, observers and frames.
+   ================================================================ */
+(() => {
+  'use strict';
+
+  /* ---------- configuration: no magic numbers in the handlers ---------- */
+  const sequence = {
+    scrollVh:            320,      // section height, in vh
+    frameCount:          120,      // quantized frames, used by the HUD readout
+    stateCount:          3,
+    fit:                 'contain',   // the framed content (route + globe) always fits the stage
+    posterState:         0,        // state rendered before measurement settles
+    reducedMotionState:  1,        // static state under prefers-reduced-motion
+    copyStops:           [0, 0.34, 0.66],
+    routeWindow:         [0.03, 0.58],   // progress span over which the route draws
+    globeWindow:         [0.46, 0.97],   // progress span over which the plane wraps
+    flatContraction:     0.62,           // the ground draws inward as it curls into the sphere
+    rotationDeg:         [-17, 30],      // globe spin across the sequence
+    tiltDeg:             13,
+    claimRadiusDeg:      6.6,      // how close a cell centre must be to the line
+    claimRampT:          0.055,    // route-parameter width of the claim animation
+    maxDpr:              2,
+    padding:             0.9,      // "contain" inset
+    rpPerCell:           7
+  };
+
+  // GRID is generated well past the stage on every side, so the honeycomb reads as
+  // open ground rather than a floating rectangle. CONTENT is the box that "contain"
+  // actually frames: the route's bounds. The two are deliberately different.
+  const GRID    = { lonMax: 140, latMax: 72, hexSize: 5.2 };
+  const CONTENT = { lonMax: 68,  latMax: 40 };
+  const COLOR = {
+    // monochrome-first. cyan is the sport-accent route only.
+    grid:      'rgba(255,255,255,0.125)',
+    gridWarm:  'rgba(255,255,255,0.16)',
+    claimFill: 'rgba(255,255,255,0.10)',
+    claimEdge: 'rgba(255,255,255,0.34)',
+    route:     '#00E0FF',
+    sphere:    'rgba(255,255,255,0.30)',
+    grat:      'rgba(255,255,255,0.10)'
+  };
+
+  const root    = document.documentElement;
+  const section = document.getElementById('sequence');
+  const stage   = document.getElementById('stage-visual');
+  const canvas  = document.getElementById('seq-canvas');
+  if (!section || !stage || !canvas) return;
+
+  const ctx      = canvas.getContext('2d');
+  const states   = Array.from(document.querySelectorAll('#states .state'));
+  const elPct    = document.getElementById('hud-pct');
+  const elFrame  = document.getElementById('hud-frame');
+  const elCells  = document.getElementById('hud-cells');
+  const elRp     = document.getElementById('hud-rp');
+  const elMode   = document.getElementById('hud-mode');
+  const nav      = document.getElementById('nav');
+
+  const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
+  let reduced = motionQuery.matches;
+
+  /* ---------- teardown registry ---------- */
+  const teardown = [];
+  const on = (target, type, fn, opts) => {
+    target.addEventListener(type, fn, opts);
+    teardown.push(() => target.removeEventListener(type, fn, opts));
+  };
+
+  /* ---------- small maths ---------- */
+  const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
+  const lerp    = (a, b, t) => a + (b - a) * t;
+  const invLerp = (a, b, v) => clamp01((v - a) / (b - a));
+  const smooth  = t => t * t * (3 - 2 * t);
+  const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  const RAD = Math.PI / 180;
+
+  /* ---------- geometry: hex lattice in lon/lat ---------- */
+  const cells = [];
+  (function buildGrid() {
+    const s = GRID.hexSize;
+    const rowStep = 1.5 * s;
+    const colStep = Math.sqrt(3) * s;
+    const verts = [];
+    for (let k = 0; k < 6; k++) {
+      const a = (30 + 60 * k) * RAD;
+      verts.push([Math.cos(a) * s, Math.sin(a) * s]);
+    }
+    let row = 0;
+    for (let lat = -GRID.latMax; lat <= GRID.latMax; lat += rowStep, row++) {
+      const offset = (row % 2) * colStep / 2;
+      for (let lon = -GRID.lonMax + offset; lon <= GRID.lonMax; lon += colStep) {
+        cells.push({ lon, lat, v: verts, claimT: null });
+      }
+    }
+  })();
+
+  /* ---------- the route: fixed control points, Catmull-Rom sampled ---------- */
+  const route = (function buildRoute() {
+    const cp = [
+      [-64, -36], [-46, -13], [-30, 6], [-8, 15], [10, 4], [18, -15],
+      [34, -23], [50, -11], [58, 10], [44, 27], [22, 33], [0, 26],
+      [-16, 35], [-36, 31]
+    ];
+    const pts = [];
+    const SEG = 34;
+    const at = i => cp[Math.max(0, Math.min(cp.length - 1, i))];
+    for (let i = 0; i < cp.length - 1; i++) {
+      const p0 = at(i - 1), p1 = at(i), p2 = at(i + 1), p3 = at(i + 2);
+      for (let j = 0; j < SEG; j++) {
+        const t = j / SEG, t2 = t * t, t3 = t2 * t;
+        pts.push([
+          0.5 * ((2 * p1[0]) + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3),
+          0.5 * ((2 * p1[1]) + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3)
+        ]);
+      }
+    }
+    pts.push(cp[cp.length - 1]);
+    return pts;
+  })();
+
+  /* ---------- precompute each cell's claim moment (deterministic) ---------- */
+  (function precomputeClaims() {
+    const r2 = sequence.claimRadiusDeg * sequence.claimRadiusDeg;
+    const last = route.length - 1;
+    for (const c of cells) {
+      for (let i = 0; i <= last; i++) {
+        const dx = route[i][0] - c.lon, dy = route[i][1] - c.lat;
+        if (dx * dx + dy * dy <= r2) { c.claimT = i / last; break; }
+      }
+    }
+  })();
+  const totalClaimable = cells.reduce((n, c) => n + (c.claimT !== null ? 1 : 0), 0);
+
+  /* ---------- projection: plane -> sphere, blended by g ---------- */
+  let W = 0, H = 0, unitFlat = 0, radius = 0, cx = 0, cy = 0;
+  const latRatio = CONTENT.latMax / CONTENT.lonMax;
+
+  function measureCanvas() {
+    const rect = stage.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, sequence.maxDpr);
+    W = Math.max(1, Math.round(rect.width));
+    H = Math.max(1, Math.round(rect.height));
+    canvas.width  = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cx = W / 2; cy = H / 2;
+    // "contain" applied to CONTENT, not to the generated grid — the grid overflows by design.
+    unitFlat = Math.min(W / 2, (H / 2) / latRatio) * sequence.padding;
+    radius   = (Math.min(W, H) / 2) * 0.84 * sequence.padding;
+  }
+
+  const P = { x: 0, y: 0, d: 1 };
+  function project(lon, lat, g, rotDeg, cosTilt, sinTilt) {
+    // the plane contracts as it wraps, so distant ground visibly draws in
+    const k = unitFlat * (1 - (1 - sequence.flatContraction) * g);
+    const fx = (lon / CONTENT.lonMax) * k;
+    const fy = -(lat / CONTENT.lonMax) * k;
+    if (g <= 0) { P.x = cx + fx; P.y = cy + fy; P.d = 1; return P; }
+    const la = (lon + rotDeg) * RAD, ph = lat * RAD;
+    const cp2 = Math.cos(ph);
+    let x3 = cp2 * Math.sin(la), y3 = Math.sin(ph), z3 = cp2 * Math.cos(la);
+    const ty = y3 * cosTilt - z3 * sinTilt;
+    const tz = y3 * sinTilt + z3 * cosTilt;
+    const sx = x3 * radius, sy = -ty * radius;
+    P.x = cx + lerp(fx, sx, g);
+    P.y = cy + lerp(fy, sy, g);
+    P.d = lerp(1, tz, g);
+    return P;
+  }
+
+  /* ---------- render ---------- */
+  function render(progress) {
+    const g       = easeInOut(invLerp(sequence.globeWindow[0], sequence.globeWindow[1], progress));
+    const reveal  = invLerp(sequence.routeWindow[0], sequence.routeWindow[1], progress);
+    const rotDeg  = lerp(sequence.rotationDeg[0], sequence.rotationDeg[1], progress);
+    const tilt    = sequence.tiltDeg * g * RAD;
+    const cosT = Math.cos(tilt), sinT = Math.sin(tilt);
+
+    ctx.clearRect(0, 0, W, H);
+
+    // globe body: atmosphere, silhouette, graticule — faded in with g
+    if (g > 0.015) {
+      ctx.save();
+      ctx.globalAlpha = g;
+      const atmo = ctx.createRadialGradient(cx, cy, radius * 0.82, cx, cy, radius * 1.16);
+      atmo.addColorStop(0, 'rgba(255,255,255,0.055)');
+      atmo.addColorStop(0.55, 'rgba(255,255,255,0.022)');
+      atmo.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = atmo;
+      ctx.beginPath(); ctx.arc(cx, cy, radius * 1.16, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = COLOR.sphere;
+      ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = COLOR.grat;
+      for (let lat = -60; lat <= 60; lat += 30) {
+        ctx.beginPath();
+        let started = false;
+        for (let lon = -180; lon <= 180; lon += 6) {
+          const p = project(lon, lat, 1, rotDeg, cosT, sinT);
+          if (p.d < 0) { started = false; continue; }
+          if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+      }
+      for (let lon = -180; lon < 180; lon += 30) {
+        ctx.beginPath();
+        let started = false;
+        for (let lat = -88; lat <= 88; lat += 4) {
+          const p = project(lon, lat, 1, rotDeg, cosT, sinT);
+          if (p.d < 0) { started = false; continue; }
+          if (!started) { ctx.moveTo(p.x, p.y); started = true; } else ctx.lineTo(p.x, p.y);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // cells
+    let claimed = 0;
+    const unclaimedPath = new Path2D();
+    const settledPath   = new Path2D();
+
+    for (const c of cells) {
+      const p0 = project(c.lon, c.lat, g, rotDeg, cosT, sinT);
+      const depth = p0.d;
+      // back of the globe fades out as the sphere forms
+      const facing = clamp01((depth + 0.06) / 0.30);
+      const vis = 1 - g * (1 - facing);
+      if (vis < 0.04) continue;
+
+      const isClaimed = c.claimT !== null && reveal > 0 && reveal >= c.claimT;
+      let age = 1, scale = 1;
+      if (isClaimed) {
+        claimed++;
+        age = clamp01((reveal - c.claimT) / sequence.claimRampT);
+        scale = lerp(0.82, 1, smooth(age));
+      }
+
+      const target = isClaimed ? settledPath : unclaimedPath;
+      const sub = isClaimed && age < 1 ? new Path2D() : null;
+      const path = sub || target;
+
+      for (let k = 0; k < 6; k++) {
+        const vx = c.v[k][0] * scale, vy = c.v[k][1] * scale;
+        const p = project(c.lon + vx, c.lat + vy, g, rotDeg, cosT, sinT);
+        if (k === 0) path.moveTo(p.x, p.y); else path.lineTo(p.x, p.y);
+      }
+      path.closePath();
+
+      if (sub) {
+        // the claim flash: hairline cyan, fading as the cell settles
+        ctx.save();
+        ctx.globalAlpha = vis;
+        ctx.fillStyle = COLOR.claimFill; ctx.fill(sub);
+        ctx.strokeStyle = COLOR.claimEdge; ctx.lineWidth = 1; ctx.stroke(sub);
+        ctx.globalAlpha = vis * (1 - age) * 0.85;
+        ctx.strokeStyle = COLOR.route; ctx.lineWidth = 1.4; ctx.stroke(sub);
+        ctx.restore();
+      } else if (vis < 0.999) {
+        ctx.save();
+        ctx.globalAlpha = vis;
+        if (isClaimed) { ctx.fillStyle = COLOR.claimFill; ctx.fill(path === settledPath ? new Path2D(path) : path); }
+        ctx.restore();
+      }
+    }
+
+    ctx.save();
+    ctx.strokeStyle = COLOR.grid; ctx.lineWidth = 1; ctx.stroke(unclaimedPath);
+    ctx.fillStyle = COLOR.claimFill; ctx.fill(settledPath);
+    ctx.strokeStyle = COLOR.claimEdge; ctx.lineWidth = 1; ctx.stroke(settledPath);
+    ctx.restore();
+
+    // the route — the one earned colour in this scene
+    if (reveal > 0) {
+      const last = route.length - 1;
+      const head = reveal * last;
+      const full = Math.floor(head);
+      const frac = head - full;
+
+      const line = new Path2D();
+      let started = false, hx = cx, hy = cy;
+      for (let i = 0; i <= full; i++) {
+        const p = project(route[i][0], route[i][1], g, rotDeg, cosT, sinT);
+        if (g > 0.5 && p.d < -0.02) { started = false; continue; }
+        if (!started) { line.moveTo(p.x, p.y); started = true; } else line.lineTo(p.x, p.y);
+        hx = p.x; hy = p.y;
+      }
+      if (full < last && started) {
+        const a = route[full], b = route[full + 1];
+        const p = project(lerp(a[0], b[0], frac), lerp(a[1], b[1], frac), g, rotDeg, cosT, sinT);
+        line.lineTo(p.x, p.y); hx = p.x; hy = p.y;
+      }
+
+      ctx.save();
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.strokeStyle = COLOR.route;
+      ctx.globalAlpha = 0.16; ctx.lineWidth = 7;  ctx.stroke(line);
+      ctx.globalAlpha = 0.34; ctx.lineWidth = 3.4; ctx.stroke(line);
+      ctx.globalAlpha = 1;    ctx.lineWidth = 1.6; ctx.stroke(line);
+
+      // leading marker: white core, cyan halo
+      if (reveal < 1) {
+        const halo = ctx.createRadialGradient(hx, hy, 0, hx, hy, 26);
+        halo.addColorStop(0, 'rgba(0,224,255,0.34)');
+        halo.addColorStop(1, 'rgba(0,224,255,0)');
+        ctx.globalAlpha = 1; ctx.fillStyle = halo;
+        ctx.beginPath(); ctx.arc(hx, hy, 26, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#fff';
+        ctx.beginPath(); ctx.arc(hx, hy, 3, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    return claimed;
+  }
+
+  /* ---------- copy + HUD, driven by the same progress ---------- */
+  function paintUI(progress, claimed) {
+    root.style.setProperty('--p', progress.toFixed(4));
+    if (elPct)   elPct.textContent = String(Math.round(progress * 100)).padStart(2, '0') + '%';
+    if (elFrame) elFrame.textContent =
+      String(Math.round(progress * (sequence.frameCount - 1))).padStart(3, '0') + ' / ' + sequence.frameCount;
+    if (elCells) elCells.textContent = claimed.toLocaleString('en-GB').replace(/,/g, ' ');
+    if (elRp)    elRp.textContent = (claimed * sequence.rpPerCell).toLocaleString('en-GB').replace(/,/g, ' ');
+    if (elMode)  elMode.textContent =
+      progress < sequence.copyStops[1] ? 'Surface grid'
+      : progress < sequence.globeWindow[0] ? 'Claiming cells'
+      : 'Globe projection';
+
+    let active = 0;
+    for (let i = 0; i < sequence.copyStops.length; i++) if (progress >= sequence.copyStops[i]) active = i;
+    for (let i = 0; i < states.length; i++) states[i].classList.toggle('is-active', i === active);
+  }
+
+  /* ---------- scroll driver: one rAF, one render per frame ---------- */
+  let rafId = 0, scheduled = false, dirty = true, lastProgress = -1;
+
+  function currentProgress() {
+    const rect = section.getBoundingClientRect();
+    const distance = Math.max(1, section.offsetHeight - window.innerHeight);
+    return clamp01(-rect.top / distance);
+  }
+
+  function frame() {
+    rafId = 0; scheduled = false;
+    const progress = currentProgress();
+    if (!dirty && Math.abs(progress - lastProgress) < 0.0002) return; // redraw only on real change
+    dirty = false;
+    lastProgress = progress;
+    paintUI(progress, render(progress));
+  }
+
+  function schedule() {
+    if (scheduled) return;
+    scheduled = true;
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function onScroll() {
+    if (nav) nav.classList.toggle('is-scrolled', window.scrollY > 12);
+    if (!reduced) schedule();
+  }
+
+  function refresh() {
+    measureCanvas();
+    dirty = true;
+    if (reduced) {
+      const p = sequence.reducedMotionState;
+      paintUI(p, render(p));
+    } else {
+      schedule();
+    }
+  }
+
+  /* ---------- mode application ---------- */
+  function applyMode() {
+    reduced = motionQuery.matches;
+    if (reduced) {
+      // no pinning, no scrubbing: the section returns to ordinary flow
+      section.style.height = '';
+      root.classList.remove('has-motion');
+    } else {
+      section.style.height = sequence.scrollVh + 'vh';
+      root.classList.add('has-motion');
+    }
+    refresh();
+  }
+
+  /* ---------- reveals ---------- */
+  let revealObserver = null, boardObserver = null;
+  function initReveals() {
+    const items = document.querySelectorAll('[data-reveal]');
+    const board = document.getElementById('board');
+    if (reduced || !('IntersectionObserver' in window)) {
+      items.forEach(el => el.classList.add('is-in'));
+      if (board) board.classList.add('is-in');
+      return;
+    }
+    revealObserver = new IntersectionObserver((entries, obs) => {
+      for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); obs.unobserve(e.target); }
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
+    items.forEach(el => revealObserver.observe(el));
+
+    if (board) {
+      boardObserver = new IntersectionObserver((entries, obs) => {
+        for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); obs.unobserve(e.target); }
+      }, { threshold: 0.25 });
+      boardObserver.observe(board);
+    }
+  }
+
+  /* ---------- wiring ---------- */
+  applyMode();
+  initReveals();
+  onScroll();
+
+  on(window, 'scroll', onScroll, { passive: true });
+  on(window, 'resize', refresh);
+  on(window, 'orientationchange', refresh);
+  if (motionQuery.addEventListener) on(motionQuery, 'change', applyMode);
+
+  // measurements must settle after fonts and intrinsic media sizes land
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh).catch(() => {});
+  on(window, 'load', refresh);
+
+  let resizeObserver = null;
+  if ('ResizeObserver' in window) {
+    resizeObserver = new ResizeObserver(refresh);
+    resizeObserver.observe(stage);
+  }
+
+  // pause work while the tab is hidden
+  on(document, 'visibilitychange', () => { if (!document.hidden) refresh(); });
+
+  /* ---------- full teardown (route change / unmount) ---------- */
+  function destroy() {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = 0; scheduled = false;
+    if (resizeObserver) { resizeObserver.disconnect(); resizeObserver = null; }
+    if (revealObserver) { revealObserver.disconnect(); revealObserver = null; }
+    if (boardObserver)  { boardObserver.disconnect();  boardObserver = null; }
+    while (teardown.length) teardown.pop()();
+    ctx.clearRect(0, 0, W, H);
+  }
+  window.__routeRushSequenceTeardown = destroy;
+  on(window, 'pagehide', destroy);
+})();
+</script>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="lgLens" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"
+          x="0" y="0" width="1320" height="58">
+    <feImage id="lgLensMap" x="0" y="0" width="1320" height="58" result="map"
+             preserveAspectRatio="none"/>
+    <feDisplacementMap in="SourceGraphic" in2="map" scale="52"
+                       xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+<script>
+/* Refractive Liquid Glass: build a displacement map matching the nav capsule.
+   Each pixel encodes a sampling offset in R (x) and G (y) around the neutral
+   128. Deep interior stays neutral — no distortion where the glass is flat.
+   Inside the bezel the offset ramps up quadratically along the outward normal
+   of the capsule's rounded-rect SDF, so content sliding under the rim bends
+   exactly there, like the thick edge of a lens. feDisplacementMap turns that
+   map into per-pixel backdrop refraction; total bend = scale * (channel-0.5).
+   Chromium-only by design: Safari and Firefox do not accept SVG filters in
+   backdrop-filter, and the invalid declaration lets the frosted rule stand. */
+(function () {
+  if (!window.chrome) return;
+  if (matchMedia('(prefers-reduced-transparency: reduce)').matches) return;
+  var wrap = document.querySelector('.nav .wrap');
+  var filter = document.getElementById('lgLens');
+  var image = document.getElementById('lgLensMap');
+  if (!wrap || !filter || !image) return;
+
+  var BEZEL = 16;                    /* px of rim where the lens bends */
+  var lastW = 0, lastH = 0;
+
+  function build() {
+    var w = Math.round(wrap.offsetWidth), h = Math.round(wrap.offsetHeight);
+    if (!w || !h || (w === lastW && h === lastH)) return;
+    lastW = w; lastH = h;
+    var r = h / 2, hw = w / 2 - r, hh = 0;   /* capsule: straight run is horizontal only */
+    var cv = document.createElement('canvas');
+    cv.width = w; cv.height = h;
+    var ctx = cv.getContext('2d');
+    var img = ctx.createImageData(w, h);
+    var d = img.data, cx = w / 2, cy = h / 2;
+    for (var y = 0; y < h; y++) {
+      for (var x = 0; x < w; x++) {
+        var px = x + .5 - cx, py = y + .5 - cy;
+        var qx = Math.max(Math.abs(px) - hw, 0);
+        var qy = Math.max(Math.abs(py) - hh, 0);
+        var len = Math.sqrt(qx * qx + qy * qy);
+        var sd = len - r;                     /* rounded-rect SDF, <0 inside */
+        var t = 1 + sd / BEZEL;               /* 0 at bezel start, 1 at rim  */
+        t = t < 0 ? 0 : t > 1 ? 1 : t;
+        t = t * t * (3 - 2 * t);              /* smoothstep */
+        var k = t * t;                        /* bend hardest right at the rim */
+        var dx = 0, dy = 0;
+        if (len > 0) {
+          dx = (qx * (px < 0 ? -1 : 1)) / len;
+          dy = (qy * (py < 0 ? -1 : 1)) / len;
+        }
+        var i = (y * w + x) * 4;
+        d[i]     = 128 + dx * k * 127;
+        d[i + 1] = 128 + dy * k * 127;
+        d[i + 2] = 128;
+        d[i + 3] = 255;
+      }
+    }
+    ctx.putImageData(img, 0, 0);
+    filter.setAttribute('width', w);  filter.setAttribute('height', h);
+    image.setAttribute('width', w);   image.setAttribute('height', h);
+    image.setAttribute('href', cv.toDataURL());
+    wrap.classList.add('lg-refract');
+  }
+
+  /* The condensing capsule animates its width on scroll, so resize events
+     stream during the 500ms transition. Regenerating a 76k-pixel map per
+     frame would jank; rebuild once, 120ms after the size settles. The stale
+     map stretches slightly mid-transition, which is invisible in practice. */
+  var settle;
+  new ResizeObserver(function () {
+    clearTimeout(settle);
+    settle = setTimeout(build, 120);
+  }).observe(wrap);
+  if (document.readyState === 'complete') build();
+  else addEventListener('load', build);
+})();
+</script>
+</body>
+</html>
