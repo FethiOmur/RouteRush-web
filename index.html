@@ -1043,6 +1043,44 @@
   /* ============================================================
      final CTA + footer
      ============================================================ */
+  /* The one photograph — see the section comment in the markup for why there
+     is exactly one. Fixed height, absolutely positioned image: nothing shifts
+     when the lazy image lands, so CLS stays at zero. */
+  .photo-band {
+    position: relative; overflow: hidden;
+    height: min(70vh, 600px);
+    display: flex; align-items: flex-end;
+    border-top: 1px solid var(--hair-soft);
+    border-bottom: 1px solid var(--hair-soft);
+  }
+  .photo-band img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center 30%;
+  }
+  /* Gradient, not a box — the text floats on the photo's own shadow. Top fade
+     seats the band against the black section above; the bottom runs to full
+     black so the closing CTA grows out of it. */
+  .photo-band::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      rgba(0,0,0,.70) 0%, rgba(0,0,0,.30) 34%, rgba(0,0,0,.85) 80%, #000 100%);
+  }
+  .photo-band .wrap { position: relative; z-index: 2; padding-bottom: 54px; }
+  .photo-band .h2 { max-width: 22ch; }
+  .photo-band .lede { max-width: 50ch; }
+  @media (max-width: 640px) {
+    .photo-band { height: min(64vh, 540px); }
+    .photo-band .wrap { padding-bottom: 40px; }
+  }
+  /* On a contrast request the photo steps back further so the type never has
+     to fight it. */
+  @media (prefers-contrast: more) {
+    .photo-band::after {
+      background: linear-gradient(180deg,
+        rgba(0,0,0,.85) 0%, rgba(0,0,0,.62) 34%, rgba(0,0,0,.94) 80%, #000 100%);
+    }
+  }
+
   .final { position: relative; text-align: center; padding-block: clamp(84px, 15vh, 180px); overflow: hidden; }
   .final::before {
     content: ""; position: absolute; inset: auto 0 -55% 0; height: 110%;
@@ -1069,6 +1107,12 @@
     .foot a { display: inline-block; padding-block: 14px; }
     .foot li + li { margin-top: 0; }
     .foot-bottom .dom a { display: inline-block; padding-block: 15px; }
+    /* The legal line's credit links (Mapbox / OpenStreetMap) sit inside a
+       sentence, so their hit area grows with padding but the layout must not:
+       the negative margin hands the space straight back. */
+    .foot-bottom span:not(.dom) a {
+      display: inline-block; padding-block: 15px; margin-block: -15px;
+    }
   }
   .foot-bottom {
     display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center;
@@ -2173,6 +2217,30 @@
           <p>Tracking survives no signal. Activities queue on device and sync when the network returns.</p>
         </article>
       </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       THE ONE PHOTOGRAPH
+       ------------------------------------------------------------
+       A single photographic beat on an otherwise all-product page,
+       placed right before the closing ask — the position and the
+       restraint are borrowed deliberately: Gentler Streak and
+       Athlytic, the two craft-awarded apps closest to this one,
+       both ship exactly one photograph and keep every other pixel
+       product. The runner is a silhouette (no identifiable person),
+       graded into the site's register (luma 0.232 vs the hero's
+       0.235, cool-shifted), and the headline sits in the photo's
+       own shadow via a gradient — never a boxed scrim. Unsplash-
+       sourced, same asset the app ships in onboarding.
+       ============================================================ -->
+  <section class="photo-band" aria-labelledby="why-title">
+    <img src="assets/dusk-run.webp" alt="A runner at dusk, silhouetted against a city skyline"
+         loading="lazy" decoding="async">
+    <div class="wrap" data-reveal>
+      <p class="eyebrow">Why it matters</p>
+      <h2 class="h2" id="why-title">The map only moves when you do.</h2>
+      <p class="lede">Nothing on your map was given to you. Every cell on it is a street you actually ran.</p>
     </div>
   </section>
 
