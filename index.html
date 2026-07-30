@@ -373,16 +373,11 @@
   .brand img { width: 30px; height: 30px; object-fit: contain; }
   .brand span {
     font-family: var(--ff-brand); font-weight: 400;
-    font-size: 21px; letter-spacing: .04em; line-height: 1;
-    padding-top: 2px;   /* the face sits high in its em box */
+    font-size: 25px; letter-spacing: .045em; line-height: 1;
+    padding-top: 3px;   /* the face sits high in its em box */
   }
   /* Hero lockup: the app's onboarding treatment — icon above, wordmark under
      it at brand scale with the same open tracking and drop shadow. */
-  /* In the hero the wordmark is a signature, not a second headline — the app
-     never shows the onboarding lockup and a headline together. It runs at brand
-     scale beside the mark; the full-size lockup lives in the closing CTA. */
-  .lockup { display: flex; align-items: center; gap: 11px; margin: 14px 0 30px; }
-  .lockup img { width: 34px; height: 34px; object-fit: contain; }
   .wordmark {
     font-family: var(--ff-brand); font-weight: 400;
     font-size: 40px; letter-spacing: .05em; line-height: 1;
@@ -397,8 +392,6 @@
     text-shadow: 0 4px 4px rgba(0,0,0,.5);
   }
   @media (max-width: 860px) {
-    .lockup img { width: 30px; height: 30px; }
-    .wordmark { font-size: 34px; }
     .lockup-xl img { width: 62px; height: 62px; }
   }
   .nav-links { display: flex; gap: 28px; margin-right: 8px; }
@@ -1181,7 +1174,8 @@
 <header class="nav" id="nav">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="RouteRush home">
-      <img src="assets/routerush-logo.png" alt="RouteRush logo" width="30" height="30">
+      <!-- The Splash logotype already opens on a stylised R, so pairing it with
+           the R mark reads as two logos side by side. The wordmark stands alone. -->
       <span>RouteRush</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
@@ -1204,13 +1198,6 @@
     <div class="stage">
       <div class="stage-copy">
         <p class="eyebrow"><span>RouteRush for iOS</span><span class="mono" id="hud-frame">000 / 120</span></p>
-
-        <!-- The app's own onboarding lockup: mark above, wordmark in
-             Splash-Regular with the same open tracking and drop shadow. -->
-        <div class="lockup">
-          <img src="assets/routerush-logo.png" alt="" width="62" height="62">
-          <p class="wordmark">RouteRush</p>
-        </div>
 
         <h1 class="hero-h1 display" id="hero-title">Running is how<br>you take <em>ground.</em></h1>
 
@@ -1325,7 +1312,12 @@
         <div class="phone">
           <div class="screen">
             <!-- SWAP: point src at the real globe/territory capture -->
-            <img class="shot" data-src="assets/screens/dev-territory.png" alt="RouteRush map zoomed into central Turin, with conquered territory polygons and runner pins over the 3D city">
+            <!-- Shows a real Mapbox capture of conquered H3 cells over central Turin
+                 right now; the owner's own device capture supersedes it via data-src
+                 as soon as that file lands. -->
+            <img class="shot" src="assets/screens/map-territory-torino.webp"
+                 data-src="assets/screens/dev-territory.png"
+                 alt="RouteRush map over central Turin with conquered hexagonal cells across Borgo Nuovo and San Salvario">
             <div class="island" aria-hidden="true"></div>
             <div class="statusbar"><span>9:41</span><span class="sb-icons">
               <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
@@ -1993,7 +1985,6 @@
     <div class="foot">
       <div>
         <a class="brand" href="#top" aria-label="RouteRush home">
-          <img src="assets/routerush-logo.png" alt="RouteRush logo" width="30" height="30">
           <span>RouteRush</span>
         </a>
         <p class="small" style="margin-top:14px; max-width:34ch">
