@@ -802,6 +802,10 @@
     --glass-tint: rgba(24, 28, 40, .22);   /* clearer: refraction needs transmission */
   }
   .nav .wrap.lg-refract::before { display: none; }          /* no sheen film */
+  /* Ghost CTA carries the same refractive material as the nav capsule:
+     clear tint, no sheen film — the lensing is the effect. */
+  .btn-ghost.lg-refract { --glass-tint: rgba(24, 28, 40, .22); background: var(--glass-tint); }
+  .btn-ghost.lg-refract::before { display: none; }
   .nav .wrap.lg-refract::after {                            /* whisper of a ring */
     background: linear-gradient(140deg,
       rgba(255,255,255,.28), rgba(255,255,255,.03) 35%,
@@ -1011,7 +1015,7 @@
         <div class="phone">
           <div class="screen">
             <!-- SWAP: point src at the real globe/territory capture -->
-            <img class="shot" data-src="assets/screens/territory.png" alt="RouteRush map screen showing conquered hex cells on a 3D globe">
+            <img class="shot" src="assets/screens/en-01-globe.png" alt="RouteRush home screen: the 3D globe over a starfield, with the glass tab bar and start-run capsule">
             <div class="island" aria-hidden="true"></div>
             <div class="statusbar"><span>9:41</span><span class="sb-icons">
               <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
@@ -1108,7 +1112,7 @@
         <div class="phone">
           <div class="screen">
             <!-- SWAP: point src at the real in-run / tracking capture -->
-            <img class="shot" data-src="assets/screens/run-coach.png" alt="RouteRush in-run screen with the Boldi coach speaking">
+            <img class="shot" src="assets/screens/en-02-plans-boldi.png" alt="RouteRush Plans screen: Boldi the coach offering training plans">
             <div class="island" aria-hidden="true"></div>
             <div class="statusbar"><span>9:41</span><span class="sb-icons">
               <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
@@ -1761,41 +1765,21 @@
   on(window, 'pagehide', destroy);
 })();
 </script>
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <filter id="lgLens" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"
-          x="0" y="0" width="1320" height="58">
-    <feImage id="lgLensMap" x="0" y="0" width="1320" height="58" result="map"
-             preserveAspectRatio="none"/>
-    <feDisplacementMap in="SourceGraphic" in2="map" scale="52"
-                       xChannelSelector="R" yChannelSelector="G"/>
-  </filter>
-</svg>
+<svg id="lgDefs" width="0" height="0" style="position:absolute" aria-hidden="true"></svg>
 <script>
-/* Refractive Liquid Glass: build a displacement map matching the nav capsule.
-   Each pixel encodes a sampling offset in R (x) and G (y) around the neutral
-   128. Deep interior stays neutral — no distortion where the glass is flat.
-   Inside the bezel the offset ramps up quadratically along the outward normal
-   of the capsule's rounded-rect SDF, so content sliding under the rim bends
-   exactly there, like the thick edge of a lens. feDisplacementMap turns that
-   map into per-pixel backdrop refraction; total bend = scale * (channel-0.5).
-   Chromium-only by design: Safari and Firefox do not accept SVG filters in
-   backdrop-filter, and the invalid declaration lets the frosted rule stand. */
+/* Refractive Liquid Glass — generalized. Each target capsule gets its own
+   SVG filter and a runtime-generated displacement map at its exact size:
+   neutral in the flat interior, bending hardest along the rounded-rect rim,
+   so backdrop content warps like the thick edge of a lens. Chromium only;
+   the frosted material declared in CSS is the fallback everywhere else. */
 (function () {
   if (!window.chrome) return;
   if (matchMedia('(prefers-reduced-transparency: reduce)').matches) return;
-  var wrap = document.querySelector('.nav .wrap');
-  var filter = document.getElementById('lgLens');
-  var image = document.getElementById('lgLensMap');
-  if (!wrap || !filter || !image) return;
+  var NS   = 'http://www.w3.org/2000/svg';
+  var defs = document.getElementById('lgDefs');
 
-  var BEZEL = 16;                    /* px of rim where the lens bends */
-  var lastW = 0, lastH = 0;
-
-  function build() {
-    var w = Math.round(wrap.offsetWidth), h = Math.round(wrap.offsetHeight);
-    if (!w || !h || (w === lastW && h === lastH)) return;
-    lastW = w; lastH = h;
-    var r = h / 2, hw = w / 2 - r, hh = 0;   /* capsule: straight run is horizontal only */
+  function buildMap(w, h, bezel) {
+    var r = h / 2, hw = w / 2 - r;
     var cv = document.createElement('canvas');
     cv.width = w; cv.height = h;
     var ctx = cv.getContext('2d');
@@ -1805,14 +1789,13 @@
       for (var x = 0; x < w; x++) {
         var px = x + .5 - cx, py = y + .5 - cy;
         var qx = Math.max(Math.abs(px) - hw, 0);
-        var qy = Math.max(Math.abs(py) - hh, 0);
+        var qy = Math.max(Math.abs(py), 0);
         var len = Math.sqrt(qx * qx + qy * qy);
-        var sd = len - r;                     /* rounded-rect SDF, <0 inside */
-        var t = 1 + sd / BEZEL;               /* 0 at bezel start, 1 at rim  */
-        t = t < 0 ? 0 : t > 1 ? 1 : t;
-        t = t * t * (3 - 2 * t);              /* smoothstep */
-        var k = t * t;                        /* bend hardest right at the rim */
-        var dx = 0, dy = 0;
+        var sd = len - r;
+        var s = 1 + sd / bezel;
+        s = s < 0 ? 0 : s > 1 ? 1 : s;
+        s = s * s * (3 - 2 * s);
+        var k = s * s, dx = 0, dy = 0;
         if (len > 0) {
           dx = (qx * (px < 0 ? -1 : 1)) / len;
           dy = (qy * (py < 0 ? -1 : 1)) / len;
@@ -1825,23 +1808,53 @@
       }
     }
     ctx.putImageData(img, 0, 0);
-    filter.setAttribute('width', w);  filter.setAttribute('height', h);
-    image.setAttribute('width', w);   image.setAttribute('height', h);
-    image.setAttribute('href', cv.toDataURL());
-    wrap.classList.add('lg-refract');
+    return cv.toDataURL();
   }
 
-  /* The condensing capsule animates its width on scroll, so resize events
-     stream during the 500ms transition. Regenerating a 76k-pixel map per
-     frame would jank; rebuild once, 120ms after the size settles. The stale
-     map stretches slightly mid-transition, which is invisible in practice. */
-  var settle;
-  new ResizeObserver(function () {
-    clearTimeout(settle);
-    settle = setTimeout(build, 120);
-  }).observe(wrap);
-  if (document.readyState === 'complete') build();
-  else addEventListener('load', build);
+  function attach(el, id, bezel) {
+    if (!el) return;
+    var filter = document.createElementNS(NS, 'filter');
+    filter.setAttribute('id', id);
+    filter.setAttribute('filterUnits', 'userSpaceOnUse');
+    filter.setAttribute('color-interpolation-filters', 'sRGB');
+    filter.setAttribute('x', '0'); filter.setAttribute('y', '0');
+    var image = document.createElementNS(NS, 'feImage');
+    image.setAttribute('x', '0'); image.setAttribute('y', '0');
+    image.setAttribute('preserveAspectRatio', 'none');
+    image.setAttribute('result', 'map');
+    var disp = document.createElementNS(NS, 'feDisplacementMap');
+    disp.setAttribute('in', 'SourceGraphic');
+    disp.setAttribute('in2', 'map');
+    disp.setAttribute('scale', '52');
+    disp.setAttribute('xChannelSelector', 'R');
+    disp.setAttribute('yChannelSelector', 'G');
+    filter.appendChild(image);
+    filter.appendChild(disp);
+    defs.appendChild(filter);
+
+    var lastW = 0, lastH = 0;
+    function build() {
+      var w = Math.round(el.offsetWidth), h = Math.round(el.offsetHeight);
+      if (!w || !h || (w === lastW && h === lastH)) return;
+      lastW = w; lastH = h;
+      filter.setAttribute('width', w);  filter.setAttribute('height', h);
+      image.setAttribute('width', w);   image.setAttribute('height', h);
+      image.setAttribute('href', buildMap(w, h, bezel));
+      var v = 'url(#' + id + ') blur(2px) saturate(1.5) brightness(1.04)';
+      el.style.webkitBackdropFilter = v;
+      el.style.backdropFilter = v;
+      el.classList.add('lg-refract');
+    }
+    var settle;
+    new ResizeObserver(function () {
+      clearTimeout(settle);
+      settle = setTimeout(build, 120);
+    }).observe(el);
+    build();
+  }
+
+  attach(document.querySelector('.nav .wrap'), 'lgLensNav', 16);
+  attach(document.querySelector('.btn-ghost[href="#territory"]'), 'lgLensBtn', 10);
 })();
 </script>
 </body>
