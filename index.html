@@ -1168,7 +1168,7 @@
   [id] { scroll-margin-top: 92px; }
 
   /* ============================================================
-     FULL-BLEED HERO — the Mapbox flight is the page's background
+     FULL-BLEED HERO — the map flight is the page's background
      ------------------------------------------------------------
      The split-column hero becomes a full-viewport stage: the frame
      sequence fills the screen, the copy floats over it on a left
@@ -1189,11 +1189,6 @@
       background: linear-gradient(180deg,
         rgba(0,0,0,.88) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,0) 100%);
     }
-  }
-  /* Mapbox imagery attribution — required, quiet, and honest. */
-  .map-attrib {
-    position: absolute; right: 14px; bottom: 10px; z-index: 3;
-    font-size: 10px; letter-spacing: .02em; color: rgba(255,255,255,.38);
   }
   /* Full-bleed layout: the copy column now owns the top-left, so the H3 HUD
      moves to the right shoulder, clear of the eyebrow. */
@@ -1317,7 +1312,7 @@
 
       <div class="stage-visual" id="stage-visual">
         <canvas id="seq-canvas" aria-hidden="true"></canvas>
-        <p class="hud hud-tl" aria-hidden="true">Mapbox · night<br><b id="hud-mode">Orbit</b></p>
+        <p class="hud hud-tl" aria-hidden="true">Night map<br><b id="hud-mode">Orbit</b></p>
         <p class="hud hud-br" aria-hidden="true">Cells claimed <b id="hud-cells">0</b><br>Rush Points <b id="hud-rp">0</b></p>
         <span class="cue" aria-hidden="true">Scroll to claim</span>
       </div>
@@ -1345,7 +1340,7 @@
         </div>
         <div class="spec">
           <dt>3D</dt>
-          <dd><b>Mapbox globe</b>Your territory rendered on a real globe, not a flat tile sheet.</dd>
+          <dd><b>Real globe</b>Your territory rendered on a true sphere, not a flat tile sheet.</dd>
         </div>
         <div class="spec">
           <dt>0</dt>
@@ -2084,7 +2079,10 @@
       </nav>
     </div>
     <p class="foot-bottom">
-      <span>© 2026 RouteRush. All rights reserved.</span>
+      <!-- Map data attribution. Not promotion — the imagery licence requires the
+           credit wherever the rendered map is shown, so it sits here in the
+           footer rather than over the artwork. -->
+      <span>© 2026 RouteRush. All rights reserved. · Map data © Mapbox © OpenStreetMap</span>
       <span class="dom"><a href="https://routerush.app">routerush.app</a></span>
     </p>
   </div>
@@ -2110,7 +2108,7 @@
   /* ---------- configuration: no magic numbers in the handlers ---------- */
   const sequence = {
     scrollVh:            320,      // section height, in vh
-    frameCount:          128,      // pre-rendered Mapbox flight frames
+    frameCount:          128,      // pre-rendered flight frames
     fit:                 'cover',  // the flight is the hero's background
     framePath:           'assets/hero/',
     focalY:              0.42,     // cover crop favours the upper part of the frame
@@ -2155,12 +2153,12 @@
   const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   const RAD = Math.PI / 180;
 
-  /* ---------- the sequence: pre-rendered Mapbox flight ---------- */
-  /* 96 frames of the app's own Mapbox Standard night globe flying from orbit
-     down onto conquered H3 territory over Turin, generated offline by
-     _agent-scratch/globe-gen.html. The page ships the frames, not Mapbox —
-     zero runtime network requests. Scroll position picks the frame; nothing
-     here is driven by time, so the sequence is deterministic both ways. */
+  /* ---------- the sequence: pre-rendered map flight ---------- */
+  /* 128 frames of the app's own night map, flying from orbit down to street
+     level over Turin, rendered offline by _agent-scratch/globe-gen.html. The
+     page ships the frames, not the map SDK — zero runtime network requests.
+     Scroll position picks the frame; nothing here is driven by time, so the
+     sequence is deterministic in both directions. */
   const FRAMES = new Array(sequence.frameCount).fill(null);
   const frameSrc = i => sequence.framePath + String(i).padStart(3, '0') + '.webp';
   let loadedCount = 0, wantedIndex = 0, loaderStarted = false;
