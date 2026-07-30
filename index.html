@@ -36,7 +36,10 @@
        it tints, blurs and lenses. See the LIQUID GLASS MATERIAL block. */
 
     --ff: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-    --ff-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    /* No monospace anywhere: the app's HUD language is SF Pro with wide
+       tracking and tabular numerals, so the site's technical labels use
+       exactly that. The variable stays so every usage keeps its rhythm. */
+    --ff-mono: var(--ff);
 
     /* Motion: critically damped springs (damping 1.0, response ~0.4) — settle,
        never overshoot. Overshoot is reserved for momentum-carrying gestures,
@@ -806,6 +809,29 @@
      clear tint, no sheen film — the lensing is the effect. */
   .btn-ghost.lg-refract { --glass-tint: rgba(24, 28, 40, .22); background: var(--glass-tint); }
   .btn-ghost.lg-refract::before { display: none; }
+  /* Feature tiles get the same treatment; their sheen also steps aside. */
+  .tile.lg-refract { background: rgba(24, 28, 40, .30); }
+  .tile.lg-refract::before { display: none; }
+
+  /* ---------- ambient topographic field ---------- */
+  .bg-topo { position: fixed; inset: -12%; z-index: 0; pointer-events: none; }
+  .bg-topo svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .topo-a { animation: topoDriftA 140s ease-in-out infinite alternate; }
+  .topo-b { animation: topoDriftB 180s ease-in-out infinite alternate; }
+  @keyframes topoDriftA {
+    from { transform: translate3d(-1.5%, -1%, 0) scale(1.02); }
+    to   { transform: translate3d( 1.5%,  1.2%, 0) scale(1.06); }
+  }
+  @keyframes topoDriftB {
+    from { transform: translate3d( 1.2%,  1%, 0) rotate(.4deg) scale(1.05); }
+    to   { transform: translate3d(-1.2%, -1.4%, 0) rotate(-.4deg) scale(1.01); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .topo-a, .topo-b { animation: none; }
+  }
+  /* content rides above the field */
+  main, footer, header.nav { position: relative; z-index: 1; }
+  header.nav { z-index: 100; }
   .nav .wrap.lg-refract::after {                            /* whisper of a ring */
     background: linear-gradient(140deg,
       rgba(255,255,255,.28), rgba(255,255,255,.03) 35%,
@@ -871,6 +897,38 @@
 </style>
 </head>
 <body>
+
+<!-- Ambient topographic field — the Profile tab's contour language, site-wide.
+     Two layers drifting against each other very slowly; brand colours at
+     whisper opacity so text contrast never moves. Fixed and behind everything;
+     the hero paints its own opaque frames, so this lives in the flat sections —
+     and gives every glass surface something real to refract. -->
+<div class="bg-topo" aria-hidden="true">
+  <svg class="topo-a" viewBox="0 0 1600 1200" preserveAspectRatio="xMidYMid slice">
+    <g fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1">
+      <path d="M220,340 C300,240 480,220 560,300 C640,380 620,520 520,580 C420,640 260,620 200,520 C150,436 160,414 220,340 Z"/>
+      <path d="M250,370 C320,290 460,270 530,330 C600,390 585,500 505,548 C425,596 300,580 250,500 C210,436 200,428 250,370 Z"/>
+      <path d="M285,400 C340,340 440,325 495,370 C550,415 540,495 480,530 C420,565 330,552 292,492 C262,444 250,440 285,400 Z"/>
+      <path d="M320,430 C360,390 425,380 462,410 C500,440 492,492 452,515 C412,538 355,530 330,490 C310,458 296,456 320,430 Z"/>
+    </g>
+    <g fill="none" stroke="rgba(0,224,255,.075)" stroke-width="1">
+      <path d="M1150,760 C1250,660 1420,650 1490,750 C1555,845 1520,990 1410,1030 C1300,1070 1160,1020 1120,920 C1088,840 1090,820 1150,760 Z"/>
+      <path d="M1185,790 C1265,715 1395,705 1450,785 C1502,860 1472,970 1385,1000 C1298,1030 1195,990 1163,910 C1138,846 1140,838 1185,790 Z"/>
+      <path d="M1225,825 C1285,770 1375,762 1415,820 C1455,878 1432,955 1368,977 C1305,1000 1230,970 1206,910 C1188,864 1190,858 1225,825 Z"/>
+    </g>
+  </svg>
+  <svg class="topo-b" viewBox="0 0 1600 1200" preserveAspectRatio="xMidYMid slice">
+    <g fill="none" stroke="rgba(204,255,0,.045)" stroke-width="1">
+      <path d="M780,120 C880,40 1040,50 1100,140 C1160,230 1120,360 1010,395 C900,430 770,380 740,280 C716,200 720,170 780,120 Z"/>
+      <path d="M810,155 C890,95 1015,105 1062,175 C1108,245 1078,345 990,372 C902,400 800,360 778,282 C760,220 764,192 810,155 Z"/>
+      <path d="M845,190 C905,145 1000,152 1035,205 C1070,258 1048,332 982,352 C916,373 840,343 823,285 C810,238 812,218 845,190 Z"/>
+    </g>
+    <g fill="none" stroke="rgba(255,255,255,.04)" stroke-width="1">
+      <path d="M320,880 C420,800 570,810 630,900 C688,988 650,1110 545,1145 C440,1180 315,1130 285,1035 C262,958 265,925 320,880 Z"/>
+      <path d="M355,910 C435,850 555,858 602,928 C648,998 618,1092 534,1120 C450,1148 352,1110 330,1035 C312,975 315,946 355,910 Z"/>
+    </g>
+  </svg>
+</div>
 
 <a class="skip" href="#main">Skip to content</a>
 
@@ -1778,8 +1836,9 @@
   var NS   = 'http://www.w3.org/2000/svg';
   var defs = document.getElementById('lgDefs');
 
-  function buildMap(w, h, bezel) {
-    var r = h / 2, hw = w / 2 - r;
+  function buildMap(w, h, bezel, r) {
+    r = Math.min(r, h / 2, w / 2);
+    var hw = w / 2 - r, hh = h / 2 - r;
     var cv = document.createElement('canvas');
     cv.width = w; cv.height = h;
     var ctx = cv.getContext('2d');
@@ -1789,7 +1848,7 @@
       for (var x = 0; x < w; x++) {
         var px = x + .5 - cx, py = y + .5 - cy;
         var qx = Math.max(Math.abs(px) - hw, 0);
-        var qy = Math.max(Math.abs(py), 0);
+        var qy = Math.max(Math.abs(py) - hh, 0);
         var len = Math.sqrt(qx * qx + qy * qy);
         var sd = len - r;
         var s = 1 + sd / bezel;
@@ -1839,7 +1898,8 @@
       lastW = w; lastH = h;
       filter.setAttribute('width', w);  filter.setAttribute('height', h);
       image.setAttribute('width', w);   image.setAttribute('height', h);
-      image.setAttribute('href', buildMap(w, h, bezel));
+      var r = parseFloat(getComputedStyle(el).borderTopLeftRadius) || h / 2;
+      image.setAttribute('href', buildMap(w, h, bezel, r));
       var v = 'url(#' + id + ') blur(2px) saturate(1.5) brightness(1.04)';
       el.style.webkitBackdropFilter = v;
       el.style.backdropFilter = v;
@@ -1855,6 +1915,10 @@
 
   attach(document.querySelector('.nav .wrap'), 'lgLensNav', 16);
   attach(document.querySelector('.btn-ghost[href="#territory"]'), 'lgLensBtn', 10);
+  /* feature tiles: same material, their own corner geometry */
+  document.querySelectorAll('.tile').forEach(function (el, i) {
+    attach(el, 'lgLensTile' + i, 14);
+  });
 })();
 </script>
 </body>
