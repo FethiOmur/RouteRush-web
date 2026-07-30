@@ -302,14 +302,36 @@
   .btn-primary { background: #fff; color: #000; }
   .btn-primary svg { fill: #000; }
   .btn-primary:hover { background: rgba(255,255,255,.9); }
-  /* glass capsule, white label — the app's secondary control. Full material
-     from the surface list; only the blur radius is scaled to the smaller shape.
+  /* glass capsule, white label — the app's secondary control. Takes the material
+     from the surface list, but not its chrome at full strength: on a shape this
+     small a 1px ring at 90% white, a 55% top specular line and a 30% bottom
+     bounce stop reading as a lens edge and start reading as a glow drawn around
+     the button. The tiles and the sheet already needed the same correction. Ring
+     quieted, sheen softened, bottom bounce gone — the blur and the tint still
+     carry the glass.
      The label is a text node, so it paints below the z-index:1 sheen — which is
      safe precisely because the sheen is `screen`: it can only add light, and
      white text screened with white is still white. */
   .btn-ghost {
     --glass-blur: 20px;
     color: #fff; border-color: transparent;
+    box-shadow:
+      inset 0 1px 0 0 rgba(255,255,255,.10),
+      inset 0 0 0 .5px rgba(255,255,255,.06),
+      var(--glass-shadow);
+  }
+  .btn-ghost::after {
+    background: linear-gradient(140deg,
+      rgba(255,255,255,.16),
+      rgba(255,255,255,.03) 38%,
+      rgba(255,255,255,0)   66%,
+      rgba(255,255,255,.06));
+  }
+  .btn-ghost::before {
+    background: linear-gradient(160deg,
+      rgba(255,255,255,.16) 0%,
+      rgba(255,255,255,.04) 24%,
+      rgba(255,255,255,0)   48%);
   }
   .btn-ghost:hover { background: var(--glass-tint-strong); }
   .btn-sm { height: 38px; padding: 0 16px; font-size: 13.5px; }
@@ -2698,7 +2720,13 @@
   }
 
   attach(document.querySelector('.nav .wrap'), 'lgLensNav', 16);
-  attach(document.querySelector('.btn-ghost[href="#territory"]'), 'lgLensBtn', 10);
+  /* querySelectorAll, not querySelector: there are two of these capsules — one
+     under the hero copy, one in the closing CTA — and the singular form left the
+     second on the frosted fallback while the first refracted, so the same button
+     looked different in two places on the same page. */
+  document.querySelectorAll('.btn-ghost[href="#territory"]').forEach(function (el, i) {
+    attach(el, 'lgLensBtn' + i, 10);
+  });
   /* feature tiles: same material, their own corner geometry */
   document.querySelectorAll('.tile').forEach(function (el, i) {
     attach(el, 'lgLensTile' + i, 14);
