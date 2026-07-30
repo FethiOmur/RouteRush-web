@@ -1576,40 +1576,6 @@
   </section>
 
   <!-- ============================================================
-       POCKET — the flight was on a phone all along.
-       ------------------------------------------------------------
-       The hero dives from orbit into street-level Torino. This
-       section answers it: the same city, scrubbed from filling the
-       viewport down into an iPhone in front of you — the reveal
-       INTVL builds with a 8149px "phoneHand" render and GSAP scale
-       6.53→1, rebuilt here in this page's own dialect: a REAL device
-       capture of the app's home screen over the SAME Torino the
-       flight just landed in, driven by the same scroll contract as
-       the hero — one normalized progress from native scroll, zoom
-       interpolated in log space (constant zoom speed, the way a map
-       zoom feels), deterministic in both directions, no library.
-       Static-first: without JS or with reduced motion this is an
-       ordinary centered figure with its copy below it.
-       ============================================================ -->
-  <section class="pocket" aria-labelledby="pocket-title">
-    <div class="pocket-stage">
-      <div class="pocket-scale" id="pocket-scale">
-        <div class="phone">
-          <div class="screen">
-            <img class="shot" src="assets/screens/dev-territory.webp" decoding="async"
-                 alt="RouteRush home screen over central Torino: the 3D night map with claimed ground along the river, the Start pill and the tab bar">
-          </div>
-        </div>
-      </div>
-      <div class="pocket-copy" id="pocket-copy">
-        <p class="eyebrow">In your pocket</p>
-        <h2 class="h2" id="pocket-title">All of it fits in your hand.</h2>
-        <p class="lede">The globe, your ground and the league table — on the phone you already carry.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============================================================
        CLAIM BAND
        ============================================================ -->
   <section class="sec" aria-labelledby="claim-title">
@@ -1641,6 +1607,50 @@
   </section>
 
   <div class="wrap"><div class="rule"></div></div>
+
+  <!-- ============================================================
+       POCKET — the flight was on a phone all along.
+       ------------------------------------------------------------
+       The hero dives from orbit into street-level Torino. This
+       section answers it: the same city, scrubbed from filling the
+       viewport down into an iPhone in front of you — the reveal
+       INTVL builds with a 8149px "phoneHand" render and GSAP scale
+       6.53→1, rebuilt here in this page's own dialect: a REAL device
+       capture of the app's home screen over the SAME Torino the
+       flight just landed in, driven by the same scroll contract as
+       the hero — one normalized progress from native scroll, zoom
+       interpolated in log space (constant zoom speed, the way a map
+       zoom feels), deterministic in both directions, no library.
+       Static-first: without JS or with reduced motion this is an
+       ordinary centered figure with its copy below it.
+
+       PLACEMENT AND ENTRY are load-bearing (owner-reported break,
+       2026-07-30). This section first sat directly after the hero,
+       and the two map surfaces ground against each other at the
+       seam — the hero's street-level frame releasing upward while a
+       different map at full zoom slid in beneath it read as a torn
+       page. So: (1) it lives AFTER the claim band, so words separate
+       the two map moments; (2) the zoomed screen fades in from black
+       only as the stage pins (see applyPocket), so the max-zoom
+       texture never slides against another section edge-to-edge.
+       ============================================================ -->
+  <section class="pocket" aria-labelledby="pocket-title">
+    <div class="pocket-stage">
+      <div class="pocket-scale" id="pocket-scale">
+        <div class="phone">
+          <div class="screen">
+            <img class="shot" src="assets/screens/dev-territory.webp" decoding="async"
+                 alt="RouteRush home screen over central Torino: the 3D night map with claimed ground along the river, the Start pill and the tab bar">
+          </div>
+        </div>
+      </div>
+      <div class="pocket-copy" id="pocket-copy">
+        <p class="eyebrow">In your pocket</p>
+        <h2 class="h2" id="pocket-title">All of it fits in your hand.</h2>
+        <p class="lede">The globe, your ground and the league table — on the phone you already carry.</p>
+      </div>
+    </div>
+  </section>
 
   <!-- ============================================================
        TERRITORY
@@ -3260,7 +3270,7 @@
   var pocket = document.querySelector('.pocket');
   var pScale = document.getElementById('pocket-scale');
   var pCopy  = document.getElementById('pocket-copy');
-  var pocketBase = null, pocketLast = -1;
+  var pocketBase = null, pocketLast = -1, pocketLastOp = -1;
   function measurePocket() {
     if (!pScale) return;
     var keep = pScale.style.transform;
@@ -3268,7 +3278,7 @@
     var r = pScale.querySelector('.screen').getBoundingClientRect();
     pScale.style.transform = keep;
     pocketBase = { sw: Math.max(1, r.width), sh: Math.max(1, r.height) };
-    pocketLast = -1;                       /* force a rewrite at the new size */
+    pocketLast = -1; pocketLastOp = -1;    /* force a rewrite at the new size */
   }
   function applyPocket(vh) {
     if (!pocket || !pocketBase) return;
@@ -3280,13 +3290,23 @@
     t = t * t * (3 - 2 * t);
     /* cover the viewport with the SCREEN at t=0, hand the phone over at t=1.
        The interpolation is linear in log space — a constant zoom rate, which
-       is how a map zoom feels; linear-in-scale starts violent and ends dead. */
-    var S0 = Math.min(7, Math.max(innerWidth / pocketBase.sw, vh / pocketBase.sh) * 1.04);
+       is how a map zoom feels; linear-in-scale starts violent and ends dead.
+       No upper cap on S0: on a very wide window a cap left the screen edges
+       inside the viewport at t=0, and exposed bezel reads as broken where a
+       moment of upscale softness does not. Cover is the invariant. */
+    var S0 = Math.max(innerWidth / pocketBase.sw, vh / pocketBase.sh) * 1.04;
     var s = Math.pow(S0, 1 - t);
     s = Math.round(s * 1000) / 1000;
-    if (s !== pocketLast) {
-      pocketLast = s;
+    /* Entry fade — the second half of the seam fix (see the section comment):
+       while the section is still sliding in over the previous one, the stage
+       shows black; the zoomed screen only materialises as the stage pins. Both
+       terms are pure functions of scroll, so determinism holds. */
+    var entry = Math.max(0, Math.min(1, ((1 - r.top / vh) - 0.55) / 0.4));
+    entry = Math.round(entry * 100) / 100;
+    if (s !== pocketLast || entry !== pocketLastOp) {
+      pocketLast = s; pocketLastOp = entry;
       pScale.style.transform = 'scale(' + s + ')';
+      pScale.style.opacity = entry;
       if (pCopy) {
         var o = Math.max(0, Math.min(1, (t - 0.72) / 0.22));
         pCopy.style.opacity = o;
@@ -3339,7 +3359,7 @@
     removeEventListener('scroll', onScroll);
     removeEventListener('resize', onResize);
     plx.forEach(function (it) { it.el.style.transform = ''; it.ty = 0; });
-    if (pScale) pScale.style.transform = '';
+    if (pScale) { pScale.style.transform = ''; pScale.style.opacity = ''; }
     if (pCopy)  { pCopy.style.opacity = ''; pCopy.style.transform = ''; }
     /* counters that already ran keep their final values — they are correct */
   }
