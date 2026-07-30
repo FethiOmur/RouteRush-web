@@ -40,6 +40,9 @@
        tracking and tabular numerals, so the site's technical labels use
        exactly that. The variable stays so every usage keeps its rhythm. */
     --ff-mono: var(--ff);
+    /* App's semantic zone pair — CohortLeaderboardRow.zoneColor */
+    --zone-up: #10B981;
+    --zone-down: #EF4444;
 
     /* Motion: critically damped springs (damping 1.0, response ~0.4) — settle,
        never overshoot. Overshoot is reserved for momentum-carrying gestures,
@@ -594,31 +597,74 @@
     letter-spacing: .16em; text-transform: uppercase; color: var(--text-3);
     background: rgba(255,255,255,.022);
   }
-  .zone-label.up   { border-left: 2px solid var(--neon-green); }
-  .zone-label.down { border-left: 2px solid rgba(255,255,255,.28); }
+  /* Zone colours are the app's own semantic pair, not the brand neons:
+     promotion green-500 #10B981, demotion red-500 #EF4444
+     (CohortLeaderboardRow.zoneColor). */
+  .zone-label.up   { border-left: 2px solid var(--zone-up); }
+  .zone-label.down { border-left: 2px solid var(--zone-down); }
+
+  /* Cohort row — ported from CohortLeaderboardRow.swift.
+     Structure: rank badge · faded avatar bleed · name (+ verified/shield) ·
+     distance & elevation · right-aligned ultraLight RP over an "RP" caption.
+     Rows are separate rounded cards, not table lines. */
   .row {
-    display: grid; grid-template-columns: 30px 1fr auto; gap: 12px; align-items: center;
-    padding: 11px 18px; border-top: 1px solid rgba(255,255,255,.045); position: relative;
+    position: relative; isolation: isolate; overflow: hidden;
+    display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center;
+    min-height: 68px; padding: 10px 16px 10px 4px;
+    margin: 6px 12px; border-radius: 16px;
+    background: rgba(255,255,255,.04);           /* normalRankBackgroundOpacity */
+    border: 1px solid rgba(255,255,255,.05);     /* default subtle border */
   }
-  .row.up   { border-left: 2px solid var(--neon-green); }
-  .row.down { border-left: 2px solid rgba(255,255,255,.28); }
-  .row.me { background: rgba(255,255,255,.06); }
-  .row .rank { font-family: var(--ff-mono); font-size: 12px; color: var(--text-3); font-variant-numeric: tabular-nums; }
-  .row.me .rank { color: #fff; }
-  .row .who { display: flex; align-items: center; gap: 10px; min-width: 0; }
-  .av {
-    width: 26px; height: 26px; border-radius: 50%; flex: none; display: grid; place-items: center;
-    background: rgba(255,255,255,.08); border: 1px solid var(--hair);
-    font-size: 10px; font-weight: 640; letter-spacing: -.01em;
+  .row.top3 { background: rgba(255,255,255,.08); }  /* topRankBackgroundOpacity */
+  /* Zone treatment: a 1.5px gradient stroke fading top→bottom, plus the glow.
+     Drawn as a masked border so it cannot tint the row's interior. */
+  .row.up, .row.down { border-color: transparent; }
+  .row.up::after, .row.down::after {
+    content: ""; position: absolute; inset: 0; border-radius: inherit;
+    padding: 1.5px; pointer-events: none; z-index: 2;
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
   }
-  .row .name { font-size: 14px; font-weight: 540; letter-spacing: -.012em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .row .rp { font-size: 13px; font-variant-numeric: tabular-nums; color: var(--text-2); }
-  .row.me .rp { color: #fff; font-weight: 600; }
-  .bar { grid-column: 1 / -1; height: 2px; background: rgba(255,255,255,.09); border-radius: 2px; overflow: hidden; margin-top: 2px; }
-  .bar i { display: block; height: 100%; background: rgba(255,255,255,.55); transform: scaleX(0); transform-origin: left; transition: transform .95s var(--spring); }
-  .row.me .bar i { background: #fff; }
-  .is-in .bar i { transform: scaleX(var(--v)); }
-  .gap-row { padding: 7px 18px; color: var(--text-4); font-family: var(--ff-mono); font-size: 11px; letter-spacing: .2em; border-top: 1px solid rgba(255,255,255,.045); }
+  .row.up::after   { background: linear-gradient(var(--zone-up),   var(--zone-up)   40%, transparent); }
+  .row.down::after { background: linear-gradient(var(--zone-down), var(--zone-down) 40%, transparent); }
+  .row.up   { box-shadow: 0 0 8px rgba(16,185,129,.25); }
+  .row.down { box-shadow: 0 0 8px rgba(239,68,68,.25); }
+
+  /* Avatar bleeds in from the left under a fade mask — the app's `.fadedMask()`
+     background image, not a small circular chip. */
+  .row .av {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 150px; z-index: 0;
+    display: grid; align-items: center; justify-items: start;
+    /* the initials sit in the bleed, clear of the rank column, so they read as
+       a ghosted avatar rather than a smudge under the rank */
+    padding-left: 52px;
+    font-size: 26px; font-weight: 200; letter-spacing: .02em;
+    color: rgba(255,255,255,.13);
+    background: linear-gradient(90deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    -webkit-mask: linear-gradient(90deg, #000 0%, rgba(0,0,0,.4) 58%, transparent 100%);
+            mask: linear-gradient(90deg, #000 0%, rgba(0,0,0,.4) 58%, transparent 100%);
+  }
+  .row > *:not(.av) { position: relative; z-index: 1; }
+  .row .rank {
+    justify-self: center; font-size: 13px; font-weight: 620;
+    color: rgba(255,255,255,.55); font-variant-numeric: tabular-nums;
+  }
+  .row.top3 .rank, .row.me .rank { color: #fff; }
+  .row .who { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .row .who .line1 { display: flex; align-items: center; gap: 5px; min-width: 0; }
+  .row .name {
+    font-size: 17px; font-weight: 700; letter-spacing: -.02em; color: #fff;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .row .sub { font-size: 12px; color: rgba(255,255,255,.7); display: flex; gap: 7px; align-items: center; }
+  .row .sub .dot { color: rgba(255,255,255,.4); }
+  .row .shield { color: var(--run); width: 13px; height: 13px; flex: none; }
+  /* RP: ultraLight numeral over a small caption — statsFontSize 24, .ultraLight */
+  .row .rpwrap { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; padding-right: 4px; }
+  .row .rp { font-size: 24px; font-weight: 200; letter-spacing: -.02em; color: #fff; font-variant-numeric: tabular-nums; line-height: 1; }
+  .row .rpcap { font-size: 10px; color: rgba(255,255,255,.5); letter-spacing: .04em; }
+  .gap-row { padding: 4px 18px 6px; color: var(--text-4); font-size: 11px; letter-spacing: .2em; text-align: center; }
   .verified-tick { width: 13px; height: 13px; flex: none; }
 
   /* ---------- product tour: frames sized for real device captures ---------- */
@@ -810,8 +856,22 @@
   .btn-ghost.lg-refract { --glass-tint: rgba(24, 28, 40, .22); background: var(--glass-tint); }
   .btn-ghost.lg-refract::before { display: none; }
   /* Feature tiles get the same treatment; their sheen also steps aside. */
+  /* Tiles are large flat rectangles: the nav's bright lens ring reads as a
+     white border at that scale, not as a lens edge. Quiet it to a hairline and
+     drop the bottom bounce — the refraction alone carries the material. */
   .tile.lg-refract { background: rgba(24, 28, 40, .30); }
   .tile.lg-refract::before { display: none; }
+  .tile.lg-refract::after {
+    background: linear-gradient(140deg,
+      rgba(255,255,255,.16), rgba(255,255,255,.03) 40%,
+      rgba(255,255,255,0) 68%, rgba(255,255,255,.06));
+  }
+  .tile.lg-refract {
+    box-shadow:
+      inset 0 1px 0 0 rgba(255,255,255,.10),
+      inset 0 0 0 .5px rgba(255,255,255,.05),
+      0 26px 60px -28px rgba(0,0,0,.9);
+  }
 
   /* ---------- ambient topographic field ---------- */
   .bg-topo { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
@@ -1328,35 +1388,75 @@
 
         <p class="zone-label up"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V6"/><path d="M6.5 11.5 12 6l5.5 5.5"/></svg> Promotion zone · top 5</p>
 
-        <div class="row up" style="--v:1"><span class="rank">1</span>
-          <span class="who"><span class="av">MK</span><span class="name">M. Kaya</span></span>
-          <span class="rp">4 820</span><span class="bar"><i></i></span></div>
-        <div class="row up" style="--v:.93"><span class="rank">2</span>
-          <span class="who"><span class="av">JD</span><span class="name">J. Duarte</span>
-            <svg class="verified-tick" viewBox="0 0 24 24" aria-label="Verified"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="row up top3">
+          <span class="av" aria-hidden="true">MK</span>
+          <span class="rank">1</span>
+          <span class="who">
+            <span class="line1"><span class="name">M. Kaya</span></span>
+            <span class="sub">84.2 km<span class="dot">•</span>1 240m ↑</span>
           </span>
-          <span class="rp">4 512</span><span class="bar"><i></i></span></div>
-        <div class="row up" style="--v:.86"><span class="rank">3</span>
-          <span class="who"><span class="av">AR</span><span class="name">A. Rossi</span></span>
-          <span class="rp">4 140</span><span class="bar"><i></i></span></div>
+          <span class="rpwrap"><span class="rp">4 820</span><span class="rpcap">RP</span></span>
+        </div>
+        <div class="row up top3">
+          <span class="av" aria-hidden="true">JD</span>
+          <span class="rank">2</span>
+          <span class="who">
+            <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Verified"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <span class="sub">79.6 km<span class="dot">•</span>980m ↑</span>
+          </span>
+          <span class="rpwrap"><span class="rp">4 512</span><span class="rpcap">RP</span></span>
+        </div>
+        <div class="row up top3">
+          <span class="av" aria-hidden="true">AR</span>
+          <span class="rank">3</span>
+          <span class="who">
+            <span class="line1"><span class="name">A. Rossi</span></span>
+            <span class="sub">71.1 km<span class="dot">•</span>1 415m ↑</span>
+          </span>
+          <span class="rpwrap"><span class="rp">4 140</span><span class="rpcap">RP</span></span>
+        </div>
 
         <p class="gap-row">· · ·</p>
 
-        <div class="row me" style="--v:.62"><span class="rank">12</span>
-          <span class="who"><span class="av">YO</span><span class="name">You</span></span>
-          <span class="rp">2 986</span><span class="bar"><i></i></span></div>
-        <div class="row" style="--v:.59"><span class="rank">13</span>
-          <span class="who"><span class="av">LN</span><span class="name">L. Novak</span></span>
-          <span class="rp">2 830</span><span class="bar"><i></i></span></div>
+        <div class="row me">
+          <span class="av" aria-hidden="true">YO</span>
+          <span class="rank">12</span>
+          <span class="who">
+            <span class="line1"><span class="name">You</span></span>
+            <span class="sub">48.9 km<span class="dot">•</span>615m ↑</span>
+          </span>
+          <span class="rpwrap"><span class="rp">2 986</span><span class="rpcap">RP</span></span>
+        </div>
+        <div class="row">
+          <span class="av" aria-hidden="true">LN</span>
+          <span class="rank">13</span>
+          <span class="who">
+            <span class="line1"><span class="name">L. Novak</span><svg class="shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-label="Newbie shield"><path d="M12 3l7 3v5.5c0 4-3 7.5-7 9.5-4-2-7-5.5-7-9.5V6z"/></svg></span>
+            <span class="sub">46.2 km<span class="dot">•</span>520m ↑</span>
+          </span>
+          <span class="rpwrap"><span class="rp">2 830</span><span class="rpcap">RP</span></span>
+        </div>
 
         <p class="gap-row">· · ·</p>
 
-        <div class="row down" style="--v:.24"><span class="rank">29</span>
-          <span class="who"><span class="av">PB</span><span class="name">P. Bauer</span></span>
-          <span class="rp">1 140</span><span class="bar"><i></i></span></div>
-        <div class="row down" style="--v:.19"><span class="rank">30</span>
-          <span class="who"><span class="av">SC</span><span class="name">S. Chen</span></span>
-          <span class="rp">905</span><span class="bar"><i></i></span></div>
+        <div class="row down">
+          <span class="av" aria-hidden="true">PB</span>
+          <span class="rank">29</span>
+          <span class="who">
+            <span class="line1"><span class="name">P. Bauer</span></span>
+            <span class="sub">19.4 km<span class="dot">•</span>210m ↑</span>
+          </span>
+          <span class="rpwrap"><span class="rp">1 140</span><span class="rpcap">RP</span></span>
+        </div>
+        <div class="row down">
+          <span class="av" aria-hidden="true">SC</span>
+          <span class="rank">30</span>
+          <span class="who">
+            <span class="line1"><span class="name">S. Chen</span></span>
+            <span class="sub">15.1 km<span class="dot">•</span>145m ↑</span>
+          </span>
+          <span class="rpwrap"><span class="rp">905</span><span class="rpcap">RP</span></span>
+        </div>
 
         <p class="zone-label down"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v13"/><path d="M17.5 12.5 12 18l-5.5-5.5"/></svg> Relegation zone · bottom 5</p>
       </div>
