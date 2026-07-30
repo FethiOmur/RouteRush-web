@@ -1043,6 +1043,13 @@
   /* ============================================================
      final CTA + footer
      ============================================================ */
+  /* Scroll physics (see the script at the end of the body). The class is set
+     by JS only when prefers-reduced-motion is off, so these rules can assume
+     motion is welcome. The band image is oversized by 14% to give its parallax
+     room to travel without ever exposing an edge. */
+  html.has-plx .phone { will-change: transform; }
+  html.has-plx .photo-band img { height: 114%; top: -7%; will-change: transform; }
+
   /* The one photograph — see the section comment in the markup for why there
      is exactly one. Fixed height, absolutely positioned image: nothing shifts
      when the lazy image lands, so CLS stays at zero. */
@@ -3076,6 +3083,142 @@
     epoch = performance.now();
     if (reduced.matches) draw(performance.now());
     else requestAnimationFrame(loop);
+  });
+})();
+</script>
+<script>
+/* ================================================================
+   Scroll physics — the numbers count and the hardware has depth.
+   ----------------------------------------------------------------
+   Two effects, both deliberately small, both native:
+
+   • COUNT-UP. Every big numeral in the leaderboard and the VS card
+     animates to its value when it first enters view — because that
+     is what the app itself does: LeaderboardSheet renders RP through
+     AnimatedNumber, so a static number on the site would actually be
+     the less faithful rendering. Each numeral counts once, the first
+     time its panel is on screen — hidden leaderboard scopes count
+     when first switched to, then hold their value.
+
+   • PARALLAX. The device frames and the photograph drift a few
+     pixels against the scroll. Pure function of scrollY — same
+     offset in, same transform out, both directions, so it obeys the
+     same determinism contract as the hero. Transform-only, so the
+     compositor carries it and CLS stays zero.
+
+   Everything here stands down under prefers-reduced-motion: the
+   gate runs before any listener is attached, and a mid-session
+   switch tears the transforms off and stops.
+   ================================================================ */
+(function () {
+  'use strict';
+  var mq = matchMedia('(prefers-reduced-motion: reduce)');
+
+  /* ---------- count-up ---------- */
+  var counters = [];
+  document.querySelectorAll('.lb-panel .row .rp, .vs .side b').forEach(function (el) {
+    var node = el.firstChild;
+    if (!node || node.nodeType !== 3) return;
+    var m = node.textContent.match(/^\s*(\d[\d\s]*(?:\.\d+)?)\s*$/);
+    if (!m) return;
+    var frac = m[1].split('.')[1] || '';
+    /* "12.4" is a decimal; "85.000" is dot-grouped thousands (the country
+       sheet's Italian-style figures). Three digits after the dot means
+       grouping — count the integer and put the dot back on format. */
+    var dotGrouped = frac.length === 3;
+    counters.push({
+      node: node, host: el, done: false,
+      final: dotGrouped ? parseFloat(m[1].replace(/[.\s]/g, ''))
+                        : parseFloat(m[1].replace(/\s+/g, '')),
+      dec: dotGrouped ? 0 : frac.length,
+      sep: dotGrouped ? '.' : (/\d\s\d/.test(m[1]) ? ' ' : '')
+    });
+  });
+  function fmt(v, c) {
+    var s = v.toFixed(c.dec), parts = s.split('.');
+    if (c.sep) parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, c.sep);
+    return parts.join('.');
+  }
+  function count(c) {
+    var t0 = performance.now(), D = 950;
+    (function step(now) {
+      var u = Math.min(1, (now - t0) / D);
+      var e = 1 - Math.pow(1 - u, 3);              /* easeOutCubic, like the app's spring tail */
+      c.node.textContent = fmt(c.final * e, c);
+      if (u < 1) requestAnimationFrame(step);
+    })(performance.now());
+  }
+  var io = null;
+  function armCounters() {
+    if (io || !('IntersectionObserver' in window)) return;
+    io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (!entries[i].isIntersecting) continue;
+        var c = counters.find(function (x) { return x.host === entries[i].target; });
+        /* one observer batch can carry two entries for the same target, and two
+           concurrent rAF loops interleave their writes — the slower one lands
+           last at u<1 and the number settles two short. The flag, not
+           unobserve, is what makes this once-only. */
+        if (c && !c.done) { c.done = true; io.unobserve(c.host); count(c); }
+      }
+    }, { threshold: 0.55 });
+    counters.forEach(function (c) { io.observe(c.host); });
+  }
+
+  /* ---------- parallax ---------- */
+  var plx = [];
+  document.querySelectorAll('.phone').forEach(function (el) {
+    plx.push({ el: el, gain: -30, clamp: 16, ty: 0 });
+  });
+  var bandImg = document.querySelector('.photo-band img');
+  if (bandImg) plx.push({ el: bandImg, gain: 52, clamp: 30, ty: 0 });
+
+  var ticking = false;
+  function applyPlx() {
+    ticking = false;
+    var vh = innerHeight;
+    for (var i = 0; i < plx.length; i++) {
+      var it = plx[i];
+      var r = it.el.getBoundingClientRect();
+      /* subtract our own transform so the measurement never feeds back */
+      var center = r.top + r.height / 2 - it.ty;
+      if (center < -vh || center > vh * 2) continue;
+      var p = (center - vh / 2) / vh;              /* 0 at viewport centre */
+      var ty = Math.max(-it.clamp, Math.min(it.clamp, p * it.gain));
+      ty = Math.round(ty * 2) / 2;                 /* half-pixel grid, no shimmer */
+      if (ty !== it.ty) {
+        it.ty = ty;
+        it.el.style.transform = 'translate3d(0,' + ty + 'px,0)';
+      }
+    }
+  }
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(applyPlx);
+  }
+
+  /* ---------- gate ---------- */
+  var on = false;
+  function enable() {
+    if (on) return; on = true;
+    document.documentElement.classList.add('has-plx');
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll);
+    armCounters();
+    onScroll();
+  }
+  function disable() {
+    if (!on) return; on = false;
+    document.documentElement.classList.remove('has-plx');
+    removeEventListener('scroll', onScroll);
+    removeEventListener('resize', onScroll);
+    plx.forEach(function (it) { it.el.style.transform = ''; it.ty = 0; });
+    /* counters that already ran keep their final values — they are correct */
+  }
+  if (!mq.matches) enable();
+  mq.addEventListener && mq.addEventListener('change', function () {
+    if (mq.matches) disable(); else enable();
   });
 })();
 </script>
