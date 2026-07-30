@@ -2358,7 +2358,16 @@
 
      (What WOULD give deterministic control is createImageBitmap plus close();
      an isolated test freed 415MB that way. It is a different decode path, so it
-     would need proving pixel-identical before it could ship here.) */
+     would need proving pixel-identical before it could ship here.)
+
+     KEEP is 14 because deeper measured no better. Swept at 14/20/28/40 against a
+     realistic 3.5s scroll on a 4x-throttled CPU, smoothness is flat inside noise
+     — 98.1 / 98.0 / 98.6 / 97.3 percent of frames within the 60fps budget, and
+     the >33ms count varies 4-9 between runs of the SAME setting — while someone
+     who scrolls 30% of the hero and leaves pays 2.0MB at 14 and 4.2MB at 40.
+     Biasing the window forward is deliberately absent: frames behind the playhead
+     are already loaded, so a symmetric window already spends every slot forward
+     when moving forward, which makes the bias just extra depth. */
   const KEEP = 14;   // fetch radius, in frames either side of the playhead
   const MAXC = 6;    // concurrent fetches, unchanged
 
@@ -2377,14 +2386,20 @@
     };
     img.onload = () => {
       /* Publish only once the bitmap is genuinely ready to paint. `load` means
-         the bytes arrived, not that they are decoded — and drawImage on an
-         undecoded image decodes it synchronously, on the main thread, inside the
-         scroll frame. That was the entire source of the scrub's jank: measured
-         over one pass, p95 frame time was 44.3ms with 6 frames past 33ms; a
-         second pass over the same frames, all decoded by then, ran at p95 9.3ms
-         with zero. `decoding = 'async'` above is only a hint and does not cover
-         the first draw. decode() does the work off the main thread and resolves
-         when a paint is free, so no frame is ever drawn cold.
+         the bytes arrived, not that they are decoded, and drawImage on an
+         undecoded image decodes it synchronously on the main thread —
+         `decoding = 'async'` is only a hint and does not cover the first draw.
+         decode() does that work off-thread and resolves when a paint is free.
+
+         Kept as the correct mechanism for this pattern, NOT as a measured win.
+         An earlier version of this comment claimed it removed the scrub's jank;
+         that was wrong and is retracted. The residual long frames survive every
+         intervention tried against them — a deeper fetch window (14 -> 40), and
+         even fetching and decoding all 128 frames before scrolling at all, both
+         land within noise of shipping behaviour (p95 ~10ms, ~98% of frames
+         inside the 60fps budget, 5-9 frames past 33ms in every configuration).
+         They are not caused by frame arrival.
+
          Failure falls through to publishing anyway — a frame that will cost a
          synchronous decode still beats a frame that never appears. */
       const publish = () => {
