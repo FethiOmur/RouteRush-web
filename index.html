@@ -1050,6 +1050,55 @@
   html.has-plx .phone { will-change: transform; }
   html.has-plx .photo-band img { height: 114%; top: -7%; will-change: transform; }
 
+  /* ============================================================
+     POCKET — scroll-scrubbed zoom-out (see the section comment).
+     Static-first: these base rules are the no-JS / reduced-motion
+     rendering — a centred figure with its copy underneath. The
+     pinned, scrubbed version only exists under html.has-motion,
+     the same gate the hero uses.
+     ============================================================ */
+  .pocket-stage {
+    position: relative; overflow: hidden;
+    min-height: 100svh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 34px; padding: 96px 24px 56px;
+  }
+  /* The 32vh term scales the device down with short windows — measured: at
+     1280x700 a fixed 272px phone met the copy column by 16px; tied to the
+     viewport it clears with room, and the zoom start recomputes from the
+     measured screen either way. */
+  .pocket-scale { flex: none; width: min(272px, 62vw, 32vh); }
+  .pocket-scale .phone { max-width: none; }
+  .pocket-copy { text-align: center; max-width: 56ch; }
+  .pocket-copy .h2 { margin-top: 14px; margin-inline: auto; }
+  .pocket-copy .lede { margin-top: 14px; margin-inline: auto; }
+  html.has-motion .pocket { height: 240vh; }
+  html.has-motion .pocket-stage {
+    position: sticky; top: 0; height: 100svh; min-height: 0;
+    padding: 0; justify-content: center;
+  }
+  /* The copy rides the scrub: JS writes its opacity/offset from the same
+     progress that drives the scale, so it lands exactly as the phone does. */
+  html.has-motion .pocket-copy {
+    position: absolute; left: 24px; right: 24px; bottom: 40px;
+    opacity: 0; transform: translateY(14px);
+  }
+  /* Wide viewports take the hero's own copy posture: a left-anchored lockup
+     beside the device. This is also the collision-proof arrangement — a
+     centred block sits directly under the phone and meets it on short
+     windows, while the left column and the centred device never share
+     horizontal space. */
+  @media (min-width: 861px) {
+    html.has-motion .pocket-copy {
+      left: clamp(24px, 6vw, 96px); right: auto; bottom: 52px;
+      text-align: left; max-width: 44ch;
+    }
+    html.has-motion .pocket-copy .h2,
+    html.has-motion .pocket-copy .lede { margin-inline: 0; }
+  }
+  html.has-plx .pocket-scale { will-change: transform; transform-origin: 50% 50%; }
+
   /* The one photograph — see the section comment in the markup for why there
      is exactly one. Fixed height, absolutely positioned image: nothing shifts
      when the lazy image lands, so CLS stays at zero. */
@@ -1522,6 +1571,40 @@
         <p class="hud hud-tl" aria-hidden="true">Night map<br><b id="hud-mode">Orbit</b></p>
         <p class="hud hud-br" aria-hidden="true">Cells claimed <b id="hud-cells">0</b><br>Rush Points <b id="hud-rp">0</b></p>
         <span class="cue" aria-hidden="true">Scroll to claim</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       POCKET — the flight was on a phone all along.
+       ------------------------------------------------------------
+       The hero dives from orbit into street-level Torino. This
+       section answers it: the same city, scrubbed from filling the
+       viewport down into an iPhone in front of you — the reveal
+       INTVL builds with a 8149px "phoneHand" render and GSAP scale
+       6.53→1, rebuilt here in this page's own dialect: a REAL device
+       capture of the app's home screen over the SAME Torino the
+       flight just landed in, driven by the same scroll contract as
+       the hero — one normalized progress from native scroll, zoom
+       interpolated in log space (constant zoom speed, the way a map
+       zoom feels), deterministic in both directions, no library.
+       Static-first: without JS or with reduced motion this is an
+       ordinary centered figure with its copy below it.
+       ============================================================ -->
+  <section class="pocket" aria-labelledby="pocket-title">
+    <div class="pocket-stage">
+      <div class="pocket-scale" id="pocket-scale">
+        <div class="phone">
+          <div class="screen">
+            <img class="shot" src="assets/screens/dev-territory.webp" decoding="async"
+                 alt="RouteRush home screen over central Torino: the 3D night map with claimed ground along the river, the Start pill and the tab bar">
+          </div>
+        </div>
+      </div>
+      <div class="pocket-copy" id="pocket-copy">
+        <p class="eyebrow">In your pocket</p>
+        <h2 class="h2" id="pocket-title">All of it fits in your hand.</h2>
+        <p class="lede">The globe, your ground and the league table — on the phone you already carry.</p>
       </div>
     </div>
   </section>
@@ -3173,10 +3256,50 @@
   var bandImg = document.querySelector('.photo-band img');
   if (bandImg) plx.push({ el: bandImg, gain: 52, clamp: 30, ty: 0 });
 
+  /* ---------- pocket zoom-out ---------- */
+  var pocket = document.querySelector('.pocket');
+  var pScale = document.getElementById('pocket-scale');
+  var pCopy  = document.getElementById('pocket-copy');
+  var pocketBase = null, pocketLast = -1;
+  function measurePocket() {
+    if (!pScale) return;
+    var keep = pScale.style.transform;
+    pScale.style.transform = 'none';
+    var r = pScale.querySelector('.screen').getBoundingClientRect();
+    pScale.style.transform = keep;
+    pocketBase = { sw: Math.max(1, r.width), sh: Math.max(1, r.height) };
+    pocketLast = -1;                       /* force a rewrite at the new size */
+  }
+  function applyPocket(vh) {
+    if (!pocket || !pocketBase) return;
+    if (!document.documentElement.classList.contains('has-motion')) return;
+    var r = pocket.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > vh) return;
+    var dist = Math.max(1, pocket.offsetHeight - vh);
+    var t = Math.max(0, Math.min(1, -r.top / dist));
+    t = t * t * (3 - 2 * t);
+    /* cover the viewport with the SCREEN at t=0, hand the phone over at t=1.
+       The interpolation is linear in log space — a constant zoom rate, which
+       is how a map zoom feels; linear-in-scale starts violent and ends dead. */
+    var S0 = Math.min(7, Math.max(innerWidth / pocketBase.sw, vh / pocketBase.sh) * 1.04);
+    var s = Math.pow(S0, 1 - t);
+    s = Math.round(s * 1000) / 1000;
+    if (s !== pocketLast) {
+      pocketLast = s;
+      pScale.style.transform = 'scale(' + s + ')';
+      if (pCopy) {
+        var o = Math.max(0, Math.min(1, (t - 0.72) / 0.22));
+        pCopy.style.opacity = o;
+        pCopy.style.transform = 'translateY(' + Math.round((1 - o) * 14) + 'px)';
+      }
+    }
+  }
+
   var ticking = false;
   function applyPlx() {
     ticking = false;
     var vh = innerHeight;
+    applyPocket(vh);
     for (var i = 0; i < plx.length; i++) {
       var it = plx[i];
       var r = it.el.getBoundingClientRect();
@@ -3200,20 +3323,24 @@
 
   /* ---------- gate ---------- */
   var on = false;
+  function onResize() { measurePocket(); onScroll(); }
   function enable() {
     if (on) return; on = true;
     document.documentElement.classList.add('has-plx');
     addEventListener('scroll', onScroll, { passive: true });
-    addEventListener('resize', onScroll);
+    addEventListener('resize', onResize);
     armCounters();
+    measurePocket();
     onScroll();
   }
   function disable() {
     if (!on) return; on = false;
     document.documentElement.classList.remove('has-plx');
     removeEventListener('scroll', onScroll);
-    removeEventListener('resize', onScroll);
+    removeEventListener('resize', onResize);
     plx.forEach(function (it) { it.el.style.transform = ''; it.ty = 0; });
+    if (pScale) pScale.style.transform = '';
+    if (pCopy)  { pCopy.style.opacity = ''; pCopy.style.transform = ''; }
     /* counters that already ran keep their final values — they are correct */
   }
   if (!mq.matches) enable();
