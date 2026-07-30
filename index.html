@@ -412,14 +412,35 @@
     .brand span { font-size: 15.5px; }
     .brand img { width: 26px; height: 26px; }
   }
+  /* Touch targets. On a finger device the capsule's controls are visually
+     smaller than the 44pt Apple asks for — the CTA pill is 34px tall and the
+     R mark 26px. Growing them would inflate the nav, which has to stay the
+     shape it is, so the hit area is carried by an invisible pseudo-element
+     instead: the pill keeps its geometry, the thumb gets its 44px. Scoped to
+     `pointer: coarse` so a mouse cursor sees no change at all. */
+  @media (pointer: coarse) {
+    .nav .btn-sm, .brand { position: relative; }
+    .nav .btn-sm::after, .brand::after {
+      content: ""; position: absolute; left: 0; right: 0;
+      top: 50%; height: 44px; transform: translateY(-50%);
+    }
+    /* the R mark is 26px wide, so the hit box needs to grow sideways too */
+    .brand::after { left: -9px; right: -9px; }
+  }
 
   /* ============================================================
      HERO — scroll-scrubbed sequence
      Section height comes from sequence.scrollVh (set by JS).
      ============================================================ */
   .sequence { position: relative; }
+  /* `min-height` here guards against the hero collapsing on a short window,
+     but a flat 600px betrayed the very case it was written for: a phone in
+     landscape is 390px tall, the floor won, and a sticky box taller than the
+     viewport pins its top and hides its own bottom — which is where the CTAs
+     live. Clamping the floor to the viewport keeps the guard for tall windows
+     and gets out of the way on short ones. */
   .stage {
-    position: sticky; top: 0; height: 100svh; min-height: 600px;
+    position: sticky; top: 0; height: 100svh; min-height: min(600px, 100svh);
     display: grid; grid-template-columns: minmax(330px, .92fr) 1.08fr;
     overflow: hidden;
   }
@@ -470,11 +491,33 @@
   }
 
   @media (max-width: 900px) {
-    .stage { grid-template-columns: 1fr; grid-template-rows: auto 1fr; min-height: 660px; }
+    .stage { grid-template-columns: 1fr; grid-template-rows: auto 1fr; min-height: min(660px, 100svh); }
     .stage-copy { border-right: 0; border-bottom: 1px solid var(--hair-soft); padding-top: 92px; padding-bottom: 22px; }
     .hero-h1 { margin-top: 0; }
     .states { min-height: 112px; }
     .cue, .hud-tl { display: none; }
+  }
+  /* Short window — a phone held sideways, or a small desktop window dragged
+     flat. Capping the stage stops the sticky overflow, but the copy stack is
+     still ~600px of content, so it has to give up height rather than be
+     clipped: the display face steps down, the fixed copy well collapses to
+     the one line that is actually showing, and the rolling Run/Rush/Ride
+     control stands down — it is a flourish, and the two real calls to action
+     are not. Everything that fits, fits; nothing lands below the fold. */
+  @media (max-height: 560px) and (min-width: 480px) {
+    /* 78px, not less: the eyebrow has to clear the nav capsule's 70px bottom */
+    .stage-copy { padding-top: 78px; padding-bottom: 12px; }
+    .hero-wordmark { font-size: clamp(30px, 5.2vh, 44px); margin-bottom: 4px; }
+    .hero-h1 { font-size: clamp(26px, 6.4vh, 40px); margin-bottom: 12px; }
+    .states { min-height: 0; padding-top: 12px; }
+    .state { position: relative; inset: auto; }
+    .state:not(.is-active) { display: none; }
+    .state p { font-size: 14px; line-height: 1.45; }
+    .readout { margin-top: 12px; }
+    .hero-cta { margin-top: 14px; }
+    /* scoped, not bare: the .startctl block further down the sheet would win on
+       source order otherwise, and the control would keep its 62px */
+    .stage-copy .startctl { display: none; }
   }
 
   /* ============================================================
@@ -667,6 +710,17 @@
   }
   .lb-tabs button:hover { color: #fff; }
   .lb-tabs button[aria-selected="true"] { background: #fff; color: #000; font-weight: 680; }
+  /* Same hit-area treatment as the nav: the segmented control is 39px tall
+     because that is what the app's own control measures, and matching it was
+     the point. The finger gets 44px from a transparent overlay that stays
+     inside the strip's 5px padding, so nothing shifts. */
+  @media (pointer: coarse) {
+    .lb-tabs button { position: relative; }
+    .lb-tabs button::after {
+      content: ""; position: absolute; left: 0; right: 0;
+      top: 50%; height: 44px; transform: translateY(-50%);
+    }
+  }
   /* Panel transitions. `hidden` alone is an instant swap, so panels animate on
      their own: the outgoing one fades and settles back a hair, the incoming one
      rises into place with its rows staggered behind it. `hidden` is still the
@@ -726,6 +780,24 @@
   /* Area value: 28px ultraLight with the unit inline, caption beneath. */
   .row.ctry .rp { font-size: 28px; font-weight: 200; }
   .row.ctry .rp .u { font-size: 16px; font-weight: 200; opacity: .7; }
+  /* Narrow phones. The country row is the widest thing in the sheet: a 96px
+     flag/rank column plus a 28px area figure with its unit and caption leaves
+     the name about 46px, so "United States" rendered as "Uni…" and "Most
+     territory:" broke across three lines. Nothing here is decoration that can
+     just be dropped — the flag, the area and the contributor are all in the
+     app's own row — so every column gives back a little instead: the rank
+     gutter narrows, the figure steps down, and the name gets the room it needs
+     to actually be a name. */
+  @media (max-width: 440px) {
+    .row.ctry { grid-template-columns: 58px 1fr auto; gap: 8px; padding-right: 12px; }
+    .row.ctry .rank { margin-left: 8px; padding: 3px 7px; font-size: 12px; }
+    .row.ctry .name { font-size: 16.5px; }
+    .row.ctry .rp { font-size: 21px; }
+    .row.ctry .rp .u { font-size: 12px; }
+    .row.ctry .rpcap { font-size: 9px; }
+    .row.ctry .contrib b { font-size: 11px; }
+    .row.ctry .contrib svg { width: 14px; height: 14px; }
+  }
   /* Sort control + small-countries toggle, both above the list. */
   .lb-sort {
     flex: none; display: flex; align-items: center; gap: 5px;
@@ -930,12 +1002,27 @@
   .foot li + li { margin-top: 9px; }
   .foot a { font-size: 14px; color: var(--text-2); transition: color .3s ease; }
   .foot a:hover { color: #fff; }
+  /* Footer links are 17px of text. Here the fix has to be real padding rather
+     than an overlay — stacked links sit 9px apart, so overlapping invisible
+     hit boxes would let a tap land on the wrong one. Trading margin for
+     padding grows the target without growing the column much. */
+  @media (pointer: coarse) {
+    .foot a { display: inline-block; padding-block: 14px; }
+    .foot li + li { margin-top: 0; }
+    .foot-bottom .dom a { display: inline-block; padding-block: 15px; }
+  }
   .foot-bottom {
     display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center;
     margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair-soft);
     font-size: 12.5px; color: var(--text-4);
   }
   .foot-bottom .dom { margin-left: auto; }
+  /* `margin-left: auto` is a two-column idea. Once the row wraps it strands the
+     domain alone on a right-aligned second line, which reads as a mistake. */
+  @media (max-width: 560px) {
+    .foot-bottom { display: block; }
+    .foot-bottom .dom { margin-left: 0; margin-top: 8px; display: block; }
+  }
 
   /* ============================================================
      reveal motion (native IntersectionObserver, no libraries)
@@ -1190,6 +1277,16 @@
         rgba(0,0,0,.88) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,0) 100%);
     }
   }
+  /* The flight finishes at --p 1, and only then does the sticky stage release
+     and slide a full viewport upward. Left alone, the copy column rides up
+     with it and passes behind the nav capsule, where the refractive backdrop
+     renders the CTA label as ghosted double text — the single worst-looking
+     moment on the page, and worst of all on a phone, where the copy block is
+     tall enough to still be mid-screen when the release starts. Dissolving it
+     across the last 4.5% of the flight means the stage is already empty by the
+     time it moves. `--p` is the same progress value the canvas reads, so this
+     stays deterministic in both scroll directions and needs no new listener. */
+  .has-motion .stage-copy { opacity: clamp(0, calc((1 - var(--p)) / .045), 1); }
   /* Full-bleed layout: the copy column now owns the top-left, so the H3 HUD
      moves to the right shoulder, clear of the eyebrow. */
   .has-motion .hud-tl { left: auto; right: 46px; top: 86px; text-align: right; }
@@ -2171,6 +2268,17 @@
     img.src = frameSrc(i);
   }
 
+  /* The full set is 128 frames and about 11.8 MB. That is fine on a desk and
+     rude on a metered phone, so a viewer who has asked for less gets less:
+     Data Saver, or a connection the browser itself calls 2g/3g, halves the set
+     to every second frame (~5.9 MB). The scrub survives it because render()
+     interpolates between whichever frames are actually loaded rather than
+     assuming neighbours — 64 crossfaded frames still read as continuous
+     motion. Nobody who has not asked for less gets less. */
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const thrifty = !!conn && (conn.saveData === true || /^(slow-2g|2g|3g)$/.test(conn.effectiveType || ''));
+  const STRIDE = thrifty ? 2 : 1;
+
   /* Poster first paint happens via render()'s nearest-loaded fallback; the
      loader itself starts at the poster and then keeps pulling whichever
      unloaded frame is closest to where the viewer actually is, six at a
@@ -2179,7 +2287,10 @@
     if (loaderStarted) return;
     loaderStarted = true;
     const order = [];
-    for (let d = 0; d < sequence.frameCount; d++) order.push(d);
+    for (let d = 0; d < sequence.frameCount; d += STRIDE) order.push(d);
+    /* the last frame is the one the page rests on, so never let stride drop it */
+    const last = sequence.frameCount - 1;
+    if (order[order.length - 1] !== last) order.push(last);
     let cursor = 0, inFlight = 0;
     const MAXC = 6;
     const pump = () => {
@@ -2224,6 +2335,17 @@
     return -1;
   }
 
+  /* Blending used to require the two frames to be literal neighbours, which
+     meant that while frames were still streaming in — or whenever stride
+     thinned the set — the scrub fell back to hard cuts between whatever had
+     arrived. Walking forward to the next loaded frame instead lets the pair
+     straddle any gap, so a half-loaded sequence scrubs smoothly rather than
+     stepping, and a strided one has no visible seams at all. */
+  function nextLoadedFrom(i) {
+    for (let j = i + 1; j < sequence.frameCount; j++) if (FRAMES[j]) return j;
+    return -1;
+  }
+
   /* ---------- render: crossfaded frame pair, cover-fit ---------- */
   /* progress lands between two frames almost always; drawing the lower frame
      and blending the upper one in by the fractional part turns 128 discrete
@@ -2242,16 +2364,23 @@
     const last = sequence.frameCount - 1;
     const pos  = Math.min(last, Math.max(0, progress * last));
     const i0   = Math.floor(pos);
-    const i1   = Math.min(last, i0 + 1);
     const f    = pos - i0;
     wantedIndex = Math.round(pos);
     ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, W, H);
     const base = nearestLoaded(i0);
-    if (base >= 0) drawCover(FRAMES[base], 1);
-    /* blend the next frame in only when it is genuinely the neighbour —
-       blending across a gap while frames still stream in would flicker */
-    if (base === i0 && f > 0.005 && FRAMES[i1]) drawCover(FRAMES[i1], f);
+    if (base >= 0) {
+      drawCover(FRAMES[base], 1);
+      /* only ever blend forward from a frame at or before the playhead —
+         blending back from a later frame would run the flight in reverse */
+      if (base <= pos) {
+        const nxt = nextLoadedFrom(base);
+        if (nxt > base) {
+          const a = (pos - base) / (nxt - base);
+          if (a > 0.005) drawCover(FRAMES[nxt], a > 1 ? 1 : a);
+        }
+      }
+    }
     /* conquest counters land through the dive's end and the tilt reveal */
     return Math.round(smooth(invLerp(0.55, 0.97, progress)) * sequence.cellsTotal);
   }
@@ -2539,6 +2668,39 @@
   }
   tabs.forEach(function (t) { var p = panelOf(t); if (p) indexRows(p); });
 
+  /* The four scopes hold different numbers of rows — Territory is 611px tall,
+     Country 929px — and because a hidden panel is `display: none`, swapping
+     them made the sheet jump by up to 318px and shoved the rest of the page
+     with it. Keeping every panel in the layout would fix the jump but leave
+     the short scopes with 300px of dead space, so instead the sheet glides:
+     measure, mutate, measure, then animate between the two. `.board` already
+     clips its overflow, so the rows slide out of a closing box cleanly. */
+  var board = document.getElementById('board');
+  function glideHeight(mutate) {
+    if (!board || REDUCED.matches) { mutate(); return; }
+    var from = board.offsetHeight;
+    mutate();
+    var to = board.offsetHeight;
+    if (from === to) return;
+    board.style.height = from + 'px';
+    void board.offsetHeight;                     /* commit the start value */
+    board.style.transition = 'height .44s var(--spring)';
+    board.style.height = to + 'px';
+    /* Guard on target and property. The rows inside the incoming panel start
+       their own staggered opacity/transform transitions in this same frame,
+       and those events BUBBLE to .board — an unguarded handler tore the inline
+       height off before the glide had drawn a single frame, which is exactly
+       how this first shipped and why it looked like the transition was being
+       ignored rather than cancelled. */
+    var clear = function (e) {
+      if (e && (e.target !== board || e.propertyName !== 'height')) return;
+      board.style.transition = ''; board.style.height = '';
+      board.removeEventListener('transitionend', clear);
+    };
+    board.addEventListener('transitionend', clear);
+    setTimeout(clear, 620);                      /* guard, same as the fade */
+  }
+
   function reveal(panel) {
     panel.hidden = false;
     panel.classList.add('is-entering');
@@ -2578,8 +2740,10 @@
     var finish = function () {
       if (done) return; done = true;
       outgoing.classList.remove('is-leaving');
-      outgoing.hidden = true;
-      reveal(incoming);
+      glideHeight(function () {
+        outgoing.hidden = true;
+        reveal(incoming);
+      });
     };
     outgoing.addEventListener('transitionend', finish, { once: true });
     setTimeout(finish, 380);   /* guard: transitionend can be skipped if the tab hides */
