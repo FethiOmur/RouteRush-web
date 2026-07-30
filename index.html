@@ -1317,7 +1317,7 @@
 
       <div class="stage-visual" id="stage-visual">
         <canvas id="seq-canvas" aria-hidden="true"></canvas>
-        <p class="hud hud-tl" aria-hidden="true">H3 · Resolution 11<br><b id="hud-mode">Surface grid</b></p>
+        <p class="hud hud-tl" aria-hidden="true">Mapbox · night<br><b id="hud-mode">Orbit</b></p>
         <p class="hud hud-br" aria-hidden="true">Cells claimed <b id="hud-cells">0</b><br>Rush Points <b id="hud-rp">0</b></p>
         <span class="cue" aria-hidden="true">Scroll to claim</span>
       </div>
@@ -1389,12 +1389,8 @@
         <div class="phone">
           <div class="screen">
             <!-- SWAP: point src at the real globe/territory capture -->
-            <!-- Shows a real Mapbox capture of conquered H3 cells over central Turin
-                 right now; the owner's own device capture supersedes it via data-src
-                 as soon as that file lands. -->
-            <img class="shot" src="assets/screens/map-territory-torino.webp"
-                 data-src="assets/screens/dev-territory.png"
-                 alt="RouteRush map over central Turin with conquered hexagonal cells across Borgo Nuovo and San Salvario">
+            <img class="shot" src="assets/screens/dev-mapmodes.webp"
+                 alt="RouteRush Map Modes over London: Heatmap, Territory and Routes cards above the 3D city">
             <div class="island" aria-hidden="true"></div>
             <div class="statusbar"><span>9:41</span><span class="sb-icons">
               <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
@@ -1491,7 +1487,7 @@
         <div class="phone">
           <div class="screen">
             <!-- SWAP: point src at the real in-run / tracking capture -->
-            <img class="shot" src="assets/screens/en-02-plans-boldi.png" alt="RouteRush Plans screen: Boldi the coach offering training plans">
+            <img class="shot" src="assets/screens/dev-league.webp" alt="RouteRush Plans screen: Boldi the coach offering training plans">
             <div class="island" aria-hidden="true"></div>
             <div class="statusbar"><span>9:41</span><span class="sb-icons">
               <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
@@ -1945,8 +1941,8 @@
         <figure data-reveal>
           <div class="phone">
             <div class="screen">
-              <img class="shot" data-src="assets/screens/dev-tracking.png"
-                   alt="RouteRush Start Rush screen with GPS, sport and Boldi controls over the live map">
+              <img class="shot" src="assets/screens/dev-summary.webp"
+                   alt="RouteRush run summary: route on the map with distance, time, pace, elevation and cadence">
             </div>
           </div>
           <figcaption class="small"><b>The globe you run on</b>Home is a real 3D globe, not a flat tile sheet. Your ground fills in as you cover it.</figcaption>
@@ -1965,7 +1961,7 @@
         <figure data-reveal style="--d:180ms">
           <div class="phone">
             <div class="screen">
-              <img class="shot" data-src="assets/screens/dev-club.png" alt="RouteRush Club screen with upcoming events and RSVP controls">
+              <img class="shot" src="assets/screens/dev-challenges.webp" alt="RouteRush club challenges with a head-to-head card and open challenges">
               <div class="pending" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M6 20V11M12 20V5M18 20v-6"/></svg>
                 League standings
@@ -2274,7 +2270,7 @@
     if (elMode)  elMode.textContent =
       progress < sequence.copyStops[1] ? 'Orbit'
       : progress < sequence.copyStops[2] ? 'Descent — Torino'
-      : 'Territory · H3 res 9';
+      : 'Street level';
 
     let active = 0;
     for (let i = 0; i < sequence.copyStops.length; i++) if (progress >= sequence.copyStops[i]) active = i;
