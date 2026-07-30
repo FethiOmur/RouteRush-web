@@ -383,6 +383,12 @@
     font-size: 40px; letter-spacing: .05em; line-height: 1;
     color: #fff; text-shadow: 0 3px 4px rgba(0,0,0,.5);
   }
+  /* Hero logotype at display scale — declared after .wordmark so it wins. */
+  .hero-wordmark {
+    font-size: clamp(50px, 6.2vw, 84px); letter-spacing: .05em;
+    margin: 2px 0 14px;
+  }
+  @media (max-width: 860px) { .hero-wordmark { font-size: 44px; } }
   /* Closing CTA: this is where the lockup gets to be the hero, at the app's own
      onboarding proportions — mark above, wordmark under it. */
   .lockup-xl { display: flex; flex-direction: column; align-items: center; gap: 16px; }
@@ -1047,6 +1053,67 @@
       0 40px 90px -36px rgba(0,0,0,.95);
   }
 
+
+  /* ============================================================
+     ROLLING START CONTROL
+     ------------------------------------------------------------
+     The app's idle run button: the R mark lit from within by a
+     tight + wide white bloom, beside a phrase that rolls between
+     the sport verb and the brand word on a slow 3.2s cadence
+     ("Start Run" -> "Start Rush" -> "Start Ride"). Words enter
+     from the bottom and leave through the top. Hidden copies of
+     every phrase pin the width so the capsule never jitters.
+     Plain glass, never a filled accent — the owner rejected a
+     glow on this control twice; the colour lives only in the
+     mark's bloom and the sport tint on the label.
+     ============================================================ */
+  .startctl {
+    /* A flex item gets blockified, so `inline-flex` alone would stretch this to
+       the column's full width — align-self keeps it shrink-wrapped. */
+    display: inline-flex; align-self: flex-start;
+    align-items: center; gap: 12px; margin-top: 22px;
+    padding: 17px 30px; border-radius: 999px;
+    background: rgba(24, 28, 40, .30);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255,255,255,.12),
+      inset 0 0 0 .5px rgba(255,255,255,.06),
+      0 22px 50px -26px rgba(0,0,0,.9);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    backdrop-filter: blur(20px) saturate(160%);
+  }
+  .startctl .mark {
+    width: 30px; height: 30px; flex: none; object-fit: contain;
+    filter: drop-shadow(0 0 5px rgba(255,255,255,.6))
+            drop-shadow(0 0 10px rgba(255,255,255,.28));
+  }
+  /* The roll window. Hidden copies establish the widest phrase; the live
+     words are absolutely positioned inside that reserved box. */
+  /* Hidden copies of EVERY phrase reserve the width. They are block-level, so
+     each takes its own line and the inline-block roll resolves to the widest of
+     them — the capsule then never resizes as words swap. */
+  .roll { position: relative; overflow: hidden; height: 27px; display: inline-block; }
+  .roll .ghost { visibility: hidden; white-space: nowrap; display: block; }
+  .roll b {
+    position: absolute; inset: 0; display: flex; align-items: center;
+    white-space: nowrap; font-weight: 300; letter-spacing: -.01em;
+    opacity: 0; transform: translateY(100%);
+    animation: roll 9.6s cubic-bezier(.32,.72,.24,1) infinite;
+  }
+  .roll, .roll b, .roll .ghost { font-size: 21px; font-weight: 300; color: #fff; }
+  .roll b.run  { animation-delay: 0s; }
+  .roll b.rush { animation-delay: 3.2s; }
+  .roll b.ride { animation-delay: 6.4s; }
+  /* Each word owns a third of the cycle: rise in, dwell, leave upward. */
+  @keyframes roll {
+    0%              { opacity: 0; transform: translateY(100%); }
+    4%, 30%         { opacity: 1; transform: translateY(0); }
+    34%, 100%       { opacity: 0; transform: translateY(-100%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .roll b { animation: none; }
+    .roll b.rush { opacity: 1; transform: none; }   /* rests on the brand word */
+  }
+
   /* ---------- ambient topographic field ---------- */
   .bg-topo { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
   #topo-gl { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -1174,9 +1241,7 @@
 <header class="nav" id="nav">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="RouteRush home">
-      <!-- The Splash logotype already opens on a stylised R, so pairing it with
-           the R mark reads as two logos side by side. The wordmark stands alone. -->
-      <span>RouteRush</span>
+      <img src="assets/routerush-logo.png" alt="RouteRush" width="30" height="30">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a href="#territory">Territory</a>
@@ -1198,6 +1263,10 @@
     <div class="stage">
       <div class="stage-copy">
         <p class="eyebrow"><span>RouteRush for iOS</span><span class="mono" id="hud-frame">000 / 120</span></p>
+
+        <!-- The logotype at display scale: the nav carries only the R mark, so
+             the wordmark owns this space without doubling up. -->
+        <p class="wordmark hero-wordmark">RouteRush</p>
 
         <h1 class="hero-h1 display" id="hero-title">Running is how<br>you take <em>ground.</em></h1>
 
@@ -1235,6 +1304,14 @@
             Download on the App Store
           </a>
           <a class="btn btn-ghost" href="#territory">See how territory works</a>
+        </div>
+
+        <div class="startctl" aria-hidden="true">
+          <img class="mark" src="assets/routerush-logo.png" alt="">
+          <span class="roll">
+            <span class="ghost">Start Run</span><span class="ghost">Start Rush</span><span class="ghost">Start Ride</span>
+            <b class="run">Start Run</b><b class="rush">Start Rush</b><b class="ride">Start Ride</b>
+          </span>
         </div>
       </div>
 
