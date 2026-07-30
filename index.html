@@ -9,6 +9,18 @@
 <link rel="icon" href="assets/routerush-appicon.png">
 <style>
   /* ============================================================
+     BRAND FACE — Splash-Regular, straight from the app bundle.
+     The app sets it at 70pt with 3pt tracking on the onboarding
+     wordmark; the site mirrors that treatment in the hero and footer.
+     ============================================================ */
+  @font-face {
+    font-family: "Splash";
+    src: url("assets/fonts/Splash-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-display: swap;
+  }
+
+  /* ============================================================
      RouteRush landing — design tokens
      Palette is verified from Core/Constants/AppColors.swift
      ------------------------------------------------------------
@@ -36,6 +48,10 @@
        it tints, blurs and lenses. See the LIQUID GLASS MATERIAL block. */
 
     --ff: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    /* The brand wordmark face. Same Splash-Regular the app uses for
+       "RouteRush" on the onboarding screen (70pt, 3pt tracking) and across the
+       battle, coach and Pro surfaces. Bundled locally — no webfont request. */
+    --ff-brand: "Splash", var(--ff);
     /* No monospace anywhere: the app's HUD language is SF Pro with wide
        tracking and tabular numerals, so the site's technical labels use
        exactly that. The variable stays so every usage keeps its rhythm. */
@@ -355,7 +371,36 @@
   }
   .brand { display: flex; align-items: center; gap: 10px; margin-right: auto; }
   .brand img { width: 30px; height: 30px; object-fit: contain; }
-  .brand span { font-weight: 620; letter-spacing: -.03em; font-size: 17px; }
+  .brand span {
+    font-family: var(--ff-brand); font-weight: 400;
+    font-size: 21px; letter-spacing: .04em; line-height: 1;
+    padding-top: 2px;   /* the face sits high in its em box */
+  }
+  /* Hero lockup: the app's onboarding treatment — icon above, wordmark under
+     it at brand scale with the same open tracking and drop shadow. */
+  /* In the hero the wordmark is a signature, not a second headline — the app
+     never shows the onboarding lockup and a headline together. It runs at brand
+     scale beside the mark; the full-size lockup lives in the closing CTA. */
+  .lockup { display: flex; align-items: center; gap: 11px; margin: 14px 0 30px; }
+  .lockup img { width: 34px; height: 34px; object-fit: contain; }
+  .wordmark {
+    font-family: var(--ff-brand); font-weight: 400;
+    font-size: 40px; letter-spacing: .05em; line-height: 1;
+    color: #fff; text-shadow: 0 3px 4px rgba(0,0,0,.5);
+  }
+  /* Closing CTA: this is where the lockup gets to be the hero, at the app's own
+     onboarding proportions — mark above, wordmark under it. */
+  .lockup-xl { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .lockup-xl img { width: 74px; height: 74px; object-fit: contain; }
+  .lockup-xl .wordmark {
+    font-size: clamp(54px, 7.6vw, 92px); letter-spacing: .055em;
+    text-shadow: 0 4px 4px rgba(0,0,0,.5);
+  }
+  @media (max-width: 860px) {
+    .lockup img { width: 30px; height: 30px; }
+    .wordmark { font-size: 34px; }
+    .lockup-xl img { width: 62px; height: 62px; }
+  }
   .nav-links { display: flex; gap: 28px; margin-right: 8px; }
   .nav-links a { font-size: 14px; color: var(--text-2); transition: color .3s ease; }
   .nav-links a:hover { color: #fff; }
@@ -623,12 +668,83 @@
   }
   .lb-tabs button:hover { color: #fff; }
   .lb-tabs button[aria-selected="true"] { background: #fff; color: #000; font-weight: 680; }
+  /* Panel transitions. `hidden` alone is an instant swap, so panels animate on
+     their own: the outgoing one fades and settles back a hair, the incoming one
+     rises into place with its rows staggered behind it. `hidden` is still the
+     source of truth for assistive tech — the animation rides on a class. */
+  .lb-panel { transition: opacity .34s ease, transform .34s var(--spring); }
   .lb-panel[hidden] { display: none; }
+  .lb-panel.is-leaving {
+    opacity: 0; transform: translateY(6px) scale(.994);
+    pointer-events: none;
+  }
+  .lb-panel.is-entering { opacity: 0; transform: translateY(-8px) scale(.994); }
+  .lb-panel.is-entering .row, .lb-panel.is-entering .lb-sec,
+  .lb-panel.is-entering .zone-label, .lb-panel.is-entering .lb-check {
+    opacity: 0; transform: translateY(7px);
+  }
+  /* Rows settle in sequence — 34ms apart, so a six-row panel resolves in
+     ~200ms: felt as one motion, not six. */
+  .lb-panel .row, .lb-panel .lb-sec, .lb-panel .zone-label, .lb-panel .lb-check {
+    transition: opacity .42s ease, transform .42s var(--spring);
+    transition-delay: calc(var(--i, 0) * 34ms);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .lb-panel, .lb-panel .row, .lb-panel .lb-sec,
+    .lb-panel .zone-label, .lb-panel .lb-check { transition: none; }
+    .lb-panel.is-leaving, .lb-panel.is-entering { opacity: 1; transform: none; }
+  }
   /* Individual / club / country rows carry a unit inside the big numeral and a
      caption under it, matching IndividualRowView / ClubRowView / CountryRowView. */
   .row .rp .u { font-size: 13px; font-weight: 400; opacity: .8; margin-left: 2px; }
   .row .at { font-size: 12px; color: rgba(255,255,255,.55); }
   .row .flag { font-size: 20px; line-height: 1; margin-right: 2px; }
+  /* Country row — ported from CountryAreaRowView.swift. The flag is a
+     full-bleed background image (the app's own flagcdn source, bundled here so
+     the page stays offline) under a fadedMask: opaque to 30% of its width, then
+     ramping to transparent. Rank rides on top of it as a #N capsule. */
+  .row.ctry { grid-template-columns: 96px 1fr auto; padding-left: 0; min-height: 78px; }
+  .row.ctry .flagbg {
+    position: absolute; left: 0; top: 0; bottom: 0; width: 200px; z-index: 0;
+    background-size: cover; background-position: center;
+    -webkit-mask: linear-gradient(90deg, #000 0%, #000 30%, transparent 100%);
+            mask: linear-gradient(90deg, #000 0%, #000 30%, transparent 100%);
+  }
+  .row.ctry .rank {
+    justify-self: start; align-self: start; margin: 10px 0 0 10px;
+    padding: 4px 8px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; color: #fff;
+    background: rgba(0,0,0,.5);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.2);
+  }
+  .row.ctry .name { font-size: 20px; font-weight: 700; }
+  /* "Most territory:" is its own caption line, then the contributor chip. */
+  .row.ctry .who { gap: 2px; }
+  .row.ctry .mt { font-size: 10px; color: rgba(255,255,255,.6); }
+  .row.ctry .contrib { display: flex; align-items: center; gap: 4px; }
+  .row.ctry .contrib svg { width: 16px; height: 16px; color: rgba(255,255,255,.5); flex: none; }
+  .row.ctry .contrib b { font-size: 12px; font-weight: 500; color: #fff; }
+  /* Area value: 28px ultraLight with the unit inline, caption beneath. */
+  .row.ctry .rp { font-size: 28px; font-weight: 200; }
+  .row.ctry .rp .u { font-size: 16px; font-weight: 200; opacity: .7; }
+  /* Sort control + small-countries toggle, both above the list. */
+  .lb-sort {
+    flex: none; display: flex; align-items: center; gap: 5px;
+    padding: 8px 12px; border-radius: 999px;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.09);
+    font-size: 12px; font-weight: 500; color: rgba(255,255,255,.8);
+  }
+  .lb-sort svg { width: 9px; height: 9px; }
+  .lb-check {
+    display: flex; align-items: center; gap: 9px;
+    margin: 0 20px 10px; font-size: 13px; color: rgba(255,255,255,.86);
+  }
+  .lb-check .tick {
+    width: 20px; height: 20px; border-radius: 50%; flex: none;
+    display: grid; place-items: center; background: var(--run-accent); color: #000;
+  }
+  .lb-check .tick svg { width: 11px; height: 11px; stroke: #000; stroke-width: 3; }
+
   /* Section header: 28px ultraLight + caption, tier badge on the right */
   .lb-sec { display: flex; align-items: flex-start; gap: 12px; padding: 4px 22px 14px; }
   .lb-sec .t { font-size: 28px; font-weight: 200; letter-spacing: -.01em; color: #fff; line-height: 1.05; }
@@ -1089,6 +1205,13 @@
       <div class="stage-copy">
         <p class="eyebrow"><span>RouteRush for iOS</span><span class="mono" id="hud-frame">000 / 120</span></p>
 
+        <!-- The app's own onboarding lockup: mark above, wordmark in
+             Splash-Regular with the same open tracking and drop shadow. -->
+        <div class="lockup">
+          <img src="assets/routerush-logo.png" alt="" width="62" height="62">
+          <p class="wordmark">RouteRush</p>
+        </div>
+
         <h1 class="hero-h1 display" id="hero-title">Running is how<br>you take <em>ground.</em></h1>
 
         <!-- The sequence communicates ordered information, so the same three
@@ -1202,7 +1325,7 @@
         <div class="phone">
           <div class="screen">
             <!-- SWAP: point src at the real globe/territory capture -->
-            <img class="shot" src="assets/screens/en-01-globe.png" alt="RouteRush home screen: the 3D globe over a starfield, with the glass tab bar and start-run capsule">
+            <img class="shot" data-src="assets/screens/dev-territory.png" alt="RouteRush map zoomed into central Turin, with conquered territory polygons and runner pins over the 3D city">
             <div class="island" aria-hidden="true"></div>
             <div class="statusbar"><span>9:41</span><span class="sb-icons">
               <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
@@ -1643,50 +1766,92 @@
 
         <div class="lb-panel" id="lbp-country" role="tabpanel" aria-labelledby="lbt-country" hidden>
           <div class="lb-sec">
-            <span class="grow">
-              <span class="t">Country Leaderboard</span>
-              <span class="c" style="display:block">Land captured</span>
+            <span class="grow"><span class="t">Country Leaderboard</span></span>
+            <span class="lb-sort">Area
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M5 8l7 7 7-7"/></svg>
             </span>
           </div>
-          <div class="row top3">
-            <span class="rank">1</span>
+          <p class="lb-check">
+            <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span>
+            Include small countries
+          </p>
+          <div class="row ctry top3">
+            <span class="flagbg" style="background-image:url(assets/flags/us.png)" aria-hidden="true"></span>
+            <span class="rank">#1</span>
             <span class="who">
-              <span class="line1"><span class="flag" aria-hidden="true">🇮🇹</span><span class="name">Italy</span></span>
-              <span class="sub">Most territory: <span class="at">@mkaya</span></span>
+              <span class="line1"><span class="name">United States</span></span>
+              <span class="mt">Most territory:</span>
+              <span class="contrib">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
+                <b>Unknown</b>
+              </span>
             </span>
-            <span class="rpwrap"><span class="rp">0.42<span class="u">%</span></span><span class="rpcap">Land captured</span></span>
+            <span class="rpwrap"><span class="rp">85.000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
           </div>
-          <div class="row top3">
-            <span class="rank">2</span>
+          <div class="row ctry top3">
+            <span class="flagbg" style="background-image:url(assets/flags/ca.png)" aria-hidden="true"></span>
+            <span class="rank">#2</span>
             <span class="who">
-              <span class="line1"><span class="flag" aria-hidden="true">🇪🇸</span><span class="name">Spain</span></span>
-              <span class="sub">Most territory: <span class="at">@acosta</span></span>
+              <span class="line1"><span class="name">Canada</span></span>
+              <span class="mt">Most territory:</span>
+              <span class="contrib">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
+                <b>Unknown</b>
+              </span>
             </span>
-            <span class="rpwrap"><span class="rp">0.31<span class="u">%</span></span><span class="rpcap">Land captured</span></span>
+            <span class="rpwrap"><span class="rp">55.000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
           </div>
-          <div class="row top3">
-            <span class="rank">3</span>
+          <div class="row ctry top3">
+            <span class="flagbg" style="background-image:url(assets/flags/au.png)" aria-hidden="true"></span>
+            <span class="rank">#3</span>
             <span class="who">
-              <span class="line1"><span class="flag" aria-hidden="true">🇩🇪</span><span class="name">Germany</span></span>
-              <span class="sub">Most territory: <span class="at">@lweber</span></span>
+              <span class="line1"><span class="name">Australia</span></span>
+              <span class="mt">Most territory:</span>
+              <span class="contrib">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
+                <b>Unknown</b>
+              </span>
             </span>
-            <span class="rpwrap"><span class="rp">0.28<span class="u">%</span></span><span class="rpcap">Land captured</span></span>
+            <span class="rpwrap"><span class="rp">50.000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
           </div>
-          <div class="row">
-            <span class="rank">4</span>
+          <div class="row ctry">
+            <span class="flagbg" style="background-image:url(assets/flags/tr.png)" aria-hidden="true"></span>
+            <span class="rank">#4</span>
             <span class="who">
-              <span class="line1"><span class="flag" aria-hidden="true">🇹🇷</span><span class="name">Türkiye</span></span>
-              <span class="sub">Most territory: <span class="at">@fethi</span></span>
+              <span class="line1"><span class="name">Türkiye</span></span>
+              <span class="mt">Most territory:</span>
+              <span class="contrib">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
+                <b>Unknown</b>
+              </span>
             </span>
-            <span class="rpwrap"><span class="rp">0.19<span class="u">%</span></span><span class="rpcap">Land captured</span></span>
+            <span class="rpwrap"><span class="rp">35.000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
           </div>
-          <div class="row">
-            <span class="rank">5</span>
+          <div class="row ctry">
+            <span class="flagbg" style="background-image:url(assets/flags/gb.png)" aria-hidden="true"></span>
+            <span class="rank">#5</span>
             <span class="who">
-              <span class="line1"><span class="flag" aria-hidden="true">🇫🇷</span><span class="name">France</span></span>
-              <span class="sub">Most territory: <span class="at">@cmartin</span></span>
+              <span class="line1"><span class="name">United Kingdom</span></span>
+              <span class="mt">Most territory:</span>
+              <span class="contrib">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
+                <b>Unknown</b>
+              </span>
             </span>
-            <span class="rpwrap"><span class="rp">0.14<span class="u">%</span></span><span class="rpcap">Land captured</span></span>
+            <span class="rpwrap"><span class="rp">32.000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
+          </div>
+          <div class="row ctry">
+            <span class="flagbg" style="background-image:url(assets/flags/de.png)" aria-hidden="true"></span>
+            <span class="rank">#6</span>
+            <span class="who">
+              <span class="line1"><span class="name">Germany</span></span>
+              <span class="mt">Most territory:</span>
+              <span class="contrib">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
+                <b>Unknown</b>
+              </span>
+            </span>
+            <span class="rpwrap"><span class="rp">27.000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
           </div>
         </div>
       </div>
@@ -1711,8 +1876,8 @@
         <figure data-reveal>
           <div class="phone">
             <div class="screen">
-              <img class="shot" src="assets/screens/en-01-globe.png"
-                   alt="RouteRush home screen: a 3D globe over a starfield with glass map controls and a Start button">
+              <img class="shot" data-src="assets/screens/dev-tracking.png"
+                   alt="RouteRush Start Rush screen with GPS, sport and Boldi controls over the live map">
             </div>
           </div>
           <figcaption class="small"><b>The globe you run on</b>Home is a real 3D globe, not a flat tile sheet. Your ground fills in as you cover it.</figcaption>
@@ -1731,7 +1896,7 @@
         <figure data-reveal style="--d:180ms">
           <div class="phone">
             <div class="screen">
-              <img class="shot" data-src="assets/screens/leaderboard.png" alt="Weekly league standings screen">
+              <img class="shot" data-src="assets/screens/dev-club.png" alt="RouteRush Club screen with upcoming events and RSVP controls">
               <div class="pending" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M6 20V11M12 20V5M18 20v-6"/></svg>
                 League standings
@@ -1800,8 +1965,13 @@
        ============================================================ -->
   <section class="final" id="download" aria-labelledby="dl-title">
     <div class="wrap">
-      <img src="assets/routerush-appicon.png" alt="" width="76" height="76" data-reveal
-           style="border-radius:18px; margin:0 auto 26px; border:1px solid var(--hair)">
+      <!-- The app's onboarding lockup at full size: mark above, wordmark in
+           Splash-Regular beneath it. -->
+      <div class="lockup-xl" data-reveal style="margin-bottom:30px">
+        <img src="assets/routerush-appicon.png" alt="" width="74" height="74"
+             style="border-radius:18px; border:1px solid var(--hair)">
+        <p class="wordmark">RouteRush</p>
+      </div>
       <h2 class="display" id="dl-title" data-reveal style="--d:60ms">Go take some ground.</h2>
       <p class="lede" data-reveal style="--d:110ms">
         RouteRush is free to start. iPhone, iOS&nbsp;17 or later. Your first run claims its first cell about
@@ -2159,6 +2329,22 @@
 </script>
 <svg id="lgDefs" width="0" height="0" style="position:absolute" aria-hidden="true"></svg>
 <script>
+/* Device captures promote themselves: each data-src is probed, and only a file
+   that actually decodes gets swapped into src. A capture that has not been
+   dropped in yet leaves the authored placeholder untouched — no broken icon,
+   no failed request in the console. */
+(function () {
+  document.querySelectorAll('img.shot[data-src]').forEach(function (img) {
+    var probe = new Image();
+    probe.onload = function () {
+      img.src = img.getAttribute('data-src');
+      img.removeAttribute('data-src');
+    };
+    probe.src = img.getAttribute('data-src');
+  });
+})();
+</script>
+<script>
 /* Refractive Liquid Glass — generalized. Each target capsule gets its own
    SVG filter and a runtime-generated displacement map at its exact size:
    neutral in the flat interior, bending hardest along the rounded-rect rim,
@@ -2280,15 +2466,61 @@
 
   function panelOf(tab) { return document.getElementById(tab.getAttribute('aria-controls')); }
 
+  var REDUCED = matchMedia('(prefers-reduced-motion: reduce)');
+  var busy = false;
+
+  /* Index the staggered children once so the CSS delay chain has something to
+     read; doing it here keeps the markup free of per-row inline styles. */
+  function indexRows(panel) {
+    var kids = panel.querySelectorAll('.lb-sec, .lb-check, .zone-label, .row');
+    for (var i = 0; i < kids.length; i++) kids[i].style.setProperty('--i', i);
+  }
+  tabs.forEach(function (t) { var p = panelOf(t); if (p) indexRows(p); });
+
+  function reveal(panel) {
+    panel.hidden = false;
+    panel.classList.add('is-entering');
+    /* two frames: one for `hidden` removal to take layout, one for the class to
+       be the browser's starting point — otherwise the transition never runs */
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        panel.classList.remove('is-entering');
+        busy = false;
+      });
+    });
+  }
+
   function select(tab, focus) {
+    var current = tabs.filter(function (t) { return t.getAttribute('aria-selected') === 'true'; })[0];
+    if (current === tab || busy) { if (focus) tab.focus(); return; }
+    busy = true;
+
     tabs.forEach(function (t) {
       var on = t === tab;
       t.setAttribute('aria-selected', on ? 'true' : 'false');
       t.tabIndex = on ? 0 : -1;
-      var panel = panelOf(t);
-      if (panel) panel.hidden = !on;
     });
     if (focus) tab.focus();
+
+    var incoming = panelOf(tab);
+    var outgoing = current ? panelOf(current) : null;
+
+    if (REDUCED.matches || !outgoing) {
+      tabs.forEach(function (t) { var p = panelOf(t); if (p) p.hidden = t !== tab; });
+      busy = false;
+      return;
+    }
+
+    outgoing.classList.add('is-leaving');
+    var done = false;
+    var finish = function () {
+      if (done) return; done = true;
+      outgoing.classList.remove('is-leaving');
+      outgoing.hidden = true;
+      reveal(incoming);
+    };
+    outgoing.addEventListener('transitionend', finish, { once: true });
+    setTimeout(finish, 380);   /* guard: transitionend can be skipped if the tab hides */
   }
 
   tabs.forEach(function (tab, i) {
