@@ -1050,58 +1050,6 @@
   html.has-plx .phone { will-change: transform; }
   html.has-plx .photo-band img { height: 114%; top: -7%; will-change: transform; }
 
-  /* ============================================================
-     POCKET — held zoom-out (see the section comment in the markup).
-     Static-first: the base rules are the no-JS / reduced-motion
-     rendering — a photo figure with its copy underneath. The
-     pinned full-bleed version exists only under html.has-motion.
-     The overlay percentages are the screen quad measured in the
-     source photo: left 614/1684, top 757/2528, width 444/1684;
-     the transform origin is the quad's centre, so the zoom stays
-     locked on the screen at every scale.
-     ============================================================ */
-  .pocket-stage {
-    position: relative; overflow: hidden;
-    min-height: 100svh;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 34px; padding: 96px 24px 56px;
-  }
-  .pocket-scale { flex: none; position: relative; width: min(430px, 78vw, 52vh); }
-  .pocket-scale .hand-base { display: block; width: 100%; height: auto; border-radius: 20px; }
-  .pocket-scale .hand-screen {
-    position: absolute; left: 36.46%; top: 29.944%; width: 26.365%; height: auto;
-  }
-  .pocket-copy { text-align: center; max-width: 56ch; }
-  .pocket-copy .h2 { margin-top: 14px; margin-inline: auto; }
-  .pocket-copy .lede { margin-top: 14px; margin-inline: auto; }
-  html.has-motion .pocket { height: 240vh; }
-  html.has-motion .pocket-stage {
-    position: sticky; top: 0; height: 100svh; min-height: 0;
-    padding: 0; justify-content: center;
-  }
-  /* full-bleed cover of the stage: 66.62svh is 100svh times the photo's
-     1684/2528 aspect, so whichever term wins, both axes are covered */
-  html.has-motion .pocket-scale {
-    width: max(100vw, 66.62svh);
-    transform-origin: 49.64% 48.85%;
-  }
-  html.has-motion .pocket-scale .hand-base { border-radius: 0; }
-  html.has-motion .pocket-copy {
-    position: absolute; left: 24px; right: 24px; bottom: 40px;
-    opacity: 0; transform: translateY(14px);
-  }
-  /* Wide viewports take the hero's own copy posture: a left-anchored lockup
-     beside the device — also the collision-proof arrangement. */
-  @media (min-width: 861px) {
-    html.has-motion .pocket-copy {
-      left: clamp(24px, 6vw, 96px); right: auto; bottom: 52px;
-      text-align: left; max-width: 44ch;
-    }
-    html.has-motion .pocket-copy .h2,
-    html.has-motion .pocket-copy .lede { margin-inline: 0; }
-  }
-  html.has-plx .pocket-scale { will-change: transform; }
 
 
   /* The one photograph — see the section comment in the markup for why there
@@ -1612,40 +1560,6 @@
   </section>
 
   <div class="wrap"><div class="rule"></div></div>
-
-  <!-- ============================================================
-       POCKET — the flight was on a phone all along. HELD, v2.
-       ------------------------------------------------------------
-       v1 ended on a bare device floating at viewport scale and the
-       owner rejected it twice — correctly: Apple's and INTVL's
-       versions of this moment are carried by the HAND, not by the
-       zoom. The artwork is now an owner-supplied hand-held iPhone
-       (AI render, owner-generated), graded into the site's register
-       in build tooling, its lock screen replaced with the app's
-       REAL Torino home capture, perspective-mapped onto the glass
-       with the photo's own Dynamic Island redrawn on top. Two
-       layers ship: the graded scene (49KB) and a 2.8x supersampled
-       screen overlay (334KB) positioned in percentages, so the
-       zoom STARTS inside sharp real UI and ends on a held phone.
-       Same scroll contract as v1: log-space zoom from native
-       scroll, deterministic both ways, entry fade from black,
-       static-first without JS or with reduced motion.
-       ============================================================ -->
-  <section class="pocket" aria-labelledby="pocket-title">
-    <div class="pocket-stage">
-      <div class="pocket-scale" id="pocket-scale">
-        <img class="hand-base" src="assets/hand-torino-base.webp" decoding="async"
-             alt="A hand holding an iPhone running RouteRush over a desk in low light">
-        <img class="hand-screen" src="assets/hand-torino-screen.webp" decoding="async"
-             alt="" aria-hidden="true">
-      </div>
-      <div class="pocket-copy" id="pocket-copy">
-        <p class="eyebrow">In your pocket</p>
-        <h2 class="h2" id="pocket-title">All of it fits in your hand.</h2>
-        <p class="lede">The globe, your ground and the league table — on the phone you already carry.</p>
-      </div>
-    </div>
-  </section>
 
   <!-- ============================================================
        TERRITORY
@@ -3262,65 +3176,11 @@
   if (bandImg) plx.push({ el: bandImg, gain: 52, clamp: 30, ty: 0 });
 
 
-  /* ---------- pocket zoom-out (held, v2) ---------- */
-  var pocket = document.querySelector('.pocket');
-  var pScale = document.getElementById('pocket-scale');
-  var pCopy  = document.getElementById('pocket-copy');
-  var pocketBase = null, pocketLast = -1, pocketLastOp = -1;
-  function measurePocket() {
-    if (!pScale) return;
-    var scr = pScale.querySelector('.hand-screen');
-    if (!scr) return;
-    var keep = pScale.style.transform;
-    pScale.style.transform = 'none';
-    var r = scr.getBoundingClientRect();
-    var layoutH = pScale.offsetHeight;
-    pScale.style.transform = keep;
-    /* End scale: on a portrait viewport the photo covers exactly and the zoom
-       lands at 1. On a landscape desktop, cover-cropping a portrait photo
-       leaves a viewport-sized device — the very framing v1 was rejected for —
-       so the zoom continues PAST cover until the whole held composition reads:
-       s_end shows ~74% of the photo's height, and the asset's edges are graded
-       to true black, so the shrunken panel sits seamlessly on the page. */
-    var sEnd = Math.min(1, (innerHeight * 1.35) / Math.max(1, layoutH));
-    pocketBase = { sw: Math.max(1, r.width), sh: Math.max(1, r.height), sEnd: sEnd };
-    pocketLast = -1; pocketLastOp = -1;    /* force a rewrite at the new size */
-  }
-  function applyPocket(vh) {
-    if (!pocket || !pocketBase) return;
-    if (!document.documentElement.classList.contains('has-motion')) return;
-    var r = pocket.getBoundingClientRect();
-    if (r.bottom < 0 || r.top > vh) return;
-    var dist = Math.max(1, pocket.offsetHeight - vh);
-    var t = Math.max(0, Math.min(1, -r.top / dist));
-    t = t * t * (3 - 2 * t);
-    /* cover the viewport with the SCREEN at t=0, hand the phone over at t=1.
-       Log-space interpolation: constant zoom rate, the way a map zoom feels. */
-    var S0 = Math.max(innerWidth / pocketBase.sw, vh / pocketBase.sh) * 1.04;
-    var s = Math.pow(S0, 1 - t) * Math.pow(pocketBase.sEnd, t);
-    s = Math.round(s * 1000) / 1000;
-    /* Entry fade — the seam fix: while the section is still sliding in over
-       the previous one the stage shows black; the zoomed screen only
-       materialises as the stage pins. Pure functions of scroll throughout. */
-    var entry = Math.max(0, Math.min(1, ((1 - r.top / vh) - 0.55) / 0.4));
-    entry = Math.round(entry * 100) / 100;
-    if (s !== pocketLast || entry !== pocketLastOp) {
-      pocketLast = s; pocketLastOp = entry;
-      pScale.style.transform = 'scale(' + s + ')';
-      pScale.style.opacity = entry;
-      if (pCopy) {
-        var o = Math.max(0, Math.min(1, (t - 0.72) / 0.22));
-        pCopy.style.opacity = o;
-        pCopy.style.transform = 'translateY(' + Math.round((1 - o) * 14) + 'px)';
-      }
-    }
-  }
 
   var ticking = false;
   function applyPlx() {
     ticking = false;
     var vh = innerHeight;
-    applyPocket(vh);
     for (var i = 0; i < plx.length; i++) {
       var it = plx[i];
       var r = it.el.getBoundingClientRect();
@@ -3344,14 +3204,13 @@
 
   /* ---------- gate ---------- */
   var on = false;
-  function onResize() { measurePocket(); onScroll(); }
+  function onResize() { onScroll(); }
   function enable() {
     if (on) return; on = true;
     document.documentElement.classList.add('has-plx');
     addEventListener('scroll', onScroll, { passive: true });
     addEventListener('resize', onResize);
     armCounters();
-    measurePocket();
     onScroll();
   }
   function disable() {
@@ -3360,8 +3219,6 @@
     removeEventListener('scroll', onScroll);
     removeEventListener('resize', onResize);
     plx.forEach(function (it) { it.el.style.transform = ''; it.ty = 0; });
-    if (pScale) { pScale.style.transform = ''; pScale.style.opacity = ''; }
-    if (pCopy)  { pCopy.style.opacity = ''; pCopy.style.transform = ''; }
     /* counters that already ran keep their final values — they are correct */
   }
   if (!mq.matches) enable();
