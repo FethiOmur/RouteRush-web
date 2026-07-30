@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="RouteRush is a gamified fitness tracker for iOS. Run or ride, conquer H3 hex cells on a 3D globe, earn Rush Points and climb weekly cohort leagues.">
+<meta name="description" content="RouteRush is a gamified fitness tracker for iOS. Run or ride, conquer H3 hex cells on a 3D globe, earn Rush Points and climb weekly leagues.">
 <meta name="theme-color" content="#000000">
 <title>RouteRush — Running is how you take ground</title>
 <link rel="icon" href="assets/routerush-appicon.png">
@@ -580,28 +580,58 @@
      ============================================================ */
   .league { display: grid; gap: clamp(30px, 5vw, 70px); grid-template-columns: minmax(0,.86fr) minmax(0,1.14fr); align-items: center; }
   @media (max-width: 940px) { .league { grid-template-columns: 1fr; } }
-  .board { border-radius: 24px; overflow: hidden; }
-  .board-head {
+  /* Leaderboards sheet — ported from LeaderboardSheet.swift + LeagueLeaderboardTab.
+     The app presents this as a SHEET: drag handle, ultraLight "Leaderboards"
+     title with a glyph close button, then a 4-tab capsule (Territory / Clubs /
+     League / Country) with the active tab as a white pill. The section title
+     is 28px ultraLight — "League", never "Cohort"; the word cohort appears
+     nowhere in the app's UI. */
+  .board {
+    border-radius: 28px 28px 24px 24px; overflow: hidden;
+    padding-bottom: 8px;
+  }
+  .sheet-grab {
+    width: 36px; height: 4px; border-radius: 2px;
+    background: rgba(255,255,255,.3); margin: 12px auto 20px;
+  }
+  .sheet-head {
     display: flex; align-items: center; gap: 12px;
-    padding: 16px 18px; border-bottom: 1px solid var(--hair-soft);
+    padding: 0 24px 16px;
   }
-  .board-head .h3 { margin-right: auto; }
-  .tierpill {
-    display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px;
-    border-radius: 999px; border: 1px solid var(--hair); background: rgba(255,255,255,.05);
-    font-size: 11.5px; font-weight: 580; letter-spacing: .02em;
+  .sheet-title {
+    font-size: 34px; font-weight: 200; letter-spacing: -.02em; color: #fff;
+    margin-right: auto; line-height: 1;
   }
-  .zone-label {
-    display: flex; align-items: center; gap: 8px;
-    padding: 9px 18px; font-family: var(--ff-mono); font-size: 9.5px;
-    letter-spacing: .16em; text-transform: uppercase; color: var(--text-3);
-    background: rgba(255,255,255,.022);
+  .sheet-x {
+    width: 34px; height: 34px; border-radius: 50%; flex: none;
+    display: grid; place-items: center;
+    background: rgba(255,255,255,.10); color: rgba(255,255,255,.85);
   }
-  /* Zone colours are the app's own semantic pair, not the brand neons:
-     promotion green-500 #10B981, demotion red-500 #EF4444
-     (CohortLeaderboardRow.zoneColor). */
-  .zone-label.up   { border-left: 2px solid var(--zone-up); }
-  .zone-label.down { border-left: 2px solid var(--zone-down); }
+  .sheet-x svg { width: 14px; height: 14px; }
+  /* 4-tab capsule: dark translucent track, active tab a white pill */
+  .lb-tabs {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
+    margin: 0 20px 14px; padding: 5px; border-radius: 999px;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.07);
+  }
+  .lb-tabs span {
+    text-align: center; padding: 9px 4px; border-radius: 999px;
+    font-size: 14px; font-weight: 500; color: rgba(255,255,255,.72);
+  }
+  .lb-tabs span.on { background: #fff; color: #000; font-weight: 680; }
+  /* Section header: 28px ultraLight + caption, tier badge on the right */
+  .lb-sec { display: flex; align-items: flex-start; gap: 12px; padding: 4px 22px 14px; }
+  .lb-sec .t { font-size: 28px; font-weight: 200; letter-spacing: -.01em; color: #fff; line-height: 1.05; }
+  .lb-sec .c { font-size: 12px; color: rgba(255,255,255,.6); margin-top: 6px; }
+  .lb-sec .grow { margin-right: auto; }
+  .tierbadge {
+    flex: none; display: flex; align-items: center; gap: 7px;
+    padding: 7px 12px; border-radius: 999px;
+    background: linear-gradient(135deg, rgba(232,234,237,.16), rgba(142,154,171,.10));
+    border: 1px solid rgba(232,234,237,.28);
+    font-size: 12px; font-weight: 620; color: #E8EAED; letter-spacing: .01em;
+  }
+  .tierbadge svg { width: 14px; height: 14px; }
 
   /* Cohort row — ported from CohortLeaderboardRow.swift.
      Structure: rank badge · faded avatar bleed · name (+ verified/shield) ·
@@ -665,6 +695,16 @@
   .row .rp { font-size: 24px; font-weight: 200; letter-spacing: -.02em; color: #fff; font-variant-numeric: tabular-nums; line-height: 1; }
   .row .rpcap { font-size: 10px; color: rgba(255,255,255,.5); letter-spacing: .04em; }
   .gap-row { padding: 4px 18px 6px; color: var(--text-4); font-size: 11px; letter-spacing: .2em; text-align: center; }
+  /* Zone labels sit in the sheet's row gutter with the arrow inline, tinted by
+     the same semantic pair as the row strokes. */
+  .zone-label {
+    display: flex; align-items: center; gap: 6px;
+    margin: 12px 18px 4px; padding: 0; border: 0;
+    font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
+  }
+  .zone-label svg { width: 12px; height: 12px; flex: none; stroke: currentColor; }
+  .zone-label.up   { color: rgba(16,185,129,.9); }
+  .zone-label.down { color: rgba(239,68,68,.85); }
   .verified-tick { width: 13px; height: 13px; flex: none; }
 
   /* ---------- product tour: frames sized for real device captures ---------- */
@@ -1364,10 +1404,10 @@
   <section class="sec" id="leagues" aria-labelledby="leagues-title">
     <div class="wrap league">
       <div>
-        <p class="eyebrow" data-reveal>Cohort leagues</p>
+        <p class="eyebrow" data-reveal>Leagues</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="leagues-title">Thirty runners.<br>One week.<br>Five go up.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:42ch">
-          Every week you are placed in a cohort of thirty at your tier. The top fifth is promoted, the
+          Every week you are placed in a league of thirty at your tier. The top fifth is promoted, the
           bottom fifth is relegated, and everyone starts again on Monday. Bronze, Silver and Gold,
           each with three divisions.
         </p>
@@ -1378,11 +1418,24 @@
       </div>
 
       <div class="board" data-reveal style="--d:120ms" id="board">
-        <div class="board-head">
-          <h3 class="h3">Silver II · Cohort #14</h3>
-          <span class="tierpill">
-            <svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5.4"/><path d="M8.4 13.6 7 21.5l5-2.6 5 2.6-1.4-7.9"/></svg>
-            4d 07h left
+        <div class="sheet-grab" aria-hidden="true"></div>
+        <div class="sheet-head">
+          <h3 class="sheet-title">Leaderboards</h3>
+          <span class="sheet-x" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
+          </span>
+        </div>
+        <div class="lb-tabs" aria-hidden="true">
+          <span>Territory</span><span>Clubs</span><span class="on">League</span><span>Country</span>
+        </div>
+        <div class="lb-sec">
+          <span class="grow">
+            <span class="t">League</span>
+            <span class="c" style="display:block">30 players • Resets in 3d 22h</span>
+          </span>
+          <span class="tierbadge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="9" r="5.4"/><path d="M8.4 13.6 7 21.5l5-2.6 5 2.6-1.4-7.9"/></svg>
+            Silver II
           </span>
         </div>
 
@@ -1501,14 +1554,14 @@
         <figure data-reveal style="--d:180ms">
           <div class="phone">
             <div class="screen">
-              <img class="shot" data-src="assets/screens/leaderboard.png" alt="Weekly cohort league standings screen">
+              <img class="shot" data-src="assets/screens/leaderboard.png" alt="Weekly league standings screen">
               <div class="pending" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M6 20V11M12 20V5M18 20v-6"/></svg>
                 League standings
               </div>
             </div>
           </div>
-          <figcaption class="small"><b>Where you stand</b>Your cohort, live, with the promotion line in sight.</figcaption>
+          <figcaption class="small"><b>Where you stand</b>Your league, live, with the promotion line in sight.</figcaption>
         </figure>
       </div>
     </div>
