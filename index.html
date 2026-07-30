@@ -614,11 +614,21 @@
     margin: 0 20px 14px; padding: 5px; border-radius: 999px;
     background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.07);
   }
-  .lb-tabs span {
+  .lb-tabs button {
+    appearance: none; border: 0; cursor: pointer; font: inherit;
     text-align: center; padding: 9px 4px; border-radius: 999px;
     font-size: 14px; font-weight: 500; color: rgba(255,255,255,.72);
+    background: transparent;
+    transition: background-color .28s var(--spring), color .28s ease;
   }
-  .lb-tabs span.on { background: #fff; color: #000; font-weight: 680; }
+  .lb-tabs button:hover { color: #fff; }
+  .lb-tabs button[aria-selected="true"] { background: #fff; color: #000; font-weight: 680; }
+  .lb-panel[hidden] { display: none; }
+  /* Individual / club / country rows carry a unit inside the big numeral and a
+     caption under it, matching IndividualRowView / ClubRowView / CountryRowView. */
+  .row .rp .u { font-size: 13px; font-weight: 400; opacity: .8; margin-left: 2px; }
+  .row .at { font-size: 12px; color: rgba(255,255,255,.55); }
+  .row .flag { font-size: 20px; line-height: 1; margin-right: 2px; }
   /* Section header: 28px ultraLight + caption, tier badge on the right */
   .lb-sec { display: flex; align-items: flex-start; gap: 12px; padding: 4px 22px 14px; }
   .lb-sec .t { font-size: 28px; font-weight: 200; letter-spacing: -.01em; color: #fff; line-height: 1.05; }
@@ -911,6 +921,21 @@
       inset 0 1px 0 0 rgba(255,255,255,.10),
       inset 0 0 0 .5px rgba(255,255,255,.05),
       0 26px 60px -28px rgba(0,0,0,.9);
+  }
+  /* The sheet is the largest glass surface on the page, so it gets the same
+     quiet treatment as the tiles — refraction carries it, not a bright rim. */
+  .board.lg-refract { background: rgba(24, 28, 40, .34); }
+  .board.lg-refract::before { display: none; }
+  .board.lg-refract::after {
+    background: linear-gradient(140deg,
+      rgba(255,255,255,.18), rgba(255,255,255,.03) 38%,
+      rgba(255,255,255,0) 66%, rgba(255,255,255,.07));
+  }
+  .board.lg-refract {
+    box-shadow:
+      inset 0 1px 0 0 rgba(255,255,255,.12),
+      inset 0 0 0 .5px rgba(255,255,255,.06),
+      0 40px 90px -36px rgba(0,0,0,.95);
   }
 
   /* ---------- ambient topographic field ---------- */
@@ -1425,93 +1450,245 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
           </span>
         </div>
-        <div class="lb-tabs" aria-hidden="true">
-          <span>Territory</span><span>Clubs</span><span class="on">League</span><span>Country</span>
-        </div>
-        <div class="lb-sec">
-          <span class="grow">
-            <span class="t">League</span>
-            <span class="c" style="display:block">30 players • Resets in 3d 22h</span>
-          </span>
-          <span class="tierbadge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="9" r="5.4"/><path d="M8.4 13.6 7 21.5l5-2.6 5 2.6-1.4-7.9"/></svg>
-            Silver II
-          </span>
+        <div class="lb-tabs" role="tablist" aria-label="Leaderboard scope">
+          <button type="button" role="tab" id="lbt-territory" aria-controls="lbp-territory" aria-selected="false">Territory</button>
+          <button type="button" role="tab" id="lbt-clubs"     aria-controls="lbp-clubs"     aria-selected="false">Clubs</button>
+          <button type="button" role="tab" id="lbt-league"    aria-controls="lbp-league"    aria-selected="true">League</button>
+          <button type="button" role="tab" id="lbt-country"   aria-controls="lbp-country"   aria-selected="false">Country</button>
         </div>
 
-        <p class="zone-label up"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V6"/><path d="M6.5 11.5 12 6l5.5 5.5"/></svg> Promotion zone · top 5</p>
-
-        <div class="row up top3">
-          <span class="av" aria-hidden="true">MK</span>
-          <span class="rank">1</span>
-          <span class="who">
-            <span class="line1"><span class="name">M. Kaya</span></span>
-            <span class="sub">84.2 km<span class="dot">•</span>1 240m ↑</span>
-          </span>
-          <span class="rpwrap"><span class="rp">4 820</span><span class="rpcap">RP</span></span>
-        </div>
-        <div class="row up top3">
-          <span class="av" aria-hidden="true">JD</span>
-          <span class="rank">2</span>
-          <span class="who">
-            <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Verified"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-            <span class="sub">79.6 km<span class="dot">•</span>980m ↑</span>
-          </span>
-          <span class="rpwrap"><span class="rp">4 512</span><span class="rpcap">RP</span></span>
-        </div>
-        <div class="row up top3">
-          <span class="av" aria-hidden="true">AR</span>
-          <span class="rank">3</span>
-          <span class="who">
-            <span class="line1"><span class="name">A. Rossi</span></span>
-            <span class="sub">71.1 km<span class="dot">•</span>1 415m ↑</span>
-          </span>
-          <span class="rpwrap"><span class="rp">4 140</span><span class="rpcap">RP</span></span>
-        </div>
-
-        <p class="gap-row">· · ·</p>
-
-        <div class="row me">
-          <span class="av" aria-hidden="true">YO</span>
-          <span class="rank">12</span>
-          <span class="who">
-            <span class="line1"><span class="name">You</span></span>
-            <span class="sub">48.9 km<span class="dot">•</span>615m ↑</span>
-          </span>
-          <span class="rpwrap"><span class="rp">2 986</span><span class="rpcap">RP</span></span>
-        </div>
-        <div class="row">
-          <span class="av" aria-hidden="true">LN</span>
-          <span class="rank">13</span>
-          <span class="who">
-            <span class="line1"><span class="name">L. Novak</span><svg class="shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-label="Newbie shield"><path d="M12 3l7 3v5.5c0 4-3 7.5-7 9.5-4-2-7-5.5-7-9.5V6z"/></svg></span>
-            <span class="sub">46.2 km<span class="dot">•</span>520m ↑</span>
-          </span>
-          <span class="rpwrap"><span class="rp">2 830</span><span class="rpcap">RP</span></span>
+        <div class="lb-panel" id="lbp-territory" role="tabpanel" aria-labelledby="lbt-territory" hidden>
+          <div class="lb-sec">
+            <span class="grow">
+              <span class="t">Torino</span>
+              <span class="c" style="display:block">This week's top runners</span>
+            </span>
+          </div>
+          <div class="row top3">
+            <span class="av" aria-hidden="true">MK</span><span class="rank">1</span>
+            <span class="who">
+              <span class="line1"><span class="name">M. Kaya</span></span>
+              <span class="sub"><span class="at">@mkaya</span> · Led by distance</span>
+            </span>
+            <span class="rpwrap"><span class="rp">12.4<span class="u"> km²</span></span><span class="rpcap">Area captured</span></span>
+          </div>
+          <div class="row top3">
+            <span class="av" aria-hidden="true">JD</span><span class="rank">2</span>
+            <span class="who">
+              <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Verified"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="sub"><span class="at">@jduarte</span> · Led by distance</span>
+            </span>
+            <span class="rpwrap"><span class="rp">11.1<span class="u"> km²</span></span><span class="rpcap">Area captured</span></span>
+          </div>
+          <div class="row top3">
+            <span class="av" aria-hidden="true">AR</span><span class="rank">3</span>
+            <span class="who">
+              <span class="line1"><span class="name">A. Rossi</span></span>
+              <span class="sub"><span class="at">@arossi</span> · Led by distance</span>
+            </span>
+            <span class="rpwrap"><span class="rp">9.8<span class="u"> km²</span></span><span class="rpcap">Area captured</span></span>
+          </div>
+          <div class="row">
+            <span class="av" aria-hidden="true">LN</span><span class="rank">4</span>
+            <span class="who">
+              <span class="line1"><span class="name">L. Novak</span></span>
+              <span class="sub"><span class="at">@lnovak</span> · Led by distance</span>
+            </span>
+            <span class="rpwrap"><span class="rp">8.2<span class="u"> km²</span></span><span class="rpcap">Area captured</span></span>
+          </div>
+          <div class="row">
+            <span class="av" aria-hidden="true">PB</span><span class="rank">5</span>
+            <span class="who">
+              <span class="line1"><span class="name">P. Bauer</span></span>
+              <span class="sub"><span class="at">@pbauer</span> · Led by distance</span>
+            </span>
+            <span class="rpwrap"><span class="rp">7.6<span class="u"> km²</span></span><span class="rpcap">Area captured</span></span>
+          </div>
         </div>
 
-        <p class="gap-row">· · ·</p>
-
-        <div class="row down">
-          <span class="av" aria-hidden="true">PB</span>
-          <span class="rank">29</span>
-          <span class="who">
-            <span class="line1"><span class="name">P. Bauer</span></span>
-            <span class="sub">19.4 km<span class="dot">•</span>210m ↑</span>
-          </span>
-          <span class="rpwrap"><span class="rp">1 140</span><span class="rpcap">RP</span></span>
+        <div class="lb-panel" id="lbp-clubs" role="tabpanel" aria-labelledby="lbt-clubs" hidden>
+          <div class="lb-sec">
+            <span class="grow">
+              <span class="t">Torino Clubs</span>
+              <span class="c" style="display:block">Clubs capturing the most territory</span>
+            </span>
+          </div>
+          <div class="row top3">
+            <span class="av" aria-hidden="true">TR</span><span class="rank">1</span>
+            <span class="who">
+              <span class="line1"><span class="name">Torino Runners</span></span>
+              <span class="sub">45 members</span>
+            </span>
+            <span class="rpwrap"><span class="rp">18.5<span class="u"> km²</span></span><span class="rpcap">km² captured</span></span>
+          </div>
+          <div class="row top3">
+            <span class="av" aria-hidden="true">PO</span><span class="rank">2</span>
+            <span class="who">
+              <span class="line1"><span class="name">Po River Pace</span></span>
+              <span class="sub">28 members</span>
+            </span>
+            <span class="rpwrap"><span class="rp">14.2<span class="u"> km²</span></span><span class="rpcap">km² captured</span></span>
+          </div>
+          <div class="row top3">
+            <span class="av" aria-hidden="true">MO</span><span class="rank">3</span>
+            <span class="who">
+              <span class="line1"><span class="name">Mole Milers</span></span>
+              <span class="sub">31 members</span>
+            </span>
+            <span class="rpwrap"><span class="rp">12.9<span class="u"> km²</span></span><span class="rpcap">km² captured</span></span>
+          </div>
+          <div class="row">
+            <span class="av" aria-hidden="true">SS</span><span class="rank">4</span>
+            <span class="who">
+              <span class="line1"><span class="name">San Salvario SC</span></span>
+              <span class="sub">19 members</span>
+            </span>
+            <span class="rpwrap"><span class="rp">9.4<span class="u"> km²</span></span><span class="rpcap">km² captured</span></span>
+          </div>
+          <div class="row">
+            <span class="av" aria-hidden="true">VA</span><span class="rank">5</span>
+            <span class="who">
+              <span class="line1"><span class="name">Valentino AC</span></span>
+              <span class="sub">23 members</span>
+            </span>
+            <span class="rpwrap"><span class="rp">8.1<span class="u"> km²</span></span><span class="rpcap">km² captured</span></span>
+          </div>
         </div>
-        <div class="row down">
-          <span class="av" aria-hidden="true">SC</span>
-          <span class="rank">30</span>
-          <span class="who">
-            <span class="line1"><span class="name">S. Chen</span></span>
-            <span class="sub">15.1 km<span class="dot">•</span>145m ↑</span>
-          </span>
-          <span class="rpwrap"><span class="rp">905</span><span class="rpcap">RP</span></span>
+
+        <div class="lb-panel" id="lbp-league" role="tabpanel" aria-labelledby="lbt-league">
+          <div class="lb-sec">
+            <span class="grow">
+              <span class="t">League</span>
+              <span class="c" style="display:block">30 players • Resets in 3d 22h</span>
+            </span>
+            <span class="tierbadge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="9" r="5.4"/><path d="M8.4 13.6 7 21.5l5-2.6 5 2.6-1.4-7.9"/></svg>
+              Silver II
+            </span>
+          </div>
+          <p class="zone-label up"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V6"/><path d="M6.5 11.5 12 6l5.5 5.5"/></svg> Promotion zone · top 5</p>
+
+          <div class="row up top3">
+            <span class="av" aria-hidden="true">MK</span>
+            <span class="rank">1</span>
+            <span class="who">
+              <span class="line1"><span class="name">M. Kaya</span></span>
+              <span class="sub">84.2 km<span class="dot">•</span>1 240m ↑</span>
+            </span>
+            <span class="rpwrap"><span class="rp">4 820</span><span class="rpcap">RP</span></span>
+          </div>
+          <div class="row up top3">
+            <span class="av" aria-hidden="true">JD</span>
+            <span class="rank">2</span>
+            <span class="who">
+              <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Verified"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="sub">79.6 km<span class="dot">•</span>980m ↑</span>
+            </span>
+            <span class="rpwrap"><span class="rp">4 512</span><span class="rpcap">RP</span></span>
+          </div>
+          <div class="row up top3">
+            <span class="av" aria-hidden="true">AR</span>
+            <span class="rank">3</span>
+            <span class="who">
+              <span class="line1"><span class="name">A. Rossi</span></span>
+              <span class="sub">71.1 km<span class="dot">•</span>1 415m ↑</span>
+            </span>
+            <span class="rpwrap"><span class="rp">4 140</span><span class="rpcap">RP</span></span>
+          </div>
+
+          <p class="gap-row">· · ·</p>
+
+          <div class="row me">
+            <span class="av" aria-hidden="true">YO</span>
+            <span class="rank">12</span>
+            <span class="who">
+              <span class="line1"><span class="name">You</span></span>
+              <span class="sub">48.9 km<span class="dot">•</span>615m ↑</span>
+            </span>
+            <span class="rpwrap"><span class="rp">2 986</span><span class="rpcap">RP</span></span>
+          </div>
+          <div class="row">
+            <span class="av" aria-hidden="true">LN</span>
+            <span class="rank">13</span>
+            <span class="who">
+              <span class="line1"><span class="name">L. Novak</span><svg class="shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-label="Newbie shield"><path d="M12 3l7 3v5.5c0 4-3 7.5-7 9.5-4-2-7-5.5-7-9.5V6z"/></svg></span>
+              <span class="sub">46.2 km<span class="dot">•</span>520m ↑</span>
+            </span>
+            <span class="rpwrap"><span class="rp">2 830</span><span class="rpcap">RP</span></span>
+          </div>
+
+          <p class="gap-row">· · ·</p>
+
+          <div class="row down">
+            <span class="av" aria-hidden="true">PB</span>
+            <span class="rank">29</span>
+            <span class="who">
+              <span class="line1"><span class="name">P. Bauer</span></span>
+              <span class="sub">19.4 km<span class="dot">•</span>210m ↑</span>
+            </span>
+            <span class="rpwrap"><span class="rp">1 140</span><span class="rpcap">RP</span></span>
+          </div>
+          <div class="row down">
+            <span class="av" aria-hidden="true">SC</span>
+            <span class="rank">30</span>
+            <span class="who">
+              <span class="line1"><span class="name">S. Chen</span></span>
+              <span class="sub">15.1 km<span class="dot">•</span>145m ↑</span>
+            </span>
+            <span class="rpwrap"><span class="rp">905</span><span class="rpcap">RP</span></span>
+          </div>
+
+          <p class="zone-label down"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v13"/><path d="M17.5 12.5 12 18l-5.5-5.5"/></svg> Relegation zone · bottom 5</p>
         </div>
 
-        <p class="zone-label down"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v13"/><path d="M17.5 12.5 12 18l-5.5-5.5"/></svg> Relegation zone · bottom 5</p>
+        <div class="lb-panel" id="lbp-country" role="tabpanel" aria-labelledby="lbt-country" hidden>
+          <div class="lb-sec">
+            <span class="grow">
+              <span class="t">Country Leaderboard</span>
+              <span class="c" style="display:block">Land captured</span>
+            </span>
+          </div>
+          <div class="row top3">
+            <span class="rank">1</span>
+            <span class="who">
+              <span class="line1"><span class="flag" aria-hidden="true">🇮🇹</span><span class="name">Italy</span></span>
+              <span class="sub">Most territory: <span class="at">@mkaya</span></span>
+            </span>
+            <span class="rpwrap"><span class="rp">0.42<span class="u">%</span></span><span class="rpcap">Land captured</span></span>
+          </div>
+          <div class="row top3">
+            <span class="rank">2</span>
+            <span class="who">
+              <span class="line1"><span class="flag" aria-hidden="true">🇪🇸</span><span class="name">Spain</span></span>
+              <span class="sub">Most territory: <span class="at">@acosta</span></span>
+            </span>
+            <span class="rpwrap"><span class="rp">0.31<span class="u">%</span></span><span class="rpcap">Land captured</span></span>
+          </div>
+          <div class="row top3">
+            <span class="rank">3</span>
+            <span class="who">
+              <span class="line1"><span class="flag" aria-hidden="true">🇩🇪</span><span class="name">Germany</span></span>
+              <span class="sub">Most territory: <span class="at">@lweber</span></span>
+            </span>
+            <span class="rpwrap"><span class="rp">0.28<span class="u">%</span></span><span class="rpcap">Land captured</span></span>
+          </div>
+          <div class="row">
+            <span class="rank">4</span>
+            <span class="who">
+              <span class="line1"><span class="flag" aria-hidden="true">🇹🇷</span><span class="name">Türkiye</span></span>
+              <span class="sub">Most territory: <span class="at">@fethi</span></span>
+            </span>
+            <span class="rpwrap"><span class="rp">0.19<span class="u">%</span></span><span class="rpcap">Land captured</span></span>
+          </div>
+          <div class="row">
+            <span class="rank">5</span>
+            <span class="who">
+              <span class="line1"><span class="flag" aria-hidden="true">🇫🇷</span><span class="name">France</span></span>
+              <span class="sub">Most territory: <span class="at">@cmartin</span></span>
+            </span>
+            <span class="rpwrap"><span class="rp">0.14<span class="u">%</span></span><span class="rpcap">Land captured</span></span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1993,7 +2170,16 @@
   var NS   = 'http://www.w3.org/2000/svg';
   var defs = document.getElementById('lgDefs');
 
+  /* The map is generated at `step` pixels per sample and stretched back by
+     feImage (preserveAspectRatio="none"). The displacement field is smooth, so
+     halving resolution on large surfaces is visually free and keeps the
+     per-pixel build off the main thread's critical path — a full-size sheet
+     would otherwise be ~450k iterations. */
   function buildMap(w, h, bezel, r) {
+    var step = (w * h > 120000) ? 2 : 1;
+    var mw = Math.max(2, Math.round(w / step)), mh = Math.max(2, Math.round(h / step));
+    bezel = bezel / step; r = r / step;
+    w = mw; h = mh;
     r = Math.min(r, h / 2, w / 2);
     var hw = w / 2 - r, hh = h / 2 - r;
     var cv = document.createElement('canvas');
@@ -2075,6 +2261,47 @@
   /* feature tiles: same material, their own corner geometry */
   document.querySelectorAll('.tile').forEach(function (el, i) {
     attach(el, 'lgLensTile' + i, 14);
+  });
+  attach(document.querySelector('#board'), 'lgLensBoard', 18);
+})();
+</script>
+<script>
+/* Leaderboard scope tabs. Four real panels, one visible at a time — the same
+   four scopes the app's LeaderboardSheet presents. Full tablist semantics:
+   arrow keys move between tabs, Home/End jump to the ends, and only the active
+   tab is in the tab order (roving tabindex), which is what a screen reader
+   expects from a tab strip. Panel swaps re-measure the sheet, and the
+   refraction map rebuilds itself off its own ResizeObserver. */
+(function () {
+  var strip = document.querySelector('.lb-tabs[role="tablist"]');
+  if (!strip) return;
+  var tabs = [].slice.call(strip.querySelectorAll('[role="tab"]'));
+  if (!tabs.length) return;
+
+  function panelOf(tab) { return document.getElementById(tab.getAttribute('aria-controls')); }
+
+  function select(tab, focus) {
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      var panel = panelOf(t);
+      if (panel) panel.hidden = !on;
+    });
+    if (focus) tab.focus();
+  }
+
+  tabs.forEach(function (tab, i) {
+    tab.tabIndex = tab.getAttribute('aria-selected') === 'true' ? 0 : -1;
+    tab.addEventListener('click', function () { select(tab, false); });
+    tab.addEventListener('keydown', function (e) {
+      var next = null;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = tabs[(i + 1) % tabs.length];
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = tabs[(i - 1 + tabs.length) % tabs.length];
+      else if (e.key === 'Home') next = tabs[0];
+      else if (e.key === 'End') next = tabs[tabs.length - 1];
+      if (next) { e.preventDefault(); select(next, true); }
+    });
   });
 })();
 </script>
