@@ -13,13 +13,54 @@ here.
 ## Structure
 
 ```
-index.html         self-contained page — inline CSS and JS, no build step
-assets/            logo, app icon
-assets/screens/    app screenshots used in the product sections
+index.html            self-contained page — inline CSS and JS, no build step
+assets/               logo, app icon
+assets/fonts/         Splash-Subset.ttf — the brand face, subset (see below)
+assets/hero/          128 pre-rendered flight frames for the scrubbed hero
+assets/screens/       app screenshots used in the product sections
 ```
 
-There are no dependencies, no build pipeline, and **no network requests at
-runtime** — every asset is local, so the page renders identically offline.
+There are no dependencies, no build pipeline, and **no network requests to any
+third party at runtime** — every asset is local, so the page renders identically
+offline.
+
+### The brand font is subset — regenerate it if you set new text in it
+
+`assets/fonts/Splash-Subset.ttf` contains only the glyphs needed for the string
+"RouteRush". The full family is 1.44 MB for 664 glyphs; the page renders seven of
+them, so shipping the whole thing meant the brand mark spent 38 seconds in the
+system fallback on a throttled phone. The subset is 95 KB and proven identical:
+zero differing pixels at 1x, 2x and 3x, identical advance widths.
+
+**If you ever set any other text in the Splash face, those letters will be
+missing.** Regenerate from the master, which lives in git history at commit
+`316e007` as `assets/fonts/Splash-Regular.ttf`:
+
+```bash
+python3 -m fontTools.subset Splash-Regular.ttf --text="RouteRush" --layout-features='*' --notdef-glyph --notdef-outline --output-file=assets/fonts/Splash-Subset.ttf
+```
+
+`--layout-features='*'` matters: Splash is a brush script whose `clig`/`dlig`/
+`fina`/`salt`/`ss01-03` features substitute alternate glyphs, and the closure is
+what keeps `h.fina`, `e.ss01` and the `o_o` ligature in the subset. Keep the
+hinting tables (`fpgm`/`prep`/`cvt`) — dropping them is smaller but changes
+rasterisation.
+
+### Proving a change is pixel-neutral
+
+`_agent-scratch/perf/golden.mjs` captures 31 deterministic renders across two
+viewports; `diff.py` compares two sets and fails on a single differing pixel.
+Time-driven things (the topo shader, the rolling start control, reveal
+transitions) are frozen before each shot — without that the harness diffs
+against itself by millions of pixels.
+
+```bash
+python3 -m http.server 8899           # in the project root
+node _agent-scratch/perf/golden.mjs before
+# ...make the change...
+node _agent-scratch/perf/golden.mjs after
+python3 _agent-scratch/perf/diff.py before after
+```
 
 ## Running locally
 

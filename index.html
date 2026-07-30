@@ -7,17 +7,47 @@
 <meta name="theme-color" content="#000000">
 <title>RouteRush — Running is how you take ground</title>
 <link rel="icon" href="assets/routerush-appicon.png">
+<!-- The brand face is the first thing a visitor reads, so it must not arrive
+     late. Preloading it is only affordable because it is subset (see below):
+     the full family took 40s to land on a throttled phone, and the wordmark
+     spent 38s of that rendered in the system fallback. -->
+<link rel="preload" href="assets/fonts/Splash-Subset.ttf" as="font" type="font/ttf" crossorigin>
 <style>
   /* ============================================================
      BRAND FACE — Splash-Regular, straight from the app bundle.
      The app sets it at 70pt with 3pt tracking on the onboarding
      wordmark; the site mirrors that treatment in the hero and footer.
+
+     SUBSET, not the full family. Splash renders exactly one string on this
+     page — "RouteRush", seven distinct glyphs — and the master carries 664 at
+     1.44MB. The subset is 96KB (44KB on the wire) and is byte-for-byte the
+     same renderer: pyftsubset closes over GSUB, so the brush face keeps the
+     alternates it actually uses (h.fina, e.ss01, the o_o ligature) along with
+     clig/dlig/fina/salt/ss01-03 and kern. Verified as zero differing pixels at
+     1x, 2x and 3x, with identical advance widths.
+
+     REGENERATING — required if anything else is ever set in this face, or
+     those glyphs will be missing. The master lives in git history (commit
+     316e007, assets/fonts/Splash-Regular.ttf):
+
+       python3 -m fontTools.subset Splash-Regular.ttf \
+         --text="RouteRush" --layout-features='*' \
+         --notdef-glyph --notdef-outline \
+         --output-file=assets/fonts/Splash-Subset.ttf
+
+     Hinting tables (fpgm/prep/cvt) are deliberately kept: dropping them is
+     smaller but changes rasterisation, which is not a trade this page makes.
      ============================================================ */
   @font-face {
     font-family: "Splash";
-    src: url("assets/fonts/Splash-Regular.ttf") format("truetype");
+    src: url("assets/fonts/Splash-Subset.ttf") format("truetype");
     font-weight: 400;
-    font-display: swap;
+    /* `block`, not `swap`, and only because the face is preloaded and 95KB: it
+       lands in ~1ms, so nothing is ever actually withheld, and the wordmark is
+       never painted in Arial first. `swap` measured CLS 0.00106 from that
+       reflow; this measures exactly 0. If the file ever fails to arrive, the
+       3s block period expires and behaviour degrades to what `swap` does. */
+    font-display: block;
   }
 
   /* ============================================================
@@ -559,10 +589,15 @@
      Every phone frame is 393 x 852 (9:19.5), so an iPhone capture drops
      in with no cropping; drop files into assets/screens/ at 1179x2556.
 
-     TO ACTIVATE A SCREENSHOT: on that frame's <img class="shot">, rename
-     the data-src attribute to src. One attribute, one frame. Until then
-     the img is hidden and makes no request, so the console stays clean
-     and the authored placeholder underneath shows instead.
+     Every slot now holds a real device capture, so the `src`-less rule below
+     is the only fallback left: an unfilled frame hides its img and shows the
+     authored placeholder underneath instead. The old data-src promote-on-decode
+     probe was removed once nothing used it — to add a capture, just set src.
+
+     Captures are lazy: all of them sit thousands of pixels below the fold, and
+     eagerly fetching 559KB of off-screen phone screens was stealing bandwidth
+     from the hero frames that are actually on screen (measured: 33 hero frames
+     in the first 8s on a throttled phone, versus 44 once these went lazy).
      ------------------------------------------------------------------ */
   .shot {
     position: absolute; inset: 0; z-index: 6;
@@ -596,8 +631,10 @@
   .metric b s { text-decoration: none; font-size: 9.5px; font-weight: 500; color: var(--text-3); margin-left: 2px; }
 
   /* A floating capsule, not an edge-to-edge bar — this is what the app
-     actually ships (see assets/screens/en-01-globe.png), and it lets the tab
-     bar carry the same full material as every other glass surface. */
+     actually ships (verified against the en-01-globe capture; kept out of the
+     tree since nothing serves it, retrievable from git history at 316e007),
+     and it lets the tab bar carry the same full material as every other glass
+     surface. */
   .tabbar {
     --glass-blur: 24px;
     display: flex; justify-content: space-around; align-items: center;
@@ -1333,7 +1370,7 @@
 <header class="nav" id="nav">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="RouteRush home">
-      <img src="assets/routerush-logo.png" alt="RouteRush" width="30" height="30">
+      <img decoding="async" src="assets/routerush-logo.png" alt="RouteRush" width="30" height="30">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a href="#territory">Territory</a>
@@ -1399,7 +1436,7 @@
         </div>
 
         <div class="startctl" aria-hidden="true">
-          <img class="mark" src="assets/routerush-logo.png" alt="">
+          <img class="mark" decoding="async" src="assets/routerush-logo.png" alt="">
           <span class="roll">
             <span class="ghost">Start Run</span><span class="ghost">Start Rush</span><span class="ghost">Start Ride</span>
             <b class="run">Start Run</b><b class="rush">Start Rush</b><b class="ride">Start Ride</b>
@@ -1481,7 +1518,7 @@
         <div class="phone">
           <div class="screen">
             <!-- SWAP: point src at the real globe/territory capture -->
-            <img class="shot" src="assets/screens/dev-mapmodes.webp"
+            <img class="shot" loading="lazy" decoding="async" src="assets/screens/dev-mapmodes.webp"
                  alt="RouteRush Map Modes over London: Heatmap, Territory and Routes cards above the 3D city">
             <div class="island" aria-hidden="true"></div>
             <div class="statusbar"><span>9:41</span><span class="sb-icons">
@@ -1579,7 +1616,7 @@
         <div class="phone">
           <div class="screen">
             <!-- SWAP: point src at the real in-run / tracking capture -->
-            <img class="shot" src="assets/screens/dev-league.webp" alt="RouteRush Plans screen: Boldi the coach offering training plans">
+            <img class="shot" loading="lazy" decoding="async" src="assets/screens/dev-league.webp" alt="RouteRush Plans screen: Boldi the coach offering training plans">
             <div class="island" aria-hidden="true"></div>
             <div class="statusbar"><span>9:41</span><span class="sb-icons">
               <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
@@ -1675,7 +1712,7 @@
           </div>
           <div class="liveact">
             <div class="liveact-top">
-              <img src="assets/routerush-appicon.png" alt="" width="20" height="20" style="border-radius:5px">
+              <img decoding="async" src="assets/routerush-appicon.png" alt="" width="20" height="20" style="border-radius:5px">
               <b>Morning run</b>
               <span>LIVE</span>
             </div>
@@ -1691,7 +1728,7 @@
           </div>
           <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; justify-content:center">
             <div class="widget">
-              <img src="assets/routerush-logo.png" alt="" width="26" height="26">
+              <img decoding="async" src="assets/routerush-logo.png" alt="" width="26" height="26">
               <div><b>Quick Start</b><br><i>Run · Ride</i></div>
             </div>
             <p class="small" style="max-width:170px">Home Screen widget. One tap opens straight into a tracked run.</p>
@@ -2033,7 +2070,7 @@
         <figure data-reveal>
           <div class="phone">
             <div class="screen">
-              <img class="shot" src="assets/screens/dev-summary.webp"
+              <img class="shot" loading="lazy" decoding="async" src="assets/screens/dev-summary.webp"
                    alt="RouteRush run summary: route on the map with distance, time, pace, elevation and cadence">
             </div>
           </div>
@@ -2043,7 +2080,7 @@
         <figure data-reveal style="--d:90ms">
           <div class="phone">
             <div class="screen">
-              <img class="shot" src="assets/screens/en-02-plans-boldi.png"
+              <img class="shot" loading="lazy" decoding="async" src="assets/screens/en-02-plans-boldi.webp"
                    alt="RouteRush Plans screen featuring Boldi the coach and structured training plans">
             </div>
           </div>
@@ -2053,7 +2090,7 @@
         <figure data-reveal style="--d:180ms">
           <div class="phone">
             <div class="screen">
-              <img class="shot" src="assets/screens/dev-challenges.webp" alt="RouteRush club challenges with a head-to-head card and open challenges">
+              <img class="shot" loading="lazy" decoding="async" src="assets/screens/dev-challenges.webp" alt="RouteRush club challenges with a head-to-head card and open challenges">
               <div class="pending" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M6 20V11M12 20V5M18 20v-6"/></svg>
                 League standings
@@ -2125,7 +2162,7 @@
       <!-- The app's onboarding lockup at full size: mark above, wordmark in
            Splash-Regular beneath it. -->
       <div class="lockup-xl" data-reveal style="margin-bottom:30px">
-        <img src="assets/routerush-appicon.png" alt="" width="74" height="74"
+        <img decoding="async" src="assets/routerush-appicon.png" alt="" width="74" height="74"
              style="border-radius:18px; border:1px solid var(--hair)">
         <p class="wordmark">RouteRush</p>
       </div>
@@ -2258,15 +2295,7 @@
      sequence is deterministic in both directions. */
   const FRAMES = new Array(sequence.frameCount).fill(null);
   const frameSrc = i => sequence.framePath + String(i).padStart(3, '0') + '.webp';
-  let loadedCount = 0, wantedIndex = 0, loaderStarted = false;
-
-  function loadFrame(i, cb) {
-    if (FRAMES[i]) return;
-    const img = new Image();
-    img.decoding = 'async';
-    img.onload = () => { FRAMES[i] = img; loadedCount++; if (cb) cb(i); };
-    img.src = frameSrc(i);
-  }
+  let wantedIndex = 0, loaderStarted = false;
 
   /* The full set is 128 frames and about 11.8 MB. That is fine on a desk and
      rude on a metered phone, so a viewer who has asked for less gets less:
@@ -2279,39 +2308,81 @@
   const thrifty = !!conn && (conn.saveData === true || /^(slow-2g|2g|3g)$/.test(conn.effectiveType || ''));
   const STRIDE = thrifty ? 2 : 1;
 
-  /* Poster first paint happens via render()'s nearest-loaded fallback; the
-     loader itself starts at the poster and then keeps pulling whichever
-     unloaded frame is closest to where the viewer actually is, six at a
-     time. Never blocks first paint on the whole set. */
+  /* Candidate set: every frame this session will ever draw. Stride thins it for
+     a thrifty connection; the last frame is always in, because the page comes
+     to rest on it. */
+  const CANDIDATES = [];
+  for (let i = 0; i < sequence.frameCount; i += STRIDE) CANDIDATES.push(i);
+  const LAST = sequence.frameCount - 1;
+  if (CANDIDATES[CANDIDATES.length - 1] !== LAST) CANDIDATES.push(LAST);
+
+  /* ---------- demand loading: fetch near the playhead, never evict ----------
+     The old loader walked a monotonic cursor and pulled all 128 frames, 11.8MB,
+     no matter how little of the flight the visitor actually watched. This one
+     only fetches what is within KEEP of where they are, so someone who scrolls
+     30% of the hero and leaves pays 2.0MB instead of 11.8MB (measured; 60% pays
+     5.8MB, and a full pass still fetches each frame exactly once).
+
+     It does NOT evict, and that is a deliberate reversal. Eviction was the
+     original plan, on the theory that dropping an Image reference would give
+     back the decoded bitmap — a 1600x1000 frame is 6.4MB decoded, and browser
+     RSS does climb 667MB across one scrub. Measured, it does not work: running
+     the page's own teardown, which drops every reference, freed 16MB, and even
+     navigating to about:blank left 576MB outstanding. That memory belongs to
+     Chromium's decoded-image cache, which releases under its own pressure
+     heuristics, not on our reference count. Evicting therefore bought nothing
+     and cost real requests — three passes over the scrub went from 128 requests
+     to 308. Keeping frames is strictly better.
+
+     (What WOULD give deterministic control is createImageBitmap plus close();
+     an isolated test freed 415MB that way. It is a different decode path, so it
+     would need proving pixel-identical before it could ship here.) */
+  const KEEP = 14;   // fetch radius, in frames either side of the playhead
+  const MAXC = 6;    // concurrent fetches, unchanged
+
+  const pending = new Set();
+  let inFlight = 0;
+
+  function request(i) {
+    if (FRAMES[i] || pending.has(i)) return;
+    pending.add(i);
+    inFlight++;
+    const img = new Image();
+    img.decoding = 'async';
+    const settle = () => {
+      pending.delete(i); inFlight--;
+      maintain();
+    };
+    img.onload = () => {
+      FRAMES[i] = img;
+      /* only a frame at or next to the playhead can change what is on screen */
+      if (Math.abs(i - wantedIndex) <= 2) { dirty = true; schedule(); }
+      settle();
+    };
+    img.onerror = settle;
+    img.src = frameSrc(i);
+  }
+
+  function maintain() {
+    if (inFlight >= MAXC) return;
+    /* nearest-first, so the frame under the playhead always wins the slot */
+    const want = [];
+    for (const i of CANDIDATES) {
+      if (FRAMES[i] || pending.has(i)) continue;
+      const d = Math.abs(i - wantedIndex);
+      if (d <= KEEP) want.push([d, i]);
+    }
+    want.sort((a, b) => a[0] - b[0]);
+    for (const [, i] of want) {
+      if (inFlight >= MAXC) break;
+      request(i);
+    }
+  }
+
   function startLoader() {
     if (loaderStarted) return;
     loaderStarted = true;
-    const order = [];
-    for (let d = 0; d < sequence.frameCount; d += STRIDE) order.push(d);
-    /* the last frame is the one the page rests on, so never let stride drop it */
-    const last = sequence.frameCount - 1;
-    if (order[order.length - 1] !== last) order.push(last);
-    let cursor = 0, inFlight = 0;
-    const MAXC = 6;
-    const pump = () => {
-      while (inFlight < MAXC && cursor < order.length) {
-        let best = cursor, bestD = Infinity;
-        for (let j = cursor; j < order.length; j++) {
-          const dd = Math.abs(order[j] - wantedIndex);
-          if (dd < bestD) { bestD = dd; best = j; }
-        }
-        const idx = order[best]; order[best] = order[cursor]; order[cursor] = idx;
-        cursor++;
-        if (FRAMES[idx]) continue;
-        inFlight++;
-        loadFrame(idx, i => {
-          inFlight--;
-          if (Math.abs(i - wantedIndex) <= 2) { dirty = true; schedule(); }
-          pump();
-        });
-      }
-    };
-    pump();
+    maintain();
   }
 
   /* ---------- canvas measurement (DPR-capped) ---------- */
@@ -2420,6 +2491,10 @@
     dirty = false;
     lastProgress = progress;
     paintUI(progress, render(progress));
+    /* render() has just moved the playhead, so residency is now stale: this is
+       what pulls the frames ahead of the viewer in and lets the ones behind go.
+       It runs after the draw, never before, so it can never delay a paint. */
+    if (loaderStarted) maintain();
   }
 
   function schedule() {
@@ -2513,28 +2588,17 @@
     if (boardObserver)  { boardObserver.disconnect();  boardObserver = null; }
     while (teardown.length) teardown.pop()();
     ctx.clearRect(0, 0, W, H);
+    /* The contract at the top of this block promises frames are torn down too,
+       and it was the one part not actually doing it — the array kept every
+       decoded bitmap alive past pagehide. */
+    pending.clear();
+    FRAMES.fill(null);
   }
   window.__routeRushSequenceTeardown = destroy;
   on(window, 'pagehide', destroy);
 })();
 </script>
 <svg id="lgDefs" width="0" height="0" style="position:absolute" aria-hidden="true"></svg>
-<script>
-/* Device captures promote themselves: each data-src is probed, and only a file
-   that actually decodes gets swapped into src. A capture that has not been
-   dropped in yet leaves the authored placeholder untouched — no broken icon,
-   no failed request in the console. */
-(function () {
-  document.querySelectorAll('img.shot[data-src]').forEach(function (img) {
-    var probe = new Image();
-    probe.onload = function () {
-      img.src = img.getAttribute('data-src');
-      img.removeAttribute('data-src');
-    };
-    probe.src = img.getAttribute('data-src');
-  });
-})();
-</script>
 <script>
 /* Refractive Liquid Glass — generalized. Each target capsule gets its own
    SVG filter and a runtime-generated displacement map at its exact size:
