@@ -814,7 +814,8 @@
   .tile.lg-refract::before { display: none; }
 
   /* ---------- ambient topographic field ---------- */
-  .bg-topo { position: fixed; inset: -12%; z-index: 0; pointer-events: none; }
+  .bg-topo { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  #topo-gl { position: absolute; inset: 0; width: 100%; height: 100%; }
   .bg-topo svg { position: absolute; inset: 0; width: 100%; height: 100%; }
   .topo-a { animation: topoDriftA 140s ease-in-out infinite alternate; }
   .topo-b { animation: topoDriftB 180s ease-in-out infinite alternate; }
@@ -829,9 +830,11 @@
   @media (prefers-reduced-motion: reduce) {
     .topo-a, .topo-b { animation: none; }
   }
-  /* content rides above the field */
-  main, footer, header.nav { position: relative; z-index: 1; }
-  header.nav { z-index: 100; }
+  /* Content rides above the field. The nav is deliberately NOT in this rule:
+     it is position:fixed, and a higher-specificity `header.nav { position:
+     relative }` here silently un-fixed it — the "nav scrolls away and never
+     comes back" bug. It already carries z-index:100 of its own. */
+  main, footer { position: relative; z-index: 1; }
   .nav .wrap.lg-refract::after {                            /* whisper of a ring */
     background: linear-gradient(140deg,
       rgba(255,255,255,.28), rgba(255,255,255,.03) 35%,
@@ -904,6 +907,7 @@
      the hero paints its own opaque frames, so this lives in the flat sections —
      and gives every glass surface something real to refract. -->
 <div class="bg-topo" aria-hidden="true">
+  <canvas id="topo-gl"></canvas>
   <svg class="topo-a" viewBox="0 0 1600 1200" preserveAspectRatio="xMidYMid slice">
     <g fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1">
       <path d="M220,340 C300,240 480,220 560,300 C640,380 620,520 520,580 C420,640 260,620 200,520 C150,436 160,414 220,340 Z"/>
@@ -1918,6 +1922,125 @@
   /* feature tiles: same material, their own corner geometry */
   document.querySelectorAll('.tile').forEach(function (el, i) {
     attach(el, 'lgLensTile' + i, 14);
+  });
+})();
+</script>
+<script>
+/* Ambient contour field — a 1:1 WebGL port of the app's ContourField.metal
+   (Profile tab). Same 11-ring analytic field: r_k(θ) = base_k · (1 +
+   .12·sin(3θ+φ1_k) + .07·sin(5θ+φ2_k)), phase speeds 2π/12.5s and 2π/15.8s,
+   global rotation 2.5°/min, alternating 2.0/2.8pt strokes, opacity ramp
+   .24→.09, anchor (0.65, 0.40), additive crossings. Palette: the app's
+   silver tier (platinum/steel/blue-gray) — the one that lives in the site's
+   monochrome register. Frame rate capped at 30fps exactly like the app's
+   TimelineView(.animation(minimumInterval: 1/30)). Reduce Motion pins t=0
+   and draws the static field once — the shader's own mechanism. If WebGL is
+   unavailable the static SVG contours behind this canvas stay visible. */
+(function () {
+  var canvas = document.getElementById('topo-gl');
+  if (!canvas) return;
+  var gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false });
+  if (!gl) return;   /* SVG fallback stays */
+
+  var FRAG = [
+    'precision mediump float;',
+    'uniform vec2 u_size;',
+    'uniform float u_time;',
+    'const vec2 CENTER = vec2(0.65, 0.40);',
+    'const vec3 COL_A = vec3(0.910, 0.918, 0.929);',   /* platinum  E8EAED */
+    'const vec3 COL_B = vec3(0.682, 0.714, 0.749);',   /* steel     AEB6BF */
+    'const vec3 COL_C = vec3(0.557, 0.604, 0.671);',   /* blue-gray 8E9AAB */
+    'void main() {',
+    '  vec2 pos = vec2(gl_FragCoord.x, u_size.y - gl_FragCoord.y);',
+    '  float diagonal = length(u_size) * 0.5;',
+    '  vec2 centerPoint = u_size * CENTER;',
+    '  vec2 delta = pos - centerPoint;',
+    '  float d = length(delta);',
+    '  float theta = atan(delta.y, delta.x);',
+    '  float rotation = u_time * 0.000727221;',        /* 2.5°/60s in rad/s */
+    '  float rt = theta + rotation;',
+    '  vec4 acc = vec4(0.0);',
+    '  for (int k = 0; k < 11; k++) {',
+    '    float fk = float(k);',
+    '    float progress = fk / 10.0;',
+    '    float baseRadius = diagonal * (0.10 + 0.68 * progress);',
+    '    float opacity = 0.24 - 0.15 * progress;',
+    '    float phase1 = fk * 0.62 + u_time * 0.502655;',   /* 2π/12.5 */
+    '    float phase2 = fk * 1.17 + 1.4 + u_time * 0.397384;', /* 2π/15.8 */
+    '    float modulation = 1.0 + 0.12 * sin(3.0 * rt + phase1) + 0.07 * sin(5.0 * rt + phase2);',
+    '    float ringRadius = baseRadius * modulation;',
+    '    float halfWidth = (mod(fk, 2.0) < 0.5) ? 1.0 : 1.4;',
+    '    float dist = abs(d - ringRadius);',
+    '    float coverage = smoothstep(halfWidth + 1.0, halfWidth - 1.0, dist);',
+    '    if (coverage <= 0.0) continue;',
+    '    vec3 ringColor = (mod(fk, 3.0) < 0.5) ? COL_A : (mod(fk, 3.0) < 1.5) ? COL_B : COL_C;',
+    '    acc += vec4(ringColor, 1.0) * (opacity * coverage);',
+    '  }',
+    '  gl_FragColor = clamp(acc, 0.0, 1.0);',
+    '}'
+  ].join('\n');
+
+  var VERT = 'attribute vec2 a; void main(){ gl_Position = vec4(a, 0.0, 1.0); }';
+
+  function compile(type, src) {
+    var s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) return null;
+    return s;
+  }
+  var vs = compile(gl.VERTEX_SHADER, VERT);
+  var fs = compile(gl.FRAGMENT_SHADER, FRAG);
+  if (!vs || !fs) return;
+  var prog = gl.createProgram();
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+  gl.useProgram(prog);
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(prog, 'a');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  var uSize = gl.getUniformLocation(prog, 'u_size');
+  var uTime = gl.getUniformLocation(prog, 'u_time');
+
+  /* WebGL is live: the SVG fallback steps aside */
+  document.querySelectorAll('.bg-topo svg').forEach(function (s) { s.style.display = 'none'; });
+
+  function resize() {
+    var w = Math.round(canvas.clientWidth), h = Math.round(canvas.clientHeight);
+    if (!w || !h) return false;   /* hidden/collapsed viewport: skip, retry next frame */
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h;
+      gl.viewport(0, 0, w, h);
+    }
+    gl.uniform2f(uSize, canvas.width, canvas.height);
+    return true;
+  }
+
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  var epoch = performance.now();
+  var last = 0;
+  function draw(now) {
+    if (!resize()) {
+      /* static-frame mode must retry once the pane becomes visible */
+      if (reduced.matches) requestAnimationFrame(draw);
+      return;
+    }
+    gl.uniform1f(uTime, reduced.matches ? 0 : (now - epoch) / 1000);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  }
+  function loop(now) {
+    if (now - last >= 33) { last = now; draw(now); }   /* 30fps cap, as in the app */
+    if (!reduced.matches) requestAnimationFrame(loop);
+  }
+  addEventListener('resize', function () { if (reduced.matches) draw(performance.now()); });
+  if (reduced.matches) { draw(performance.now()); }
+  else requestAnimationFrame(loop);
+  reduced.addEventListener && reduced.addEventListener('change', function () {
+    epoch = performance.now();
+    if (reduced.matches) draw(performance.now());
+    else requestAnimationFrame(loop);
   });
 })();
 </script>
