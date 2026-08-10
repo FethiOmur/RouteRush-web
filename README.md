@@ -1,6 +1,6 @@
 # RouteRush — web
 
-Marketing site for [RouteRush](https://routerush.app), a gamified run and ride
+Marketing site for [RouteRush](https://routerushapp.com), a gamified run and ride
 tracking app for iOS. Runs and rides claim H3 hex cells on a 3D globe, earn
 Rush Points, and move you through cohort leagues.
 
