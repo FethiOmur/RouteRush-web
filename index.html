@@ -5,6 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="RouteRush is a gamified fitness tracker for iOS. Run or ride, conquer H3 hex cells on a 3D globe, earn Rush Points and climb weekly leagues.">
 <meta name="theme-color" content="#000000">
+<!-- Content policy. GitHub Pages cannot serve custom response headers, so the
+     policy ships in the document instead. It is deliberately strict because the
+     page can afford to be: every asset is same-origin and the page makes zero
+     third-party requests, so the only things this has to permit are the inline
+     <style>/<script> the page is built from, and the data:/blob: URIs the
+     refractive-glass displacement maps are generated as. Anything injected from
+     an outside host — a script tag, a tracking pixel, a font — is refused.
+     Known limit: frame-ancestors is ignored in a meta policy, so clickjacking
+     protection would need a real header this host does not offer. -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline';
+  img-src 'self' data: blob:;
+  font-src 'self';
+  connect-src 'self';
+  base-uri 'self';
+  form-action 'none';
+  object-src 'none'">
+<!-- Cross-origin navigations leak only the origin, never the path. -->
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>RouteRush — Running is how you take ground</title>
 <link rel="icon" href="assets/routerush-appicon.png">
 <!-- The brand face is the first thing a visitor reads, so it must not arrive
