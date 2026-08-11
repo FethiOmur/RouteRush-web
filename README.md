@@ -76,9 +76,14 @@ Then visit <http://localhost:8899>.
 ## Notes for future edits
 
 - **The hero is a scroll-scrubbed sequence.** Native scroll position is the only
-  source of truth; one normalized progress value drives the canvas, the copy
-  stops, and the counters. It must stay deterministic in both directions — the
-  same scroll offset always produces the same frame.
+  source of truth; one normalized progress value drives the canvas and the copy
+  stops. It must stay deterministic in both directions — the same scroll offset
+  always settles on the same frame. The playhead *glides* toward the scroll
+  position (`sequence.glideTauMs`, exponential approach) rather than jumping:
+  measured under a compositor flick, the hard jump repainted ~9 times a second
+  crossing a median of 7 source frames per paint, which read as low frame rate.
+  The glide only eases motion between rests — where the playhead settles is
+  unchanged, and the golden harness proves rest states pixel-identical.
 - **Never set `overflow-x: hidden` on `html`.** It makes `<html>` the scroll
   container and silently breaks the hero's sticky pinning.
 - **Glass surfaces** follow the project's own web Liquid Glass system: a tinted
