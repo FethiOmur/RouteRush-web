@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="RouteRush is a gamified fitness tracker for iOS. Run or ride, conquer H3 hex cells on a 3D globe, earn Rush Points and climb weekly leagues.">
+<meta name="description" content="RouteRush is a gamified fitness tracker for iOS. Run or ride, conquer real ground on a 3D globe, earn Rush Points and climb weekly leagues.">
 <meta name="theme-color" content="#000000">
 <!-- Content policy. GitHub Pages cannot serve custom response headers, so the
      policy ships in the document instead. It is deliberately strict because the
@@ -307,7 +307,6 @@
   .h3 { font-weight: 600; letter-spacing: -.022em; font-size: clamp(18px, 1.5vw, 21px); line-height: 1.25; }
   .lede { color: var(--text-2); font-size: clamp(15.5px, 1.35vw, 19px); line-height: 1.58; letter-spacing: -.011em; }
   .small { font-size: 14px; color: var(--text-3); line-height: 1.55; }
-  .mono { font-family: var(--ff-mono); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
   .num { font-variant-numeric: tabular-nums; }
 
   /* ---------- buttons: white capsule = primary (house pattern) ---------- */
@@ -544,14 +543,6 @@
   /* visual stage */
   .stage-visual { position: relative; min-width: 0; overflow: hidden; background: #000; }
   .stage-visual canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .hud {
-    position: absolute; z-index: 2; pointer-events: none;
-    font-family: var(--ff-mono); font-size: 10px; letter-spacing: .12em;
-    text-transform: uppercase; color: var(--text-4); font-variant-numeric: tabular-nums;
-  }
-  .hud-tl { left: 46px; top: 86px; }
-  .hud-br { right: 24px; bottom: 24px; text-align: right; }
-  .hud b { color: rgba(255,255,255,.72); font-weight: 500; }
   .cue {
     position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
     writing-mode: vertical-rl; font-family: var(--ff-mono);
@@ -563,7 +554,7 @@
     .stage-copy { border-right: 0; border-bottom: 1px solid var(--hair-soft); padding-top: 92px; padding-bottom: 22px; }
     .hero-h1 { margin-top: 0; }
     .states { min-height: 112px; }
-    .cue, .hud-tl { display: none; }
+    .cue { display: none; }
   }
   /* Short window — a phone held sideways, or a small desktop window dragged
      flat. Capping the stage stops the sticky overflow, but the copy stack is
@@ -1415,7 +1406,6 @@
   .has-motion .stage-copy { opacity: clamp(0, calc((1 - var(--p)) / .045), 1); }
   /* Full-bleed layout: the copy column now owns the top-left, so the H3 HUD
      moves to the right shoulder, clear of the eyebrow. */
-  .has-motion .hud-tl { left: auto; right: 46px; top: 86px; text-align: right; }
 </style>
 </head>
 <body>
@@ -1480,7 +1470,7 @@
   <section class="sequence" id="sequence" aria-labelledby="hero-title">
     <div class="stage">
       <div class="stage-copy">
-        <p class="eyebrow"><span>RouteRush for iOS</span><span class="mono" id="hud-frame">000 / 120</span></p>
+        <p class="eyebrow"><span>RouteRush for iOS</span></p>
 
         <!-- The logotype at display scale: the nav carries only the R mark, so
              the wordmark owns this space without doubling up. -->
@@ -1492,7 +1482,7 @@
              states also exist as readable text for assistive technology. -->
         <ol class="sr-only">
           <li>Step one. Record a run or a ride with GPS tracking that survives lost signal.</li>
-          <li>Step two. Every hexagonal cell your route passes through is claimed as your territory.</li>
+          <li>Step two. Close a loop and the ground inside it becomes your territory.</li>
           <li>Step three. Claimed territory becomes Rush Points, and Rush Points decide your weekly league rank.</li>
         </ol>
 
@@ -1503,7 +1493,7 @@
           </div>
           <div class="state">
             <b>02 — Conquer</b>
-            <p>Every hex your route touches turns yours. Resolution&#8209;11 cells, roughly 25&nbsp;metres across, claimed the moment you pass through one.</p>
+            <p>Close a loop and the ground inside it turns yours. Territory follows the streets you ran, at the resolution you ran them.</p>
           </div>
           <div class="state">
             <b>03 — Hold it</b>
@@ -1530,8 +1520,6 @@
 
       <div class="stage-visual" id="stage-visual">
         <canvas id="seq-canvas" aria-hidden="true"></canvas>
-        <p class="hud hud-tl" aria-hidden="true">Night map<br><b id="hud-mode">Orbit</b></p>
-        <p class="hud hud-br" aria-hidden="true">Cells claimed <b id="hud-cells">0</b><br>Rush Points <b id="hud-rp">0</b></p>
         <span class="cue" aria-hidden="true">Scroll to claim</span>
       </div>
     </div>
@@ -1547,14 +1535,14 @@
         <h2 class="h2" id="claim-title" data-reveal style="--d:60ms; margin-top:18px">A tracker tells you where you went.<br>RouteRush tells you what you took.</h2>
         <p class="lede" data-reveal style="--d:120ms; max-width:52ch; margin-top:22px">
           The same run, scored differently. Distance and pace are the receipt. The map is the score —
-          a permanent record of the streets you have actually covered, cell by cell, against everyone
+          a permanent record of the streets you have actually covered, block by block, against everyone
           else covering theirs.
         </p>
       </div>
       <dl class="specs" data-reveal style="--d:160ms">
         <div class="spec">
           <dt>25<span style="font-size:.5em; letter-spacing:0"> m</span></dt>
-          <dd><b>Cell edge, roughly</b>H3 resolution 11. Fine enough that one side of a street is not the other.</dd>
+          <dd><b>Street resolution</b>Fine enough that one side of a street is not the other.</dd>
         </div>
         <div class="spec">
           <dt>3D</dt>
@@ -1576,20 +1564,23 @@
   <section class="sec" id="territory" aria-labelledby="territory-title">
     <div class="wrap frow">
       <div>
-        <p class="eyebrow" data-reveal>Hex conquest</p>
+        <p class="eyebrow" data-reveal>Ground taken</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="territory-title">The map remembers every street you have taken.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
-          Your GPS line is matched to a hexagonal grid the moment it is recorded. Pass through a cell and
-          it is yours. Come back a different way and the shape of what you own changes.
+          Close a loop on your run and everything inside it becomes yours, in the shape of the streets you
+          took. Come back a different way and the shape of what you own changes.
         </p>
         <div class="fpoints" data-reveal style="--d:160ms">
           <div class="fpoint">
-            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.6 20.1 7v10L12 21.4 3.9 17V7z"/><path d="M12 8.4 16.2 11v4.2L12 17.6 7.8 15.2V11z"/></svg>
-            <p><b>Cell-level scoring.</b> Rush Points are awarded per activity from the ground you actually covered, not from a step count.</p>
+            <!-- A closed loop around a couple of blocks — the shape a claim
+                 actually has. This was two nested hexagons, the one piece of
+                 honeycomb still visible on the page. -->
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.4 8.2h7.2V4.4h10v9.2h-4.6v6.2H8.6v-5.4H3.4z"/><path d="M10.6 8.2v5.8h5.4"/></svg>
+            <p><b>Ground-level scoring.</b> Rush Points are awarded per activity from the ground you actually covered, not from a step count.</p>
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M2.8 12h18.4"/><path d="M12 2.8c2.4 2.6 3.7 5.8 3.7 9.2s-1.3 6.6-3.7 9.2c-2.4-2.6-3.7-5.8-3.7-9.2S9.6 5.4 12 2.8z"/></svg>
-            <p><b>Contested ground.</b> Cells have a dominance record. Someone else running your route puts your claim under pressure.</p>
+            <p><b>Contested ground.</b> Every claim has a dominance record. Someone else running your route puts your claim under pressure.</p>
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17.5 9.2 12l3.4 3.4L20 7.4"/><path d="M20 12.4V7.4h-5"/></svg>
@@ -1611,7 +1602,7 @@
             </span></div>
 
             <div class="screen-body">
-              <!-- globe with claimed hex patch -->
+              <!-- globe with claimed ground -->
               <div style="position:relative; flex:1; min-height:0; border-radius:16px; overflow:hidden; border:1px solid var(--hair-soft); background:radial-gradient(120% 90% at 50% 20%, #0b1016, #000 70%)">
                 <svg viewBox="0 0 240 300" style="width:100%; height:100%" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
                   <defs>
@@ -1626,20 +1617,24 @@
                     <ellipse cx="120" cy="150" rx="28" ry="86"/><ellipse cx="120" cy="150" rx="58" ry="86"/>
                     <line x1="34" y1="150" x2="206" y2="150"/>
                   </g>
-                  <!-- claimed territory patch: white fills, cyan hairline frame -->
-                  <g clip-path="url(#globeClip)">
-                    <g fill="rgba(255,255,255,.13)" stroke="rgba(255,255,255,.42)" stroke-width=".8">
-                      <path d="M96 120l9-5 9 5v10l-9 5-9-5z"/><path d="M114 110l9-5 9 5v10l-9 5-9-5z"/>
-                      <path d="M114 130l9-5 9 5v10l-9 5-9-5z"/><path d="M132 120l9-5 9 5v10l-9 5-9-5z"/>
-                      <path d="M96 140l9-5 9 5v10l-9 5-9-5z"/><path d="M114 150l9-5 9 5v10l-9 5-9-5z"/>
-                      <path d="M132 140l9-5 9 5v10l-9 5-9-5z"/><path d="M78 130l9-5 9 5v10l-9 5-9-5z"/>
-                      <path d="M96 160l9-5 9 5v10l-9 5-9-5z"/><path d="M132 160l9-5 9 5v10l-9 5-9-5z"/>
-                    </g>
-                    <g fill="none" stroke="rgba(255,255,255,.10)" stroke-width=".7">
-                      <path d="M60 140l9-5 9 5v10l-9 5-9-5z"/><path d="M150 130l9-5 9 5v10l-9 5-9-5z"/>
-                      <path d="M78 170l9-5 9 5v10l-9 5-9-5z"/><path d="M150 170l9-5 9 5v10l-9 5-9-5z"/>
-                      <path d="M114 190l9-5 9 5v10l-9 5-9-5z"/><path d="M60 110l9-5 9 5v10l-9 5-9-5z"/>
-                    </g>
+                  <!-- Claimed ground. This used to be sixteen hexagons in a
+                       honeycomb, which is a picture of the scoring substrate,
+                       not of the app: the hex mesh was rejected three times in
+                       the product and now survives there only as a z>=15
+                       texture under smooth polygon fills. These are rectilinear
+                       claims in the hero's own pastel palette, each the shape
+                       of a closed loop somebody ran round a few blocks. -->
+                  <g clip-path="url(#globeClip)" stroke-width=".9" fill-opacity=".42" stroke-opacity=".95">
+                    <path d="M92 118h30v12h14v20h-22v10H92z"      fill="#8FD3FF" stroke="#8FD3FF"/>
+                    <path d="M128 150h26v14h12v18h-30v-12h-8z"    fill="#FFA9B8" stroke="#FFA9B8"/>
+                    <path d="M76 146h22v10h10v22H84v-14h-8z"      fill="#9FE8C8" stroke="#9FE8C8"/>
+                    <path d="M104 184h28v10h10v16h-38z"           fill="#C9B3F7" stroke="#C9B3F7"/>
+                    <path d="M148 112h20v10h8v16h-28z"            fill="#FFC98F" stroke="#FFC98F"/>
+                  </g>
+                  <!-- ground still up for grabs -->
+                  <g clip-path="url(#globeClip)" fill="none" stroke="rgba(255,255,255,.10)" stroke-width=".7">
+                    <path d="M58 112h22v14h-22z"/><path d="M60 178h26v12H60z"/>
+                    <path d="M150 186h22v14h-22z"/>
                     <!-- the run line: sport accent, the earned cyan -->
                     <path d="M74 176c14-14 18-30 34-38s30 6 44-6 20-18 30-16" fill="none" stroke="#00E0FF" stroke-width="4.5" opacity=".18" stroke-linecap="round"/>
                     <path d="M74 176c14-14 18-30 34-38s30 6 44-6 20-18 30-16" fill="none" stroke="#00E0FF" stroke-width="1.6" stroke-linecap="round"/>
@@ -1650,7 +1645,7 @@
 
               <div class="gcard">
                 <div class="metric-row">
-                  <div class="metric"><i>Cells</i><b>1 284</b></div>
+                  <div class="metric"><i>Blocks</i><b>1 284</b></div>
                   <div class="metric"><i>Rush Points</i><b>8 420</b></div>
                   <div class="metric"><i>This week</i><b>+312</b></div>
                 </div>
@@ -1681,7 +1676,7 @@
         <p class="eyebrow" data-reveal>Boldi, the in-run coach</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="coach-title">A coach in your ear, not a podcast.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
-          Boldi watches the run as it happens — your pace, the cells ahead, how much you have left — and
+          Boldi watches the run as it happens — your pace, the ground ahead, how much you have left — and
           says something when it is worth saying. The rest of the time he is quiet.
         </p>
         <div class="fpoints" data-reveal style="--d:160ms">
@@ -1691,7 +1686,7 @@
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.5"/><path d="M8.6 6.4 12 3l3.4 3.4"/><circle cx="12" cy="17.6" r="3.4"/></svg>
-            <p><b>Aware of the map.</b> He knows which cells are still unclaimed on the route in front of you.</p>
+            <p><b>Aware of the map.</b> He knows which ground is still unclaimed on the route in front of you.</p>
           </div>
         </div>
       </div>
@@ -1753,7 +1748,7 @@
                 <span class="boldi-avatar" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2.5 5 13.5h5.5L10 21.5l8.5-11H13z"/></svg>
                 </span>
-                <p class="bubble">Nine unclaimed cells on the loop ahead. Hold this pace and they are all yours.</p>
+                <p class="bubble">Two unclaimed blocks on the loop ahead. Hold this pace and they are both yours.</p>
               </div>
             </div>
 
@@ -1803,7 +1798,7 @@
             <div class="metric-row">
               <div class="metric"><i>Time</i><b>32:14</b></div>
               <div class="metric"><i>Distance</i><b>6.42<s>km</s></b></div>
-              <div class="metric"><i>Cells</i><b>+41</b></div>
+              <div class="metric"><i>Blocks</i><b>+41</b></div>
             </div>
             <div style="display:flex; gap:8px">
               <span class="btn btn-primary" style="height:32px; font-size:12.5px; flex:1; padding:0 12px" role="img" aria-label="Pause control">Pause</span>
@@ -2258,7 +2253,7 @@
     <div class="wrap" data-reveal>
       <p class="eyebrow">Why it matters</p>
       <h2 class="h2" id="why-title">The map only moves when you do.</h2>
-      <p class="lede">Nothing on your map was given to you. Every cell on it is a street you actually ran.</p>
+      <p class="lede">Nothing on your map was given to you. Every inch of it is a street you actually ran.</p>
     </div>
   </section>
 
@@ -2276,7 +2271,7 @@
       </div>
       <h2 class="display" id="dl-title" data-reveal style="--d:60ms">Go take some ground.</h2>
       <p class="lede" data-reveal style="--d:110ms">
-        RouteRush is free to start. iPhone, iOS&nbsp;17 or later. Your first run claims its first cell about
+        RouteRush is free to start. iPhone, iOS&nbsp;17 or later. Your first run claims its first ground about
         twenty seconds in.
       </p>
       <div class="final-cta" data-reveal style="--d:160ms">
@@ -2298,7 +2293,7 @@
           <span>RouteRush</span>
         </a>
         <p class="small" style="margin-top:14px; max-width:34ch">
-          Gamified run and ride tracking for iOS. Conquer the map one hex at a time.
+          Gamified run and ride tracking for iOS. Conquer the map one street at a time.
         </p>
       </div>
       <nav aria-label="Product">
@@ -2367,8 +2362,6 @@
     posterState:         0,        // frame painted before anything else loads
     reducedMotionState:  1,        // static progress under prefers-reduced-motion (final frame)
     copyStops:           [0, 0.32, 0.86],  // aligned to the flight's three phases
-    cellsTotal:          1284,     // matches the app's own stat card
-    rpPerCell:           7,
     maxDpr:              2
   };
 
@@ -2380,10 +2373,6 @@
 
   const ctx      = canvas.getContext('2d');
   const states   = Array.from(document.querySelectorAll('#states .state'));
-  const elFrame  = document.getElementById('hud-frame');
-  const elCells  = document.getElementById('hud-cells');
-  const elRp     = document.getElementById('hud-rp');
-  const elMode   = document.getElementById('hud-mode');
   const nav      = document.getElementById('nav');
 
   const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
@@ -2599,22 +2588,12 @@
         }
       }
     }
-    /* conquest counters land through the dive's end and the tilt reveal */
-    return Math.round(smooth(invLerp(0.55, 0.97, progress)) * sequence.cellsTotal);
   }
 
   startLoader();
-  /* ---------- copy + HUD, driven by the same progress ---------- */
-  function paintUI(progress, claimed) {
+  /* ---------- copy stops, driven by the same progress ---------- */
+  function paintUI(progress) {
     root.style.setProperty('--p', progress.toFixed(4));
-    if (elFrame) elFrame.textContent =
-      String(Math.round(progress * (sequence.frameCount - 1))).padStart(3, '0') + ' / ' + sequence.frameCount;
-    if (elCells) elCells.textContent = claimed.toLocaleString('en-GB').replace(/,/g, ' ');
-    if (elRp)    elRp.textContent = (claimed * sequence.rpPerCell).toLocaleString('en-GB').replace(/,/g, ' ');
-    if (elMode)  elMode.textContent =
-      progress < sequence.copyStops[1] ? 'Orbit'
-      : progress < sequence.copyStops[2] ? 'Descent — Torino'
-      : 'Street level';
 
     let active = 0;
     for (let i = 0; i < sequence.copyStops.length; i++) if (progress >= sequence.copyStops[i]) active = i;
@@ -2636,7 +2615,8 @@
     if (!dirty && Math.abs(progress - lastProgress) < 0.0002) return; // redraw only on real change
     dirty = false;
     lastProgress = progress;
-    paintUI(progress, render(progress));
+    render(progress);
+    paintUI(progress);
     /* render() has just moved the playhead, so residency is now stale: this is
        what pulls the frames ahead of the viewer in and lets the ones behind go.
        It runs after the draw, never before, so it can never delay a paint. */
@@ -2659,7 +2639,8 @@
     dirty = true;
     if (reduced) {
       const p = sequence.reducedMotionState;
-      paintUI(p, render(p));
+      render(p);
+      paintUI(p);
     } else {
       schedule();
     }
