@@ -539,11 +539,6 @@
   .state b { display: block; font-size: 11px; letter-spacing: .17em; text-transform: uppercase; margin-bottom: 9px; font-weight: 600; }
   .state p { color: var(--text-2); font-size: clamp(14.5px, 1.15vw, 17px); line-height: 1.55; }
 
-  .readout { display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; margin-top: clamp(18px, 3vh, 30px); }
-  .track { height: 2px; background: rgba(255,255,255,.14); overflow: hidden; border-radius: 2px; }
-  .track i { display: block; height: 100%; background: #fff; transform: scaleX(var(--p)); transform-origin: left; }
-  .readout .mono { font-size: 11px; color: var(--text-3); }
-
   .hero-cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: clamp(18px, 3vh, 28px); }
 
   /* visual stage */
@@ -586,7 +581,6 @@
     .state { position: relative; inset: auto; }
     .state:not(.is-active) { display: none; }
     .state p { font-size: 14px; line-height: 1.45; }
-    .readout { margin-top: 12px; }
     .hero-cta { margin-top: 14px; }
     /* scoped, not bare: the .startctl block further down the sheet would win on
        source order otherwise, and the control would keep its 62px */
@@ -1209,7 +1203,6 @@
     .cue { display: none; }
     .states { min-height: 0; display: grid; gap: 18px; }
     .state { position: relative; inset: auto; opacity: 1; transform: none; pointer-events: auto; }
-    .track i { transform: scaleX(1); }
     [data-reveal] { opacity: 1 !important; transform: none !important; }
     .bar i { transform: scaleX(var(--v)); }
   }
@@ -1516,11 +1509,6 @@
             <b>03 — Hold it</b>
             <p>Territory becomes Rush Points, Rush Points become rank, and rank resets every week. The map is only yours while you keep running.</p>
           </div>
-        </div>
-
-        <div class="readout">
-          <div class="track" aria-hidden="true"><i></i></div>
-          <span class="mono" id="hud-pct">00%</span>
         </div>
 
         <div class="hero-cta">
@@ -2327,7 +2315,7 @@
         <ul>
           <li><a href="#download">Privacy</a></li>
           <li><a href="#download">Terms</a></li>
-          <li><a href="#download">Support</a></li>
+          <li><a href="mailto:support@routerushapp.com">Support</a></li>
           <li><a href="#download">Press kit</a></li>
         </ul>
       </nav>
@@ -2389,7 +2377,6 @@
 
   const ctx      = canvas.getContext('2d');
   const states   = Array.from(document.querySelectorAll('#states .state'));
-  const elPct    = document.getElementById('hud-pct');
   const elFrame  = document.getElementById('hud-frame');
   const elCells  = document.getElementById('hud-cells');
   const elRp     = document.getElementById('hud-rp');
@@ -2617,7 +2604,6 @@
   /* ---------- copy + HUD, driven by the same progress ---------- */
   function paintUI(progress, claimed) {
     root.style.setProperty('--p', progress.toFixed(4));
-    if (elPct)   elPct.textContent = String(Math.round(progress * 100)).padStart(2, '0') + '%';
     if (elFrame) elFrame.textContent =
       String(Math.round(progress * (sequence.frameCount - 1))).padStart(3, '0') + ' / ' + sequence.frameCount;
     if (elCells) elCells.textContent = claimed.toLocaleString('en-GB').replace(/,/g, ' ');
