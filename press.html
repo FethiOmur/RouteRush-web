@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Same posture as the main page: everything local, nothing phones home. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="description" content="RouteRush press kit — logo, app icon, screenshots, fact sheet and contact.">
+<title>RouteRush — Press kit</title>
+<style>
+  /* A utility page, deliberately quieter than the landing page: same palette
+     and type so it is recognisably ours, none of the scroll machinery. */
+  @font-face {
+    font-family: 'Splash';
+    src: url('assets/fonts/Splash-Subset.ttf') format('truetype');
+    /* the subset carries ONLY the glyphs of "RouteRush" — never set other text in it */
+    font-display: block;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --text-2: rgba(255,255,255,.78); --text-3: rgba(255,255,255,.55);
+    --text-4: rgba(255,255,255,.38); --hair: rgba(255,255,255,.10);
+    --accent: #00E0FF;
+  }
+  html { color-scheme: dark; }
+  body {
+    background: #000; color: #fff;
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 72px; }
+  .wordmark { font-family: 'Splash', cursive; font-size: 44px; font-weight: 400; }
+  .eyebrow { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-4); margin-bottom: 14px; }
+  h1 { font-size: 15px; font-weight: 500; color: var(--text-3); margin-top: 10px; }
+  h2 { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-4); font-weight: 560; margin: 52px 0 18px; }
+  p  { color: var(--text-2); max-width: 62ch; }
+  a  { color: #fff; }
+  a:hover { color: var(--accent); }
+
+  dl { display: grid; grid-template-columns: 150px 1fr; row-gap: 10px; column-gap: 18px; }
+  dt { color: var(--text-4); font-size: 14px; }
+  dd { color: var(--text-2); font-size: 14px; }
+
+  .assets { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
+  .asset { display: block; border: 1px solid var(--hair); border-radius: 14px; overflow: hidden; background: #0a0a0c; text-decoration: none; }
+  .asset img { display: block; width: 100%; height: 150px; object-fit: contain; padding: 14px; }
+  .asset.tall img { height: 240px; object-fit: cover; object-position: top; padding: 0; }
+  .asset b { display: block; font-size: 12px; font-weight: 500; color: var(--text-3); padding: 9px 12px 10px; border-top: 1px solid var(--hair); }
+  .asset:hover b { color: #fff; }
+
+  .note { font-size: 14px; color: var(--text-3); border-left: 2px solid var(--hair); padding-left: 16px; }
+  footer { margin-top: 64px; padding-top: 22px; border-top: 1px solid var(--hair); font-size: 13px; color: var(--text-4); display: flex; gap: 18px; flex-wrap: wrap; }
+  footer a { color: var(--text-3); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Press kit</p>
+  <div class="wordmark">RouteRush</div>
+  <h1>Gamified run &amp; ride tracking for iOS</h1>
+
+  <h2>What it is</h2>
+  <p>
+    RouteRush turns running and cycling into territorial conquest. Close a loop on a run and the
+    ground inside it becomes yours, drawn on a 3D night map of your city. Territory earns Rush
+    Points, Rush Points decide weekly leagues, and everything you hold can be contested by anyone
+    who runs your streets. An AI coach, Boldi, speaks during the run — about your pace and the
+    ground ahead — and stays quiet the rest of the time.
+  </p>
+
+  <h2>Fact sheet</h2>
+  <dl>
+    <dt>Name</dt><dd>RouteRush</dd>
+    <dt>Platform</dt><dd>iOS 17 or later, iPhone</dd>
+    <dt>Price</dt><dd>Free to start; optional premium subscription</dd>
+    <dt>Developer</dt><dd>Fethi Omur — independent developer, solo</dd>
+    <dt>Website</dt><dd><a href="https://routerushapp.com">routerushapp.com</a></dd>
+    <dt>Press contact</dt><dd><a href="mailto:support@routerushapp.com">support@routerushapp.com</a></dd>
+    <dt>Instagram</dt><dd>@routerushapp</dd>
+  </dl>
+
+  <h2>Brand assets</h2>
+  <div class="assets">
+    <a class="asset" href="assets/routerush-logo.png" download>
+      <img src="assets/routerush-logo.png" alt="RouteRush logo, white script R on transparent"><b>Logo · PNG 512</b>
+    </a>
+    <a class="asset" href="assets/routerush-appicon.png" download>
+      <img src="assets/routerush-appicon.png" alt="RouteRush app icon"><b>App icon · PNG 512</b>
+    </a>
+  </div>
+
+  <h2>Screenshots</h2>
+  <div class="assets">
+    <a class="asset tall" href="assets/screens/dev-mapmodes.webp" download>
+      <img src="assets/screens/dev-mapmodes.webp" alt="Map modes over the 3D night city: Heatmap, Territory, Routes"><b>Map modes</b>
+    </a>
+    <a class="asset tall" href="assets/screens/dev-summary.webp" download>
+      <img src="assets/screens/dev-summary.webp" alt="Run summary with route, stats and earned Rush Points"><b>Run summary</b>
+    </a>
+    <a class="asset tall" href="assets/screens/dev-league.webp" download>
+      <img src="assets/screens/dev-league.webp" alt="Weekly cohort league standings"><b>Leagues</b>
+    </a>
+    <a class="asset tall" href="assets/screens/dev-challenges.webp" download>
+      <img src="assets/screens/dev-challenges.webp" alt="Challenges list"><b>Challenges</b>
+    </a>
+    <a class="asset tall" href="assets/screens/en-02-plans-boldi.webp" download>
+      <img src="assets/screens/en-02-plans-boldi.webp" alt="Boldi, the AI coach, in the training plans screen"><b>Boldi coach</b>
+    </a>
+  </div>
+
+  <h2>Usage</h2>
+  <p class="note">
+    Everything on this page may be reproduced for articles, reviews and videos about RouteRush.
+    Please don't stretch, recolour or add effects to the logo, and don't imply endorsement.
+    For anything else — interviews, early builds, higher-resolution assets — write to the
+    press contact above.
+  </p>
+
+  <footer>
+    <span>© 2026 RouteRush</span>
+    <a href="/">routerushapp.com</a>
+    <a href="https://fethiomur.github.io/RouteRush-legal/privacy.html">Privacy</a>
+    <a href="https://fethiomur.github.io/RouteRush-legal/terms.html">Terms</a>
+  </footer>
+</div>
+</body>
+</html>
