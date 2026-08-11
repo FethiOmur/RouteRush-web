@@ -16,11 +16,13 @@
      protection would need a real header this host does not offer. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'unsafe-inline';
+  script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval';
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: blob:;
   font-src 'self';
-  connect-src 'self';
+  connect-src 'self' https://api.mapbox.com https://events.mapbox.com;
+  worker-src blob:;
+  child-src blob:;
   base-uri 'self';
   form-action 'none';
   object-src 'none'">
@@ -28,6 +30,8 @@
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <title>RouteRush — Running is how you take ground</title>
 <link rel="icon" href="assets/routerush-appicon.png">
+<link rel="stylesheet" href="assets/vendor/mapbox-gl-3.18.0.css">
+<link rel="preconnect" href="https://api.mapbox.com" crossorigin>
 <!-- The brand face is the first thing a visitor reads, so it must not arrive
      late. Preloading it is only affordable because it is subset (see below):
      the full family took 40s to land on a throttled phone, and the wordmark
@@ -543,6 +547,26 @@
   /* visual stage */
   .stage-visual { position: relative; min-width: 0; overflow: hidden; background: #000; }
   .stage-visual canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .stage-visual .poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 42%; }
+  #seq-map { position: absolute; inset: 0; opacity: 0; transition: opacity .7s ease; }
+  #seq-map.is-live { opacity: 1; }
+  /* Mapbox's own chrome, kept (TOS) but quieted to the house palette */
+  #seq-map .mapboxgl-ctrl-attrib { background: rgba(0,0,0,.35); color: rgba(255,255,255,.45); font-size: 10px; }
+  #seq-map .mapboxgl-ctrl-attrib a { color: rgba(255,255,255,.55); }
+
+  /* The loading veil — the "asset intro" every reference site opens with.
+     Shown only when the live map is coming; capped, never sticky. */
+  .hero-loading {
+    position: fixed; inset: 0; z-index: 80; background: #000;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    opacity: 1; transition: opacity .5s ease; pointer-events: none;
+  }
+  .hero-loading.is-done { opacity: 0; }
+  .hero-loading[hidden] { display: none; }
+  .hl-mark { font-family: 'Splash', cursive; font-size: 40px; color: #fff; }
+  .hl-note { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.45); }
+  .hl-bar { width: 180px; height: 2px; background: rgba(255,255,255,.14); border-radius: 2px; overflow: hidden; }
+  .hl-bar i { display: block; height: 100%; width: 100%; background: #fff; transform-origin: left; transform: scaleX(0); transition: transform .3s ease; }
   .cue {
     position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
     writing-mode: vertical-rl; font-family: var(--ff-mono);
@@ -1409,6 +1433,11 @@
 </style>
 </head>
 <body>
+<div class="hero-loading" id="hero-loading" hidden>
+  <span class="hl-mark">RouteRush</span>
+  <span class="hl-note">Preparing the night map</span>
+  <span class="hl-bar"><i id="hl-fill"></i></span>
+</div>
 
 <!-- Ambient topographic field — the Profile tab's contour language, site-wide.
      Two layers drifting against each other very slowly; brand colours at
@@ -1519,7 +1548,11 @@
       </div>
 
       <div class="stage-visual" id="stage-visual">
-        <canvas id="seq-canvas" aria-hidden="true"></canvas>
+        <!-- Poster paints instantly and is the whole hero when the live map
+             cannot run (reduced motion, save-data, no WebGL, ?nomap=1 for the
+             golden harness). The map fades in over it once warmed. -->
+        <img class="poster" id="hero-poster" src="assets/hero/poster-start.webp" alt="" aria-hidden="true" decoding="async">
+        <div id="seq-map" aria-hidden="true"></div>
         <span class="cue" aria-hidden="true">Scroll to claim</span>
       </div>
     </div>
@@ -2283,355 +2316,244 @@
   </div>
 </footer>
 
+<script src="assets/vendor/mapbox-gl-3.18.0.js"></script>
 <script>
 /* ================================================================
-   RouteRush — scroll-scrubbed hero sequence
+   RouteRush — live scroll-flown hero (Mapbox GL)
    ----------------------------------------------------------------
-   Contract:
-     • ONE normalized progress value (0..1) from native scroll position.
-     • Native scroll is the only source of truth — no wheel deltas,
-       no elapsed time, no autoplay. Deterministically reversible.
-     • rAF-coalesced measurement, one render per frame, redraw only
-       when progress (or layout) actually changed.
-     • prefers-reduced-motion: no pinning, no scrubbing, static state.
-     • Full teardown of listeners, observers and frames.
+   The hero was a 320-frame pre-rendered scrub of this exact flight.
+   The owner asked for the real thing — the app's own living map —
+   accepting what that trades away: the page now speaks to
+   api.mapbox.com at runtime (one billable map load per visit,
+   50k/month free) and the "renders identically offline" guarantee
+   is gone. What it buys is the property no frame set can have:
+   the camera is continuous, so there is nothing between frames to
+   see. The loading veil is the same pattern his reference sites
+   open with — the corridor is flown once, hidden, while it shows.
+
+   Contract, unchanged:
+     • ONE normalized progress value (0..1) from native scroll.
+     • Native scroll is the only source of truth; the playhead
+       GLIDES toward it (glideTauMs) and settles exactly on it.
+     • prefers-reduced-motion / save-data / no-WebGL / ?nomap=1:
+       no map at all — the poster is the hero.
    ================================================================ */
 (() => {
   'use strict';
 
-  /* ---------- configuration: no magic numbers in the handlers ---------- */
   const sequence = {
-    scrollVh:            460,      // section height, in vh — the runway. 320vh
-                                   // packed the whole flight into ~2000px of
-                                   // scroll; Awwwards-class sequences give a
-                                   // transformation several viewports of room.
-    frameCount:          320,      // pre-rendered flight frames, sampled at
-                                   // uniform MEASURED visual change per frame
-                                   // (the generator's ARC table) — the fix for
-                                   // "photos sliding": neighbouring frames are
-                                   // now visually near-identical, the property
-                                   // that makes a sequence read as continuous
-    fit:                 'cover',  // the flight is the hero's background
-    framePath:           'assets/hero/',
-    focalY:              0.42,     // cover crop favours the upper part of the frame
-    posterState:         0,        // frame painted before anything else loads
-    reducedMotionState:  1,        // static progress under prefers-reduced-motion (final frame)
-    copyStops:           [0, 0.116, 0.650], // phase boundaries in the NEW
-                                   // progress space: arc-length sampling
-                                   // compresses the orbit to 11.6% and runs
-                                   // the dive to 65%
-    maxDpr:              2,
-    /* Time constant of the playhead's glide toward the scroll position, in ms.
-       Without it a fast flick moves the scroll several frames between two
-       paints and the canvas jumps straight there — which reads as "low fps"
-       even when every paint hits budget (measured: the jump, not the paint,
-       is what the eye objects to). The glide spreads those crossings over a
-       few paints, the way Lenis-driven sites do. Raising it feels heavier,
-       lowering it feels more literal; 0 would restore the old hard-jump. */
-    glideTauMs:          120
+    scrollVh:   460,
+    copyStops:  [0, 0.116, 0.650],
+    glideTauMs: 120,
   };
+  /* Public token, restricted to this site's URL in the Mapbox console.
+     pk-scope only — it can read styles and tiles, nothing else. */
+  const TOKEN = 'pk.eyJ1IjoiZmV0aGlvbXVyIiwiYSI6ImNtc291OGtubjAwbXUyenNiNzVsYWVoam8ifQ.9sTuSfzH7ntGQ_xzztfPNA';
+  const TURIN = [7.6864, 45.0703];
+
+  /* Measured pacing (see the generator): cumulative on-screen change
+     across the flight, blended 65/35 with uniform time. warp(u) inverts
+     it so equal scroll steps produce equal visual steps. */
+  const ARC = [[0.0,0.0],[0.01181,0.00352],[0.02362,0.00705],[0.03543,0.01057],[0.04724,0.01425],[0.05906,0.01812],[0.07087,0.02215],[0.08268,0.02635],[0.09449,0.03071],[0.1063,0.03523],[0.11811,0.0399],[0.12992,0.04473],[0.14173,0.04968],[0.15354,0.05476],[0.16535,0.05995],[0.17717,0.06528],[0.18898,0.07065],[0.20079,0.07605],[0.2126,0.08145],[0.22441,0.08681],[0.23622,0.09207],[0.24803,0.09717],[0.25984,0.10202],[0.27165,0.10655],[0.28346,0.11062],[0.29528,0.11414],[0.30419,0.11766],[0.31118,0.12158],[0.31816,0.12638],[0.32515,0.13193],[0.33213,0.1381],[0.33912,0.1447],[0.3461,0.15168],[0.35309,0.15908],[0.36007,0.16696],[0.36706,0.17543],[0.37404,0.1843],[0.38103,0.1937],[0.38801,0.20358],[0.395,0.2129],[0.40198,0.22102],[0.40897,0.22831],[0.41595,0.23547],[0.42294,0.24261],[0.42992,0.25034],[0.43691,0.25869],[0.44389,0.26699],[0.45088,0.276],[0.45786,0.28502],[0.46485,0.2934],[0.47183,0.30132],[0.47882,0.30904],[0.4858,0.31643],[0.49279,0.3238],[0.49977,0.33085],[0.50676,0.33769],[0.51374,0.3441],[0.52073,0.35057],[0.52771,0.35673],[0.5347,0.36258],[0.54168,0.36864],[0.54867,0.37498],[0.55565,0.38146],[0.56264,0.38817],[0.56962,0.39516],[0.57661,0.40149],[0.58359,0.40719],[0.59058,0.41289],[0.59756,0.41864],[0.60455,0.42437],[0.61153,0.43001],[0.61852,0.43737],[0.6255,0.44441],[0.63249,0.45133],[0.63947,0.4584],[0.64646,0.46596],[0.65344,0.47408],[0.66043,0.48199],[0.66741,0.49012],[0.6744,0.49852],[0.68138,0.50727],[0.68837,0.51683],[0.69535,0.52667],[0.70234,0.53704],[0.70932,0.54777],[0.71631,0.55893],[0.72329,0.57039],[0.73028,0.58175],[0.73726,0.59282],[0.74425,0.60382],[0.75123,0.61464],[0.75822,0.62505],[0.7652,0.63478],[0.77219,0.64322],[0.77917,0.64895],[0.78616,0.65364],[0.79314,0.66142],[0.80013,0.67073],[0.80711,0.6809],[0.8141,0.69166],[0.82108,0.70287],[0.82807,0.71441],[0.83505,0.72628],[0.84204,0.73844],[0.84902,0.75087],[0.85564,0.76339],[0.8622,0.77599],[0.86877,0.7886],[0.87533,0.80135],[0.88189,0.815],[0.88845,0.82892],[0.89501,0.84273],[0.90157,0.85627],[0.90814,0.86946],[0.9147,0.88222],[0.92126,0.89466],[0.92782,0.90668],[0.93438,0.9183],[0.94094,0.92931],[0.94751,0.93989],[0.95407,0.95006],[0.96063,0.95967],[0.96719,0.96856],[0.97375,0.97665],[0.98031,0.98406],[0.98688,0.99066],[0.99344,0.99612],[1.0,1.0]];
+  function warp(u) {
+    if (u <= 0) return 0;
+    if (u >= 1) return 1;
+    let lo = 0, hi = ARC.length - 1;
+    while (hi - lo > 1) { const m = (lo + hi) >> 1; (ARC[m][1] <= u ? lo = m : hi = m); }
+    const t0 = ARC[lo][0], s0 = ARC[lo][1], t1 = ARC[hi][0], s1 = ARC[hi][1];
+    return t0 + (t1 - t0) * ((u - s0) / ((s1 - s0) || 1e-9));
+  }
+
+  /* Camera path — byte-for-byte the pre-rendered flight's. */
+  const ss = t => t * t * (3 - 2 * t);
+  const lerp = (a, b, t) => a + (b - a) * t;
+  function cam(t) {
+    if (t < 0.30) {
+      const u = ss(t / 0.30);
+      return { center: [lerp(35, 9, u), lerp(5, 40, u)], zoom: lerp(1.45, 2.4, u), bearing: 0, pitch: 0 };
+    }
+    if (t < 0.78) {
+      const u = ss((t - 0.30) / 0.48);
+      const w = 1 - Math.pow(1 - u, 2.5);
+      return { center: [lerp(9, TURIN[0], w), lerp(40, TURIN[1], w)],
+               zoom: lerp(2.4, 14.2, u), bearing: 0, pitch: lerp(0, 25, u) };
+    }
+    const u = ss((t - 0.78) / 0.22);
+    return { center: TURIN, zoom: lerp(14.2, 16.6, u), bearing: lerp(0, -24, u), pitch: lerp(25, 62, u) };
+  }
 
   const root    = document.documentElement;
   const section = document.getElementById('sequence');
   const stage   = document.getElementById('stage-visual');
-  const canvas  = document.getElementById('seq-canvas');
-  if (!section || !stage || !canvas) return;
-
-  /* alpha:false — the flight covers the canvas edge to edge, so there is
-     nothing to see through it; an opaque canvas lets the compositor blit it
-     instead of blending it against the page every frame. */
-  const ctx      = canvas.getContext('2d', { alpha: false });
-  const states   = Array.from(document.querySelectorAll('#states .state'));
-  const nav      = document.getElementById('nav');
+  const mapEl   = document.getElementById('seq-map');
+  const poster  = document.getElementById('hero-poster');
+  const veil    = document.getElementById('hero-loading');
+  const veilBar = document.getElementById('hl-fill');
+  const nav     = document.querySelector('.nav');
+  const states  = Array.from(document.querySelectorAll('#states .state'));
+  if (!section || !stage || !mapEl) return;
 
   const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
   let reduced = motionQuery.matches;
 
-  /* ---------- teardown registry ---------- */
-  const teardown = [];
-  const on = (target, type, fn, opts) => {
-    target.addEventListener(type, fn, opts);
-    teardown.push(() => target.removeEventListener(type, fn, opts));
-  };
-
-  /* ---------- small maths ---------- */
-  const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
-  const lerp    = (a, b, t) => a + (b - a) * t;
-  const invLerp = (a, b, v) => clamp01((v - a) / (b - a));
-  const smooth  = t => t * t * (3 - 2 * t);
-  const easeInOut = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  const RAD = Math.PI / 180;
-
-  /* ---------- the sequence: pre-rendered map flight ---------- */
-  /* 128 frames of the app's own night map, flying from orbit down to street
-     level over Turin, rendered offline by _agent-scratch/globe-gen.html. The
-     page ships the frames, not the map SDK — zero runtime network requests.
-     Scroll position picks the frame; nothing here is driven by time, so the
-     sequence is deterministic in both directions. */
-  const FRAMES = new Array(sequence.frameCount).fill(null);
-  const frameSrc = i => sequence.framePath + String(i).padStart(3, '0') + '.webp';
-  let wantedIndex = 0, loaderStarted = false;
-
-  /* The full set is 128 frames and about 11.8 MB. That is fine on a desk and
-     rude on a metered phone, so a viewer who has asked for less gets less:
-     Data Saver, or a connection the browser itself calls 2g/3g, halves the set
-     to every second frame (~5.9 MB). The scrub survives it because render()
-     interpolates between whichever frames are actually loaded rather than
-     assuming neighbours — 64 crossfaded frames still read as continuous
-     motion. Nobody who has not asked for less gets less. */
   const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   const thrifty = !!conn && (conn.saveData === true || /^(slow-2g|2g|3g)$/.test(conn.effectiveType || ''));
-  const STRIDE = thrifty ? 2 : 1;
+  const noMap = new URLSearchParams(location.search).has('nomap')
+    || thrifty || typeof mapboxgl === 'undefined' || !mapboxgl.supported?.() && !window.WebGLRenderingContext;
 
-  /* Candidate set: every frame this session will ever draw. Stride thins it for
-     a thrifty connection; the last frame is always in, because the page comes
-     to rest on it. */
-  const CANDIDATES = [];
-  for (let i = 0; i < sequence.frameCount; i += STRIDE) CANDIDATES.push(i);
-  const LAST = sequence.frameCount - 1;
-  if (CANDIDATES[CANDIDATES.length - 1] !== LAST) CANDIDATES.push(LAST);
+  const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
 
-  /* ---------- demand loading: fetch near the playhead, never evict ----------
-     The old loader walked a monotonic cursor and pulled all 128 frames, 11.8MB,
-     no matter how little of the flight the visitor actually watched. This one
-     only fetches what is within KEEP of where they are, so someone who scrolls
-     30% of the hero and leaves pays 2.0MB instead of 11.8MB (measured; 60% pays
-     5.8MB, and a full pass still fetches each frame exactly once).
-
-     It does NOT evict, and that is a deliberate reversal. Eviction was the
-     original plan, on the theory that dropping an Image reference would give
-     back the decoded bitmap — a 1600x1000 frame is 6.4MB decoded, and browser
-     RSS does climb 667MB across one scrub. Measured, it does not work: running
-     the page's own teardown, which drops every reference, freed 16MB, and even
-     navigating to about:blank left 576MB outstanding. That memory belongs to
-     Chromium's decoded-image cache, which releases under its own pressure
-     heuristics, not on our reference count. Evicting therefore bought nothing
-     and cost real requests — three passes over the scrub went from 128 requests
-     to 308. Keeping frames is strictly better.
-
-     (What WOULD give deterministic control is createImageBitmap plus close();
-     an isolated test freed 415MB that way. It is a different decode path, so it
-     would need proving pixel-identical before it could ship here.)
-
-     KEEP is 14 because deeper measured no better. Swept at 14/20/28/40 against a
-     realistic 3.5s scroll on a 4x-throttled CPU, smoothness is flat inside noise
-     — 98.1 / 98.0 / 98.6 / 97.3 percent of frames within the 60fps budget, and
-     the >33ms count varies 4-9 between runs of the SAME setting — while someone
-     who scrolls 30% of the hero and leaves pays 2.0MB at 14 and 4.2MB at 40.
-     Biasing the window forward is deliberately absent: frames behind the playhead
-     are already loaded, so a symmetric window already spends every slot forward
-     when moving forward, which makes the bias just extra depth. */
-  const KEEP = 35;   // fetch radius, in frames either side of the playhead —
-                     // 14 at 128-frame density, scaled to hold the same TIME
-                     // window now that frames are 2.5x denser
-  const MAXC = 6;    // concurrent fetches, unchanged
-
-  const pending = new Set();
-  let inFlight = 0;
-
-  /* ---------- rest-frame 2x upgrade ---------- */
-  /* Motion is drawn from the 1x set; the ONE frame the viewer settles on is
-     re-fetched at 3200x2000 and swapped in. Sharpness where the eye can
-     linger, ~200KB per stop instead of a parallel 65MB ladder. The map keeps
-     the last few upgrades so stepping back to a recent rest is instant. */
-  let hiEligible = false;
-  const HI = new Map(), hiPending = new Set();
-  const HI_KEEP = 8;
-  function requestHi(k) {
-    if (!hiEligible || HI.has(k) || hiPending.has(k)) return;
-    hiPending.add(k);
-    const img = new Image();
-    img.decoding = 'async';
-    img.onload = () => {
-      const publish = () => {
-        HI.set(k, img);
-        hiPending.delete(k);
-        while (HI.size > HI_KEEP) HI.delete(HI.keys().next().value);
-        dirty = true; schedule();
-      };
-      if (img.decode) img.decode().then(publish, publish); else publish();
-    };
-    img.onerror = () => hiPending.delete(k);
-    img.src = 'assets/hero2x/' + String(k).padStart(3, '0') + '.webp';
-  }
-
-  function request(i) {
-    if (FRAMES[i] || pending.has(i)) return;
-    pending.add(i);
-    inFlight++;
-    const img = new Image();
-    img.decoding = 'async';
-    const settle = () => {
-      pending.delete(i); inFlight--;
-      maintain();
-    };
-    img.onload = () => {
-      /* Publish only once the bitmap is genuinely ready to paint. `load` means
-         the bytes arrived, not that they are decoded, and drawImage on an
-         undecoded image decodes it synchronously on the main thread —
-         `decoding = 'async'` is only a hint and does not cover the first draw.
-         decode() does that work off-thread and resolves when a paint is free.
-
-         Kept as the correct mechanism for this pattern, NOT as a measured win.
-         An earlier version of this comment claimed it removed the scrub's jank;
-         that was wrong and is retracted. The residual long frames survive every
-         intervention tried against them — a deeper fetch window (14 -> 40), and
-         even fetching and decoding all 128 frames before scrolling at all, both
-         land within noise of shipping behaviour (p95 ~10ms, ~98% of frames
-         inside the 60fps budget, 5-9 frames past 33ms in every configuration).
-         They are not caused by frame arrival.
-
-         Failure falls through to publishing anyway — a frame that will cost a
-         synchronous decode still beats a frame that never appears. */
-      const publish = () => {
-        FRAMES[i] = img;
-        /* only a frame at or next to the playhead can change what is on screen */
-        if (Math.abs(i - wantedIndex) <= 2) { dirty = true; schedule(); }
-        settle();
-      };
-      if (img.decode) img.decode().then(publish, publish);
-      else publish();
-    };
-    img.onerror = settle;
-    img.src = frameSrc(i);
-  }
-
-  function maintain() {
-    if (inFlight >= MAXC) return;
-    /* nearest-first, so the frame under the playhead always wins the slot */
-    const want = [];
-    for (const i of CANDIDATES) {
-      if (FRAMES[i] || pending.has(i)) continue;
-      const d = Math.abs(i - wantedIndex);
-      if (d <= KEEP) want.push([d, i]);
-    }
-    want.sort((a, b) => a[0] - b[0]);
-    for (const [, i] of want) {
-      if (inFlight >= MAXC) break;
-      request(i);
-    }
-  }
-
-  function startLoader() {
-    if (loaderStarted) return;
-    loaderStarted = true;
-    /* 2x is no longer a parallel windowed set — at 320 frames that ladder
-       would cost ~65MB per Retina visitor. Motion hides resolution; only the
-       frame you STOP on needs to be sharp. Eligibility is decided here
-       (viewport, not the stage rect: this runs before applyMode() pins the
-       stage, when it still has its unpinned column width — measuring the
-       stage silently chose 1x on a 2880 backing once). The single resting
-       frame is upgraded on demand by requestHi(). */
-    if (!thrifty) {
-      const dpr = Math.min(window.devicePixelRatio || 1, sequence.maxDpr);
-      hiEligible = Math.round(window.innerWidth * dpr) > 1840;
-    }
-    maintain();
-  }
-
-  /* ---------- canvas measurement (DPR-capped) ---------- */
-  let W = 0, H = 0;
-  function measureCanvas() {
-    const rect = stage.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, sequence.maxDpr);
-    W = Math.max(1, Math.round(rect.width));
-    H = Math.max(1, Math.round(rect.height));
-    canvas.width  = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  function nearestLoaded(i) {
-    if (FRAMES[i]) return i;
-    for (let d = 1; d < sequence.frameCount; d++) {
-      if (i - d >= 0 && FRAMES[i - d]) return i - d;
-      if (i + d < sequence.frameCount && FRAMES[i + d]) return i + d;
-    }
-    return -1;
-  }
-
-  /* Blending used to require the two frames to be literal neighbours, which
-     meant that while frames were still streaming in — or whenever stride
-     thinned the set — the scrub fell back to hard cuts between whatever had
-     arrived. Walking forward to the next loaded frame instead lets the pair
-     straddle any gap, so a half-loaded sequence scrubs smoothly rather than
-     stepping, and a strided one has no visible seams at all. */
-  function nextLoadedFrom(i) {
-    for (let j = i + 1; j < sequence.frameCount; j++) if (FRAMES[j]) return j;
-    return -1;
-  }
-
-  /* ---------- render: crossfaded frame pair, cover-fit ---------- */
-  /* progress lands between two frames almost always; drawing the lower frame
-     and blending the upper one in by the fractional part turns 128 discrete
-     images into a continuous scrub. Still fully deterministic: the same
-     progress always produces the same pair and the same blend factor. */
-  function drawCover(img, alpha) {
-    const iw = img.naturalWidth, ih = img.naturalHeight;
-    const s  = Math.max(W / iw, H / ih);
-    const dw = iw * s, dh = ih * s;
-    ctx.globalAlpha = alpha;
-    ctx.drawImage(img, (W - dw) * 0.5, (H - dh) * sequence.focalY, dw, dh);
-    ctx.globalAlpha = 1;
-  }
-
-  function render(progress) {
-    const last = sequence.frameCount - 1;
-    const pos  = Math.min(last, Math.max(0, progress * last));
-    const i0   = Math.floor(pos);
-    const f    = pos - i0;
-    wantedIndex = Math.round(pos);
-    ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, W, H);
-    const base = nearestLoaded(i0);
-    if (base >= 0) {
-      /* only ever blend forward from a frame at or before the playhead —
-         blending back from a later frame would run the flight in reverse */
-      let nxt = -1, a = 0;
-      if (base <= pos) {
-        nxt = nextLoadedFrom(base);
-        if (nxt > base) a = Math.min(1, (pos - base) / (nxt - base));
-      }
-      /* at the ends of a crossing the pair collapses to one image; drawing
-         the occluded partner there is a full-canvas paint for nothing */
-      if (a >= 0.995) {
-        drawCover(HI.get(nxt) || FRAMES[nxt], 1);
-      } else if (a <= 0.005) {
-        drawCover(HI.get(base) || FRAMES[base], 1);
-      } else {
-        drawCover(FRAMES[base], 1);
-        drawCover(FRAMES[nxt], a);
-      }
-    }
-  }
-
-  startLoader();
-  /* ---------- copy stops, driven by the same progress ---------- */
+  /* ---------- copy stops, driven by the glided progress ---------- */
   function paintUI(progress) {
-    /* Written on the SECTION, not :root. The only consumer of --p is the
-       hero copy fade inside this section, and a custom-property write on the
-       document element invalidates style for the whole page every frame —
-       measured at 318 recalcs / 409ms across one throttled scrub. Scoping the
-       write bounds that invalidation to the hero subtree. */
     section.style.setProperty('--p', progress.toFixed(4));
-
     let active = 0;
     for (let i = 0; i < sequence.copyStops.length; i++) if (progress >= sequence.copyStops[i]) active = i;
     for (let i = 0; i < states.length; i++) states[i].classList.toggle('is-active', i === active);
   }
 
-  /* ---------- scroll driver: one rAF, one render per frame ---------- */
-  /* Scroll position is still the single source of truth, but the playhead now
-     GLIDES toward it instead of teleporting. The old driver drew exactly the
-     scroll-derived progress, so a fast flick that moved five frames between
-     two paints jumped five frames in one paint — measured on a throttled
-     phone profile, that jump is what read as "low fps", not paint cost.
-     Exponential approach with time constant `glideTauMs` spreads each
-     crossing over a few paints and settles on precisely the same frame the
-     old code showed: determinism at rest is unchanged, only motion between
-     rests is eased. Reduced-motion never enters this path at all. */
+  /* ---------- the live map ---------- */
+  let map = null, mapReady = false, labelsOn = false;
+
+  function buildMap() {
+    /* The veil must be unstrandable BY CONSTRUCTION. The warm chain crosses a
+       style load, a geojson fetch, 22 image callbacks and eleven bounded idle
+       waits — verified flaky under software GL, where one run went live in
+       10s and the next never did. Rather than trust every link, the watchdog
+       reveals whatever exists after 15s. */
+    setTimeout(() => {
+      if (!mapReady) { console.warn('hero warm watchdog: revealing'); finishWarm(); }
+    }, 15000);
+    mapboxgl.accessToken = TOKEN;
+    map = new mapboxgl.Map({
+      container: mapEl,
+      style: 'mapbox://styles/mapbox/standard',
+      projection: 'globe',
+      center: [30, 10], zoom: 1.45, bearing: 0, pitch: 0,
+      interactive: false,
+      attributionControl: { compact: true },   /* required by the TOS on a live map */
+      fadeDuration: 0,
+      maxTileCacheSize: 2048,                  /* hold the warmed corridor */
+      config: { basemap: {
+        lightPreset: 'night',
+        showAdminBoundaries: false,
+        showPlaceLabels: false,
+        showPointOfInterestLabels: false,
+        showTransitLabels: false,
+        showRoadLabels: false,
+        show3dObjects: true
+      }}
+    });
+
+    map.on('style.load', async () => {
+      map.setConfigProperty('basemap', 'showAdminBoundaries', false);
+      map.setFog({ 'space-color': '#050a14', 'star-intensity': 0.55,
+                   'horizon-blend': 0.018, 'color': '#cfe2f5', 'high-color': '#2b5c94' });
+
+      /* Conquest layers — identical recipe to the app and the old frames:
+         street-snapped loops, pastel over the night ground, below buildings. */
+      const PALETTE = ['#8FD3FF','#FFA9B8','#9FE8C8','#C9B3F7','#FFC98F','#8FE8E8',
+                       '#F5E1A0','#FFB0DC','#C5E89A','#AEBBFF','#FFB3A7','#A8CBFF'];
+      const colorExp = ['match', ['get', 'color_index']]
+        .concat(PALETTE.flatMap((c, i) => [i, c])).concat([PALETTE[0]]);
+      const under = (map.getStyle().layers.find(l => l.type === 'fill-extrusion') || {}).id;
+
+      const withTimeout = (pr, ms) => Promise.race([pr, new Promise(res => setTimeout(() => res(null), ms))]);
+      const terr = await withTimeout(fetch('assets/territory.geojson').then(r => r.json()), 6000);
+      if (!terr) { warm(); return; }   // conquest missing beats a stuck veil
+      map.addSource('terr', { type: 'geojson', data: terr });
+      map.addLayer({ id: 'terr-fill', type: 'fill', source: 'terr',
+        paint: { 'fill-color': colorExp, 'fill-opacity': 0.45, 'fill-emissive-strength': 0.85 } }, under);
+      map.addLayer({ id: 'terr-outline', type: 'line', source: 'terr',
+        paint: { 'line-color': colorExp, 'line-opacity': 0.95, 'line-emissive-strength': 1.0,
+                 'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1, 12, 2, 16, 3] },
+        layout: { 'line-join': 'round', 'line-cap': 'round' } }, under);
+
+      await withTimeout(Promise.all(terr.features.map(f => new Promise(res => {
+        map.loadImage('assets/pins/pin-' + f.properties.owner + '.png', (e, img) => {
+          if (!e && img && !map.hasImage(f.properties.pin)) map.addImage(f.properties.pin, img, { pixelRatio: 3 });
+          res();
+        });
+      }))), 6000);
+      map.addSource('pins', { type: 'geojson', data: {
+        type: 'FeatureCollection',
+        features: terr.features.map(f => ({
+          type: 'Feature', properties: f.properties,
+          geometry: { type: 'Point', coordinates: [f.properties.cx, f.properties.cy] },
+        })),
+      }});
+      map.addLayer({ id: 'terr-pins', type: 'symbol', source: 'pins',
+        layout: { 'icon-image': ['get', 'pin'], 'icon-allow-overlap': true, 'icon-ignore-placement': true,
+                  'icon-size': ['interpolate', ['linear'], ['zoom'], 14, 0.62, 17, 1.08] },
+        paint: { 'icon-opacity': ['interpolate', ['linear'], ['zoom'], 13.5, 0, 15, 1],
+                 'icon-emissive-strength': 1.0 } });
+
+      warm();
+    });
+
+    let styleBegan = false;
+    map.once('styledata', () => { styleBegan = true; });
+    map.on('error', e => {
+      /* Only a failure BEFORE the style ever arrives is fatal (dead token,
+         dead style URL). The first version fell back on ANY error event and
+         a transient tile hiccup killed a fully working map mid-warm —
+         measured: 103 tile requests served, then poster mode. Transient
+         errors are logged and survived. */
+      if (!styleBegan) { console.warn('hero map failed before style, poster mode', e && e.error); toPoster(); }
+      else if (!mapReady) console.warn('hero map transient during warm:', (e && e.error && e.error.message) || e);
+    });
+  }
+
+  /* Labels resolve in as the camera closes — with hysteresis, because a
+     scrub crosses the gate in both directions. */
+  function syncLabels(zoom) {
+    if (!labelsOn && zoom >= 4.7) { labelsOn = true; map.setConfigProperty('basemap', 'showPlaceLabels', true); }
+    else if (labelsOn && zoom <= 4.3) { labelsOn = false; map.setConfigProperty('basemap', 'showPlaceLabels', false); }
+  }
+
+  /* ---------- the loading veil + corridor warm-up ---------- */
+  /* The reference sites all open with a loader while assets arrive. Ours
+     flies the corridor once, hidden: every zoom level the dive crosses gets
+     its tiles into cache before the visitor sees a single moving pixel.
+     Bounded — a slow network gets a best-effort cache and the veil lifts
+     anyway; it can never hold the page hostage. */
+  const bounded = ms => new Promise(r => { const done = () => r(); map.once('idle', done); setTimeout(done, ms); });
+  async function warm() {
+    const stations = [0, 0.05, 0.116, 0.20, 0.30, 0.42, 0.55, 0.65, 0.76, 0.88, 1];
+    for (let i = 0; i < stations.length; i++) {
+      const c = cam(warp(stations[i]));
+      syncLabels(c.zoom);
+      map.jumpTo(c);
+      await bounded(i < 3 ? 900 : 650);
+      if (veilBar) veilBar.style.transform = 'scaleX(' + ((i + 1) / stations.length) + ')';
+    }
+    const c0 = cam(warp(currentProgress()));
+    syncLabels(c0.zoom);
+    map.jumpTo(c0);
+    await bounded(700);
+    finishWarm();
+  }
+
+  /* Idempotent, and the watchdog's target: however the warm-up ends — clean,
+     slow network, or a stall anywhere in the chain — the page ends up in the
+     same live state. Tiles still streaming just finish loading in view. */
+  function finishWarm() {
+    if (mapReady) return;
+    mapReady = true;
+    mapEl.classList.add('is-live');
+    if (veil) { veil.classList.add('is-done'); setTimeout(() => { veil.hidden = true; }, 600); }
+    dirty = true; schedule();
+  }
+
+  function toPoster() {
+    if (poster) poster.src = 'assets/hero/poster-final.webp';
+    if (veil) veil.hidden = true;
+    if (map) { try { map.remove(); } catch (e) {} map = null; }
+    mapEl.style.display = 'none';
+  }
+
+  /* ---------- scroll driver: glide toward native scroll ---------- */
   let rafId = 0, scheduled = false, dirty = true, lastProgress = -1;
-  let shown = -1, lastTick = 0, lastInput = 0, restAnchor = -1;
+  let shown = -1, lastTick = 0;
 
   function currentProgress() {
     const rect = section.getBoundingClientRect();
@@ -2641,53 +2563,23 @@
 
   function frame(now) {
     rafId = 0; scheduled = false;
-    let target = currentProgress();
-    /* At rest, land ON a frame. The scrub position almost never divides into
-       a whole frame index, so the settled canvas used to be a blend of two
-       neighbouring frames — at street level, where neighbours differ by a
-       real camera move, that superposition reads as ghosted, blurry
-       buildings (owner report). Once scrolling has been quiet for a beat,
-       the glide's destination becomes the nearest whole frame: exactly one
-       crisp image, reached smoothly, no pop. Deterministic as before — the
-       same rest offset always rounds to the same frame. */
-    if (now - lastInput > 350) {
-      /* Anchors are the EVEN indices: only they exist at 2x, and at 320-frame
-         density the at-most-one-frame nudge is 1/319 of the flight. The idle
-         window is 350ms, not 140: quantizing between the strokes of a slow,
-         hesitant scroll turned single frames into visible holds — a stutter
-         this exists to remove, not add. */
-      const last = sequence.frameCount - 1;
-      restAnchor = Math.min(last, Math.round(target * last / 2) * 2);
-      target = restAnchor / last;
-    } else {
-      restAnchor = -1;
-    }
-    /* first paint snaps: a page restored mid-hero must not glide in from 0 */
+    const target = currentProgress();
     if (shown < 0) shown = target;
     const dt = Math.min(64, now - lastTick || 16.7);
     lastTick = now;
     shown += (target - shown) * (1 - Math.exp(-dt / sequence.glideTauMs));
-    /* close enough is done — snapping here is what ends the rAF chain */
-    if (Math.abs(target - shown) < 0.0006) shown = target;
-    if (dirty || Math.abs(shown - lastProgress) >= 0.0002) {
+    if (Math.abs(target - shown) < 0.0004) shown = target;
+    if (dirty || Math.abs(shown - lastProgress) >= 0.00015) {
       dirty = false;
       lastProgress = shown;
-      render(shown);
+      if (map && mapReady) {
+        const c = cam(warp(shown));
+        syncLabels(c.zoom);
+        map.jumpTo(c);
+      }
       paintUI(shown);
-      /* render() has just moved the playhead, so residency is now stale: this is
-         what pulls the frames ahead of the viewer in and lets the ones behind go.
-         It runs after the draw, never before, so it can never delay a paint. */
-      if (loaderStarted) maintain();
     }
-    if (shown !== target) {
-      schedule();
-    } else if (restAnchor >= 0) {
-      /* Ordered AFTER the glide: the first version asked for the upgrade
-         before the snap ever happened, and once snapped the loop stops — so
-         the request was provably never sent (0 hero2x fetches in the run
-         that caught this). Arrival redraws via dirty+schedule. */
-      requestHi(restAnchor);
-    }
+    if (shown !== target) schedule();
   }
 
   function schedule() {
@@ -2697,30 +2589,25 @@
   }
 
   function onScroll() {
-    lastInput = performance.now();
     if (nav) nav.classList.toggle('is-scrolled', window.scrollY > 12);
     if (!reduced) schedule();
   }
 
   function refresh() {
-    measureCanvas();
     dirty = true;
-    if (reduced) {
-      const p = sequence.reducedMotionState;
-      render(p);
-      paintUI(p);
-    } else {
-      schedule();
-    }
+    if (reduced) paintUI(1);
+    else schedule();
   }
 
   /* ---------- mode application ---------- */
   function applyMode() {
     reduced = motionQuery.matches;
     if (reduced) {
-      // no pinning, no scrubbing: the section returns to ordinary flow
       section.style.height = '';
       root.classList.remove('has-motion');
+      if (poster) poster.src = 'assets/hero/poster-final.webp';
+      if (veil) veil.hidden = true;
+      mapEl.style.display = 'none';
     } else {
       section.style.height = sequence.scrollVh + 'vh';
       root.classList.add('has-motion');
@@ -2728,69 +2615,18 @@
     refresh();
   }
 
-  /* ---------- reveals ---------- */
-  let revealObserver = null, boardObserver = null;
-  function initReveals() {
-    const items = document.querySelectorAll('[data-reveal]');
-    const board = document.getElementById('board');
-    if (reduced || !('IntersectionObserver' in window)) {
-      items.forEach(el => el.classList.add('is-in'));
-      if (board) board.classList.add('is-in');
-      return;
-    }
-    revealObserver = new IntersectionObserver((entries, obs) => {
-      for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); obs.unobserve(e.target); }
-    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
-    items.forEach(el => revealObserver.observe(el));
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', refresh);
+  motionQuery.addEventListener ? motionQuery.addEventListener('change', applyMode)
+                               : motionQuery.addListener(applyMode);
 
-    if (board) {
-      boardObserver = new IntersectionObserver((entries, obs) => {
-        for (const e of entries) if (e.isIntersecting) { e.target.classList.add('is-in'); obs.unobserve(e.target); }
-      }, { threshold: 0.25 });
-      boardObserver.observe(board);
-    }
-  }
-
-  /* ---------- wiring ---------- */
   applyMode();
-  initReveals();
-  onScroll();
-
-  on(window, 'scroll', onScroll, { passive: true });
-  on(window, 'resize', refresh);
-  on(window, 'orientationchange', refresh);
-  if (motionQuery.addEventListener) on(motionQuery, 'change', applyMode);
-
-  // measurements must settle after fonts and intrinsic media sizes land
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(refresh).catch(() => {});
-  on(window, 'load', refresh);
-
-  let resizeObserver = null;
-  if ('ResizeObserver' in window) {
-    resizeObserver = new ResizeObserver(refresh);
-    resizeObserver.observe(stage);
+  if (!reduced && !noMap) {
+    if (veil) veil.hidden = false;
+    buildMap();
+  } else if (!reduced) {
+    toPoster();
   }
-
-  // pause work while the tab is hidden
-  on(document, 'visibilitychange', () => { if (!document.hidden) refresh(); });
-
-  /* ---------- full teardown (route change / unmount) ---------- */
-  function destroy() {
-    if (rafId) cancelAnimationFrame(rafId);
-    rafId = 0; scheduled = false;
-    if (resizeObserver) { resizeObserver.disconnect(); resizeObserver = null; }
-    if (revealObserver) { revealObserver.disconnect(); revealObserver = null; }
-    if (boardObserver)  { boardObserver.disconnect();  boardObserver = null; }
-    while (teardown.length) teardown.pop()();
-    ctx.clearRect(0, 0, W, H);
-    /* The contract at the top of this block promises frames are torn down too,
-       and it was the one part not actually doing it — the array kept every
-       decoded bitmap alive past pagehide. */
-    pending.clear();
-    FRAMES.fill(null);
-  }
-  window.__routeRushSequenceTeardown = destroy;
-  on(window, 'pagehide', destroy);
 })();
 </script>
 <svg id="lgDefs" width="0" height="0" style="position:absolute" aria-hidden="true"></svg>

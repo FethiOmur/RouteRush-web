@@ -16,21 +16,21 @@ here.
 index.html            self-contained page — inline CSS and JS, no build step
 assets/               logo, app icon
 assets/fonts/         Splash-Subset.ttf — the brand face, subset (see below)
-assets/hero/          320 pre-rendered flight frames, 1600x1000, sampled at
-                      uniform MEASURED visual change per frame (the
-                      generator's ARC table) so neighbouring frames are
-                      visually near-identical
-assets/hero2x/        the 160 EVEN-index frames at 3200x2000. Not a parallel
-                      windowed set: motion is drawn from 1x, and only the
-                      single frame the viewer RESTS on is fetched from here
-                      and swapped in (requestHi) — sharpness where the eye
-                      can linger, ~200KB per stop
+assets/hero/          two posters only: the hero is a LIVE Mapbox GL map now.
+                      poster-start paints before the map, poster-final IS the
+                      hero under reduced motion / save-data / no WebGL /
+                      ?nomap=1 (the golden harness runs this mode)
+assets/vendor/        mapbox-gl 3.18.0, vendored — the page's only script dep
+assets/pins/          the 22 territory owner pins (ring+glow baked in)
+assets/territory.geojson  street-snapped conquest loops (build-territory.py)
 assets/screens/       app screenshots used in the product sections
 ```
 
-There are no dependencies, no build pipeline, and **no network requests to any
-third party at runtime** — every asset is local, so the page renders identically
-offline.
+There is no build pipeline. Since the live-map hero (owner call, 2026-08-11)
+the page talks to **api.mapbox.com** at runtime — tiles, glyphs, sprites — and
+sends Mapbox's billing pings to events.mapbox.com. One billable "map load" per
+visit; 50k/month are free, then $5/1k. Everything else is local, and the
+`?nomap=1` mode renders fully offline (poster hero).
 
 ### The brand font is subset — regenerate it if you set new text in it
 
@@ -83,18 +83,17 @@ Then visit <http://localhost:8899>.
 
 ## Notes for future edits
 
-- **The hero is a scroll-scrubbed sequence.** Native scroll position is the only
-  source of truth; one normalized progress value drives the canvas and the copy
-  stops. It must stay deterministic in both directions — the same scroll offset
-  always settles on the same frame. The playhead *glides* toward the scroll
-  position (`sequence.glideTauMs`, exponential approach) rather than jumping:
-  measured under a compositor flick, the hard jump repainted ~9 times a second
-  crossing a median of 7 source frames per paint, which read as low frame rate.
-  The glide only eases motion between rests. At rest the playhead lands on the
-  NEAREST WHOLE FRAME (after ~140ms without scroll input): the scrub position
-  almost never divides into a whole index, and the settled two-frame blend
-  read as ghosted, doubled detail. Still deterministic — the same rest offset
-  always rounds to the same frame.
+- **The hero is a live Mapbox GL map flown by scroll.** Native scroll position
+  is the only source of truth; one normalized progress value drives the camera
+  (`cam(warp(p))` — the measured ARC pacing) and the copy stops. The playhead
+  *glides* toward the scroll position (`sequence.glideTauMs`) so a fast flick
+  eases instead of teleporting. A loading veil flies the corridor once, hidden,
+  so the dive's tiles are cached before anything is visible; it is time-capped
+  and can never strand the page. Reduced motion, save-data, missing WebGL and
+  `?nomap=1` all get the poster hero with the same copy. The embedded token is
+  a web-only pk token, URL-restricted to routerushapp.com (+ localhost:8899
+  for local runs) in the Mapbox console — useless anywhere else. Never embed
+  the app's token here: it cannot be URL-restricted without breaking the app.
 - **Never set `overflow-x: hidden` on `html`.** It makes `<html>` the scroll
   container and silently breaks the hero's sticky pinning.
 - **Glass surfaces** follow the project's own web Liquid Glass system: a tinted
