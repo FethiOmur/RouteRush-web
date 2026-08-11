@@ -2569,18 +2569,23 @@
      anyway; it can never hold the page hostage. */
   const bounded = ms => new Promise(r => { const done = () => r(); map.once('idle', done); setTimeout(done, ms); });
   async function warm() {
-    const stations = [0, 0.05, 0.116, 0.20, 0.30, 0.42, 0.55, 0.65, 0.76, 0.88, 1];
+    /* Eight stations, tighter caps. The first cut used eleven stations with
+       900/650ms caps — on mobile the veil ran 18-27s, three to five times
+       what the reference sites hold their loaders for. The cap is a CEILING:
+       fast networks still advance on the idle event, and anything a shorter
+       warm leaves cold streams in while the visitor reads the headline. */
+    const stations = [0, 0.116, 0.25, 0.42, 0.55, 0.68, 0.84, 1];
     for (let i = 0; i < stations.length; i++) {
       const c = cam(warp(stations[i]));
       syncLabels(c.zoom);
       map.jumpTo(c);
-      await bounded(i < 3 ? 900 : 650);
+      await bounded(i < 2 ? 700 : 450);
       if (veilBar) veilBar.style.transform = 'scaleX(' + ((i + 1) / stations.length) + ')';
     }
     const c0 = cam(warp(currentProgress()));
     syncLabels(c0.zoom);
     map.jumpTo(c0);
-    await bounded(700);
+    await bounded(500);
     finishWarm();
   }
 
