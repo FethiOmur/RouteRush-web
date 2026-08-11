@@ -2493,7 +2493,11 @@
                  'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1, 12, 2, 16, 3] },
         layout: { 'line-join': 'round', 'line-cap': 'round' } }, under);
 
-      await withTimeout(Promise.all(terr.features.map(f => new Promise(res => {
+      /* Only claims that CARRY a pin get one — the original owners the
+         finale frames. The city-fill claims are anonymous rivals: two
+         hundred repeating faces would read smaller, not bigger. */
+      const pinned = terr.features.filter(f => f.properties.pin);
+      await withTimeout(Promise.all(pinned.map(f => new Promise(res => {
         map.loadImage('assets/pins/pin-' + f.properties.owner + '.png', (e, img) => {
           if (!e && img && !map.hasImage(f.properties.pin)) map.addImage(f.properties.pin, img, { pixelRatio: 3 });
           res();
@@ -2525,7 +2529,7 @@
 
       map.addSource('pins', { type: 'geojson', data: {
         type: 'FeatureCollection',
-        features: terr.features.map(f => ({
+        features: pinned.map(f => ({
           type: 'Feature', properties: f.properties,
           geometry: { type: 'Point', coordinates: [f.properties.cx, f.properties.cy] },
         })),
