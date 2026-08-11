@@ -2301,14 +2301,25 @@
 
   /* ---------- configuration: no magic numbers in the handlers ---------- */
   const sequence = {
-    scrollVh:            320,      // section height, in vh
-    frameCount:          128,      // pre-rendered flight frames
+    scrollVh:            460,      // section height, in vh — the runway. 320vh
+                                   // packed the whole flight into ~2000px of
+                                   // scroll; Awwwards-class sequences give a
+                                   // transformation several viewports of room.
+    frameCount:          320,      // pre-rendered flight frames, sampled at
+                                   // uniform MEASURED visual change per frame
+                                   // (the generator's ARC table) — the fix for
+                                   // "photos sliding": neighbouring frames are
+                                   // now visually near-identical, the property
+                                   // that makes a sequence read as continuous
     fit:                 'cover',  // the flight is the hero's background
     framePath:           'assets/hero/',
     focalY:              0.42,     // cover crop favours the upper part of the frame
     posterState:         0,        // frame painted before anything else loads
     reducedMotionState:  1,        // static progress under prefers-reduced-motion (final frame)
-    copyStops:           [0, 0.32, 0.86],  // aligned to the flight's three phases
+    copyStops:           [0, 0.116, 0.650], // phase boundaries in the NEW
+                                   // progress space: arc-length sampling
+                                   // compresses the orbit to 11.6% and runs
+                                   // the dive to 65%
     maxDpr:              2,
     /* Time constant of the playhead's glide toward the scroll position, in ms.
        Without it a fast flick moves the scroll several frames between two
@@ -2410,11 +2421,39 @@
      Biasing the window forward is deliberately absent: frames behind the playhead
      are already loaded, so a symmetric window already spends every slot forward
      when moving forward, which makes the bias just extra depth. */
-  const KEEP = 14;   // fetch radius, in frames either side of the playhead
+  const KEEP = 35;   // fetch radius, in frames either side of the playhead —
+                     // 14 at 128-frame density, scaled to hold the same TIME
+                     // window now that frames are 2.5x denser
   const MAXC = 6;    // concurrent fetches, unchanged
 
   const pending = new Set();
   let inFlight = 0;
+
+  /* ---------- rest-frame 2x upgrade ---------- */
+  /* Motion is drawn from the 1x set; the ONE frame the viewer settles on is
+     re-fetched at 3200x2000 and swapped in. Sharpness where the eye can
+     linger, ~200KB per stop instead of a parallel 65MB ladder. The map keeps
+     the last few upgrades so stepping back to a recent rest is instant. */
+  let hiEligible = false;
+  const HI = new Map(), hiPending = new Set();
+  const HI_KEEP = 8;
+  function requestHi(k) {
+    if (!hiEligible || HI.has(k) || hiPending.has(k)) return;
+    hiPending.add(k);
+    const img = new Image();
+    img.decoding = 'async';
+    img.onload = () => {
+      const publish = () => {
+        HI.set(k, img);
+        hiPending.delete(k);
+        while (HI.size > HI_KEEP) HI.delete(HI.keys().next().value);
+        dirty = true; schedule();
+      };
+      if (img.decode) img.decode().then(publish, publish); else publish();
+    };
+    img.onerror = () => hiPending.delete(k);
+    img.src = 'assets/hero2x/' + String(k).padStart(3, '0') + '.webp';
+  }
 
   function request(i) {
     if (FRAMES[i] || pending.has(i)) return;
@@ -2476,24 +2515,16 @@
   function startLoader() {
     if (loaderStarted) return;
     loaderStarted = true;
-    /* Resolution ladder, decided once per load. The 1x set is 1600x1000; on a
-       Retina laptop the canvas backing store is ~2880 wide, so every frame was
-       being upscaled 1.8x — the owner saw it: mid-flight frames soft, while 0
-       and 127 (shipped at 2x) were crisp. Canvases that would upscale by more
-       than ~15% fetch the 3200x2000 set instead; phones never qualify (their
-       backing is far below the 1x sources), and neither does anyone on a
-       save-data or slow connection. Decided at loader start, not on resize:
-       re-fetching 128 frames because a window crossed a threshold is worse
-       than one soft session. */
+    /* 2x is no longer a parallel windowed set — at 320 frames that ladder
+       would cost ~65MB per Retina visitor. Motion hides resolution; only the
+       frame you STOP on needs to be sharp. Eligibility is decided here
+       (viewport, not the stage rect: this runs before applyMode() pins the
+       stage, when it still has its unpinned column width — measuring the
+       stage silently chose 1x on a 2880 backing once). The single resting
+       frame is upgraded on demand by requestHi(). */
     if (!thrifty) {
       const dpr = Math.min(window.devicePixelRatio || 1, sequence.maxDpr);
-      /* viewport, not the stage rect: this runs during IIFE evaluation,
-         before applyMode() has pinned the stage to full viewport, so the
-         stage still has its unpinned column width here — measuring it chose
-         1x on a 2880-wide backing. In motion mode the canvas covers the
-         viewport, so the viewport IS the backing target. */
-      const backing = Math.round(window.innerWidth * dpr);
-      if (backing > 1840) sequence.framePath = 'assets/hero2x/';
+      hiEligible = Math.round(window.innerWidth * dpr) > 1840;
     }
     maintain();
   }
@@ -2564,10 +2595,12 @@
       /* at the ends of a crossing the pair collapses to one image; drawing
          the occluded partner there is a full-canvas paint for nothing */
       if (a >= 0.995) {
-        drawCover(FRAMES[nxt], 1);
+        drawCover(HI.get(nxt) || FRAMES[nxt], 1);
+      } else if (a <= 0.005) {
+        drawCover(HI.get(base) || FRAMES[base], 1);
       } else {
         drawCover(FRAMES[base], 1);
-        if (a > 0.005) drawCover(FRAMES[nxt], a);
+        drawCover(FRAMES[nxt], a);
       }
     }
   }
@@ -2598,7 +2631,7 @@
      old code showed: determinism at rest is unchanged, only motion between
      rests is eased. Reduced-motion never enters this path at all. */
   let rafId = 0, scheduled = false, dirty = true, lastProgress = -1;
-  let shown = -1, lastTick = 0, lastInput = 0;
+  let shown = -1, lastTick = 0, lastInput = 0, restAnchor = -1;
 
   function currentProgress() {
     const rect = section.getBoundingClientRect();
@@ -2617,9 +2650,17 @@
        the glide's destination becomes the nearest whole frame: exactly one
        crisp image, reached smoothly, no pop. Deterministic as before — the
        same rest offset always rounds to the same frame. */
-    if (now - lastInput > 140) {
+    if (now - lastInput > 350) {
+      /* Anchors are the EVEN indices: only they exist at 2x, and at 320-frame
+         density the at-most-one-frame nudge is 1/319 of the flight. The idle
+         window is 350ms, not 140: quantizing between the strokes of a slow,
+         hesitant scroll turned single frames into visible holds — a stutter
+         this exists to remove, not add. */
       const last = sequence.frameCount - 1;
-      target = Math.round(target * last) / last;
+      restAnchor = Math.min(last, Math.round(target * last / 2) * 2);
+      target = restAnchor / last;
+    } else {
+      restAnchor = -1;
     }
     /* first paint snaps: a page restored mid-hero must not glide in from 0 */
     if (shown < 0) shown = target;
@@ -2638,7 +2679,15 @@
          It runs after the draw, never before, so it can never delay a paint. */
       if (loaderStarted) maintain();
     }
-    if (shown !== target) schedule();
+    if (shown !== target) {
+      schedule();
+    } else if (restAnchor >= 0) {
+      /* Ordered AFTER the glide: the first version asked for the upgrade
+         before the snap ever happened, and once snapped the loop stops — so
+         the request was provably never sent (0 hero2x fetches in the run
+         that caught this). Arrival redraws via dirty+schedule. */
+      requestHi(restAnchor);
+    }
   }
 
   function schedule() {

@@ -16,10 +16,15 @@ here.
 index.html            self-contained page — inline CSS and JS, no build step
 assets/               logo, app icon
 assets/fonts/         Splash-Subset.ttf — the brand face, subset (see below)
-assets/hero/          128 pre-rendered flight frames, 1600x1000 (0/127 at 2x)
-assets/hero2x/        the same 128 frames at 3200x2000 — fetched instead of
-                      the 1x set when the canvas backing exceeds 1840px wide
-                      (Retina laptops/desktops) on a non-thrifty connection
+assets/hero/          320 pre-rendered flight frames, 1600x1000, sampled at
+                      uniform MEASURED visual change per frame (the
+                      generator's ARC table) so neighbouring frames are
+                      visually near-identical
+assets/hero2x/        the 160 EVEN-index frames at 3200x2000. Not a parallel
+                      windowed set: motion is drawn from 1x, and only the
+                      single frame the viewer RESTS on is fetched from here
+                      and swapped in (requestHi) — sharpness where the eye
+                      can linger, ~200KB per stop
 assets/screens/       app screenshots used in the product sections
 ```
 
