@@ -1595,70 +1595,18 @@
             <!-- SWAP: point src at the real globe/territory capture -->
             <img class="shot" loading="lazy" decoding="async" src="assets/screens/dev-mapmodes.webp"
                  alt="RouteRush Map Modes over London: Heatmap, Territory and Routes cards above the 3D city">
-            <div class="island" aria-hidden="true"></div>
-            <div class="statusbar"><span>9:41</span><span class="sb-icons">
-              <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
-              <svg width="19" height="10" viewBox="0 0 19 10" aria-hidden="true"><rect x=".5" y=".5" width="15" height="9" rx="2.6" stroke="#fff" fill="none" opacity=".5"/><rect x="2" y="2" width="10.5" height="6" rx="1.4" fill="#fff"/><path d="M17 3.6v2.8c.9-.3 1.4-.8 1.4-1.4s-.5-1.1-1.4-1.4z" fill="#fff" opacity=".5"/></svg>
-            </span></div>
-
-            <div class="screen-body">
-              <!-- globe with claimed ground -->
-              <div style="position:relative; flex:1; min-height:0; border-radius:16px; overflow:hidden; border:1px solid var(--hair-soft); background:radial-gradient(120% 90% at 50% 20%, #0b1016, #000 70%)">
-                <svg viewBox="0 0 240 300" style="width:100%; height:100%" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
-                  <defs>
-                    <radialGradient id="globeShade" cx="38%" cy="30%" r="78%">
-                      <stop offset="0%" stop-color="#1d2530"/><stop offset="100%" stop-color="#04070b"/>
-                    </radialGradient>
-                    <clipPath id="globeClip"><circle cx="120" cy="150" r="86"/></clipPath>
-                  </defs>
-                  <circle cx="120" cy="150" r="86" fill="url(#globeShade)" stroke="rgba(255,255,255,.16)"/>
-                  <g clip-path="url(#globeClip)" stroke="rgba(255,255,255,.12)" fill="none">
-                    <ellipse cx="120" cy="150" rx="86" ry="30"/><ellipse cx="120" cy="150" rx="86" ry="60"/>
-                    <ellipse cx="120" cy="150" rx="28" ry="86"/><ellipse cx="120" cy="150" rx="58" ry="86"/>
-                    <line x1="34" y1="150" x2="206" y2="150"/>
-                  </g>
-                  <!-- Claimed ground. This used to be sixteen hexagons in a
-                       honeycomb, which is a picture of the scoring substrate,
-                       not of the app: the hex mesh was rejected three times in
-                       the product and now survives there only as a z>=15
-                       texture under smooth polygon fills. These are rectilinear
-                       claims in the hero's own pastel palette, each the shape
-                       of a closed loop somebody ran round a few blocks. -->
-                  <g clip-path="url(#globeClip)" stroke-width=".9" fill-opacity=".42" stroke-opacity=".95">
-                    <path d="M92 118h30v12h14v20h-22v10H92z"      fill="#8FD3FF" stroke="#8FD3FF"/>
-                    <path d="M128 150h26v14h12v18h-30v-12h-8z"    fill="#FFA9B8" stroke="#FFA9B8"/>
-                    <path d="M76 146h22v10h10v22H84v-14h-8z"      fill="#9FE8C8" stroke="#9FE8C8"/>
-                    <path d="M104 184h28v10h10v16h-38z"           fill="#C9B3F7" stroke="#C9B3F7"/>
-                    <path d="M148 112h20v10h8v16h-28z"            fill="#FFC98F" stroke="#FFC98F"/>
-                  </g>
-                  <!-- ground still up for grabs -->
-                  <g clip-path="url(#globeClip)" fill="none" stroke="rgba(255,255,255,.10)" stroke-width=".7">
-                    <path d="M58 112h22v14h-22z"/><path d="M60 178h26v12H60z"/>
-                    <path d="M150 186h22v14h-22z"/>
-                    <!-- the run line: sport accent, the earned cyan -->
-                    <path d="M74 176c14-14 18-30 34-38s30 6 44-6 20-18 30-16" fill="none" stroke="#00E0FF" stroke-width="4.5" opacity=".18" stroke-linecap="round"/>
-                    <path d="M74 176c14-14 18-30 34-38s30 6 44-6 20-18 30-16" fill="none" stroke="#00E0FF" stroke-width="1.6" stroke-linecap="round"/>
-                    <circle cx="182" cy="116" r="3" fill="#fff"/>
-                  </g>
-                </svg>
-              </div>
-
-              <div class="gcard">
-                <div class="metric-row">
-                  <div class="metric"><i>Blocks</i><b>1 284</b></div>
-                  <div class="metric"><i>Rush Points</i><b>8 420</b></div>
-                  <div class="metric"><i>This week</i><b>+312</b></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="tabbar" aria-hidden="true">
-              <svg class="ico on" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 21.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/></svg>
-              <svg class="ico" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
-              <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.6"/><path d="M12 8v8M8 12h8"/></svg>
-              <svg class="ico" viewBox="0 0 24 24"><path d="M6 20v-1.5A3.5 3.5 0 0 1 9.5 15h5a3.5 3.5 0 0 1 3.5 3.5V20"/><circle cx="12" cy="8" r="3.6"/></svg>
-              <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.6"/><path d="M5 20c0-3.6 3.1-6 7-6s7 2.4 7 6"/></svg>
-            </div>
+            <!-- The screenshot is the phone's entire screen. A hand-built
+                 mock UI used to sit under it — status bar, a drawn globe with
+                 claims, a metrics card, a tab bar, ~75 lines — but the shot is
+                 absolutely positioned at z-index 6, above all of it (island 4,
+                 statusbar 3, the rest auto), so none of it ever painted.
+                 Verified by z-order inspection and a before/after capture:
+                 the only differing pixels are the rounded-corner clip's
+                 anti-aliasing arcs, max delta 29/255, invisible without 8x
+                 amplification — the blend under a partially-covered corner
+                 pixel changes when occluded layers go. If the screenshot is
+                 ever replaced by a built-up mock again, recover the old markup
+                 from git history rather than rebuilding it. -->
           </div>
         </div>
       </div>
