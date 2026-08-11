@@ -20,7 +20,7 @@
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: blob:;
   font-src 'self';
-  connect-src 'self' https://api.mapbox.com https://events.mapbox.com;
+  connect-src 'self' https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com;
   worker-src blob:;
   child-src blob:;
   base-uri 'self';
@@ -179,11 +179,17 @@
     overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
   }
   .skip {
-    position: fixed; z-index: 200; left: 16px; top: -80px;
+    /* Clipped, not offset. The old `top: -80px` park position leaked in
+       mobile WebKit — a white block painted at the viewport corner on the
+       owner's iPhone. A clipped box has no pixels to leak in any engine. */
+    position: fixed; z-index: 200; left: 16px; top: 16px;
     padding: 12px 18px; background: #fff; color: #000; font-weight: 650;
-    border-radius: 999px; transition: top .18s ease;
+    border-radius: 999px;
+    clip-path: inset(50%); opacity: 0; pointer-events: none;
   }
-  .skip:focus { top: 16px; }
+  .skip:focus-visible {
+    clip-path: none; opacity: 1; pointer-events: auto;
+  }
 
   .wrap { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gut); }
 
@@ -479,7 +485,15 @@
   .nav-links { display: flex; gap: 28px; margin-right: 8px; }
   .nav-links a { font-size: 14px; color: var(--text-2); transition: color .3s ease; }
   .nav-links a:hover { color: #fff; }
-  @media (max-width: 860px) { .nav-links { display: none; } }
+  @media (max-width: 860px) {
+    .nav-links { display: none; }
+    /* With the links gone the full-width capsule is mostly empty glass — the
+       owner's phone showed a bar holding a mark, a button and a void. Below
+       this width the capsule hugs its content instead, and the rest/scrolled
+       states share the geometry: nothing left to condense, so the width
+       animation (which needs concrete values) simply retires here. */
+    .nav .wrap, .nav.is-scrolled .wrap { max-width: max-content; gap: 14px; }
+  }
   /* Keep the download CTA in the capsule at every width — it is the primary
      action, and without it the capsule is a wide bar holding only a logo. */
   @media (max-width: 420px) {
