@@ -2685,6 +2685,30 @@
   }
 })();
 </script>
+<script>
+/* Reveal-on-scroll — RESTORED. The original observer lived inside the hero
+   script block and was deleted with the frame pipeline when the live map
+   replaced it; every [data-reveal] element then sat at opacity 0 forever.
+   The page's own tests missed it because they force .is-in before capturing
+   — the owner's iPhone was the first honest look below the fold. Kept as
+   its own block so no future hero rewrite can take it down again. */
+(() => {
+  'use strict';
+  const els = document.querySelectorAll('[data-reveal]');
+  if (!els.length) return;
+  if (!('IntersectionObserver' in window)) {
+    els.forEach(el => el.classList.add('is-in'));
+    return;
+  }
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); }
+    }
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+  els.forEach(el => io.observe(el));
+})();
+</script>
+
 <svg id="lgDefs" width="0" height="0" style="position:absolute" aria-hidden="true"></svg>
 <script>
 /* Refractive Liquid Glass — generalized. Each target capsule gets its own
