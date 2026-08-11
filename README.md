@@ -16,7 +16,10 @@ here.
 index.html            self-contained page — inline CSS and JS, no build step
 assets/               logo, app icon
 assets/fonts/         Splash-Subset.ttf — the brand face, subset (see below)
-assets/hero/          128 pre-rendered flight frames for the scrubbed hero
+assets/hero/          128 pre-rendered flight frames, 1600x1000 (0/127 at 2x)
+assets/hero2x/        the same 128 frames at 3200x2000 — fetched instead of
+                      the 1x set when the canvas backing exceeds 1840px wide
+                      (Retina laptops/desktops) on a non-thrifty connection
 assets/screens/       app screenshots used in the product sections
 ```
 
@@ -82,8 +85,11 @@ Then visit <http://localhost:8899>.
   position (`sequence.glideTauMs`, exponential approach) rather than jumping:
   measured under a compositor flick, the hard jump repainted ~9 times a second
   crossing a median of 7 source frames per paint, which read as low frame rate.
-  The glide only eases motion between rests — where the playhead settles is
-  unchanged, and the golden harness proves rest states pixel-identical.
+  The glide only eases motion between rests. At rest the playhead lands on the
+  NEAREST WHOLE FRAME (after ~140ms without scroll input): the scrub position
+  almost never divides into a whole index, and the settled two-frame blend
+  read as ghosted, doubled detail. Still deterministic — the same rest offset
+  always rounds to the same frame.
 - **Never set `overflow-x: hidden` on `html`.** It makes `<html>` the scroll
   container and silently breaks the hero's sticky pinning.
 - **Glass surfaces** follow the project's own web Liquid Glass system: a tinted

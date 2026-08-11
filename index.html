@@ -2476,6 +2476,25 @@
   function startLoader() {
     if (loaderStarted) return;
     loaderStarted = true;
+    /* Resolution ladder, decided once per load. The 1x set is 1600x1000; on a
+       Retina laptop the canvas backing store is ~2880 wide, so every frame was
+       being upscaled 1.8x — the owner saw it: mid-flight frames soft, while 0
+       and 127 (shipped at 2x) were crisp. Canvases that would upscale by more
+       than ~15% fetch the 3200x2000 set instead; phones never qualify (their
+       backing is far below the 1x sources), and neither does anyone on a
+       save-data or slow connection. Decided at loader start, not on resize:
+       re-fetching 128 frames because a window crossed a threshold is worse
+       than one soft session. */
+    if (!thrifty) {
+      const dpr = Math.min(window.devicePixelRatio || 1, sequence.maxDpr);
+      /* viewport, not the stage rect: this runs during IIFE evaluation,
+         before applyMode() has pinned the stage to full viewport, so the
+         stage still has its unpinned column width here — measuring it chose
+         1x on a 2880-wide backing. In motion mode the canvas covers the
+         viewport, so the viewport IS the backing target. */
+      const backing = Math.round(window.innerWidth * dpr);
+      if (backing > 1840) sequence.framePath = 'assets/hero2x/';
+    }
     maintain();
   }
 
@@ -2579,7 +2598,7 @@
      old code showed: determinism at rest is unchanged, only motion between
      rests is eased. Reduced-motion never enters this path at all. */
   let rafId = 0, scheduled = false, dirty = true, lastProgress = -1;
-  let shown = -1, lastTick = 0;
+  let shown = -1, lastTick = 0, lastInput = 0;
 
   function currentProgress() {
     const rect = section.getBoundingClientRect();
@@ -2589,7 +2608,19 @@
 
   function frame(now) {
     rafId = 0; scheduled = false;
-    const target = currentProgress();
+    let target = currentProgress();
+    /* At rest, land ON a frame. The scrub position almost never divides into
+       a whole frame index, so the settled canvas used to be a blend of two
+       neighbouring frames — at street level, where neighbours differ by a
+       real camera move, that superposition reads as ghosted, blurry
+       buildings (owner report). Once scrolling has been quiet for a beat,
+       the glide's destination becomes the nearest whole frame: exactly one
+       crisp image, reached smoothly, no pop. Deterministic as before — the
+       same rest offset always rounds to the same frame. */
+    if (now - lastInput > 140) {
+      const last = sequence.frameCount - 1;
+      target = Math.round(target * last) / last;
+    }
     /* first paint snaps: a page restored mid-hero must not glide in from 0 */
     if (shown < 0) shown = target;
     const dt = Math.min(64, now - lastTick || 16.7);
@@ -2617,6 +2648,7 @@
   }
 
   function onScroll() {
+    lastInput = performance.now();
     if (nav) nav.classList.toggle('is-scrolled', window.scrollY > 12);
     if (!reduced) schedule();
   }
