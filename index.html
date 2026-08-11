@@ -2472,13 +2472,15 @@
         map.addSource('world', { type: 'geojson', data: world, tolerance: 0.6 });
         map.addLayer({ id: 'world-fill', type: 'fill', source: 'world',
           paint: { 'fill-color': wc, 'fill-emissive-strength': 0.85,
+                   /* fills arrive only once a neighbourhood-scale claim is
+                      legible; before that the speckle carries the story */
                    'fill-opacity': ['interpolate', ['linear'], ['zoom'],
-                     3, 0.25, 6, 0.42, 9.5, 0.40, 11.5, 0] } }, under);
+                     6.5, 0, 8, 0.45, 10, 0.45, 11.5, 0] } }, under);
         map.addLayer({ id: 'world-outline', type: 'line', source: 'world',
           paint: { 'line-color': wc, 'line-emissive-strength': 1.0,
-                   'line-width': ['interpolate', ['linear'], ['zoom'], 4, 0.4, 9, 1.1],
+                   'line-width': ['interpolate', ['linear'], ['zoom'], 7, 0.5, 10, 1.2],
                    'line-opacity': ['interpolate', ['linear'], ['zoom'],
-                     4, 0.5, 9.5, 0.85, 11.5, 0] } }, under);
+                     6.5, 0, 8.5, 0.9, 11.5, 0] } }, under);
       }
 
       const terr = await withTimeout(fetch('assets/territory.geojson').then(r => r.json()), 6000);
