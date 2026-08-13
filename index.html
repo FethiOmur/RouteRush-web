@@ -1161,7 +1161,7 @@
   .final-cta { display: flex; gap: 11px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
 
   footer { border-top: 1px solid var(--hair-soft); padding-block: 44px 40px; }
-  .foot { display: grid; gap: 28px; grid-template-columns: minmax(0,1.2fr) repeat(2, minmax(0,1fr)); align-items: start; }
+  .foot { display: grid; gap: 28px; grid-template-columns: minmax(0,1.2fr) repeat(3, minmax(0,1fr)); align-items: start; }
   @media (max-width: 720px) { .foot { grid-template-columns: 1fr 1fr; } .foot > :first-child { grid-column: 1 / -1; } }
   .foot h4 { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-4); font-weight: 560; margin-bottom: 13px; }
   .foot li + li { margin-top: 9px; }
@@ -1472,6 +1472,7 @@
       "logo": "https://routerushapp.com/assets/routerush-appicon.png",
       "sameAs": [
         "https://www.instagram.com/routerushapp/",
+        "https://www.tiktok.com/@routerushapp",
         "https://www.tiktok.com/@routerush"
       ]
     },
@@ -2376,6 +2377,21 @@
           <li><a href="faq.html">FAQ</a></li>
           <li><a href="mailto:support@routerushapp.com">Support</a></li>
           <li><a href="press.html">Press kit</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Social">
+        <h4>Follow</h4>
+        <!-- These are the two handles that carry the brand name on their
+             profiles, and the same two listed in the Organization sameAs above.
+             The pairing is the point: a search or answer engine only treats a
+             profile as ours if it can see the link from here and the profile
+             pointing back. rel="me" states the same claim in microformats.
+             @routerush on TikTok is also ours but held empty, so it stays in
+             sameAs and out of the visible list — sending a visitor to a blank
+             profile is worse than not offering the link. -->
+        <ul>
+          <li><a href="https://www.instagram.com/routerushapp/" rel="me noopener">Instagram</a></li>
+          <li><a href="https://www.tiktok.com/@routerushapp" rel="me noopener">TikTok</a></li>
         </ul>
       </nav>
     </div>
