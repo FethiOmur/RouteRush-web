@@ -1,6 +1,5 @@
 {
   "//": "Turkish. Vocabulary is pinned to the app's own Localizable.xcstrings so the site and the product never call the same thing two different names: territory=bölge, ground=toprak, claim/conquer=ele geçirmek, League=Lig, Leaderboards=Lider Tabloları, Clubs=Kulüpler, Country=Ülke, Area=Alan, Distance=Mesafe, Pace=Tempo, Time=Süre, Pause=Duraklat. Rush, Rush Points, Atlas, PRO and Boldi stay English — the app leaves them untranslated too. Address is informal (sen), matching the app.",
-
   "index.html": {
     "//head": "Written for the locale's own searchers, not translated word-for-word. Turkish runners search 'bölge kapma' and 'koşu uygulaması'; the English title's phrase 'Territory Running App' has no Turkish search volume as a literal rendering. These keys are longer than any word-level key, so the single-pass replacement always prefers them.",
     "RouteRush — Territory Running App for iOS": "RouteRush — iOS için Bölge Kapma Koşu Uygulaması",
@@ -8,7 +7,6 @@
     "Close a loop on a run and the streets inside it become your territory — on a live 3D night map of your city. Weekly leagues, an AI coach, real conquest.": "Koşuda bir döngü kapat, içinde kalan sokaklar senin bölgen olsun — şehrinin canlı 3D gece haritasında. Haftalık ligler, yapay zekâ koç, gerçek fetih.",
     "Close a loop on a run and the streets inside it become your territory — on a live 3D night map of your city.": "Koşuda bir döngü kapat, içinde kalan sokaklar senin bölgen olsun — şehrinin canlı 3D gece haritasında.",
     "RouteRush wordmark over a night map of Turin covered in claimed territory": "Ele geçirilmiş bölgelerle kaplı Torino gece haritası üzerinde RouteRush logosu",
-
     "Skip to content": "İçeriğe geç",
     "Territory": "Bölge",
     "Coach": "Koç",
@@ -16,39 +14,32 @@
     "Features": "Özellikler",
     "Get the app": "Uygulamayı indir",
     "RouteRush for iOS": "iOS için RouteRush",
-
     "<h1 class=\"hero-h1 display\" id=\"hero-title\">Running is how<br>you take <em>ground.</em></h1>": "<h1 class=\"hero-h1 display\" id=\"hero-title\">Toprak<br>koşarak <em>alınır.</em></h1>",
-
     "Step one. Record a run or a ride with GPS tracking that survives lost signal.": "Birinci adım. Sinyal kesilince de devam eden GPS takibiyle bir koşu ya da sürüş kaydet.",
     "Step two. Close a loop and the ground inside it becomes your territory.": "İkinci adım. Bir döngü kapat, içinde kalan toprak senin bölgen olsun.",
     "Step three. Claimed territory becomes Rush Points, and Rush Points decide your weekly league rank.": "Üçüncü adım. Ele geçirdiğin bölge Rush Points'e dönüşür, Rush Points de haftalık lig sıranı belirler.",
-
     "01 — Record": "01 — Kaydet",
     "Start a run or a ride. RouteRush follows your line at street resolution, and keeps recording when the signal drops out.": "Bir koşu ya da sürüş başlat. RouteRush çizgini sokak çözünürlüğünde takip eder, sinyal kesildiğinde kaydetmeyi sürdürür.",
     "02 — Conquer": "02 — Ele geçir",
     "Close a loop and the ground inside it turns yours. Territory follows the streets you ran, at the resolution you ran them.": "Bir döngü kapat, içinde kalan toprak senin olsun. Bölge koştuğun sokakları izler, hangi çözünürlükte koştuysan o çözünürlükte.",
     "03 — Hold it": "03 — Elinde tut",
     "Territory becomes Rush Points, Rush Points become rank, and rank resets every week. The map is only yours while you keep running.": "Bölge Rush Points olur, Rush Points sıraya dönüşür, sıra da her hafta sıfırlanır. Harita yalnızca koşmaya devam ettiğin sürece senindir.",
-
     "Download on the App Store": "App Store'dan indir",
     "See how territory works": "Bölge nasıl çalışıyor, gör",
-    "Start Run": "Koşuya Başla",
+    "Start Run": "Koşuyu Başlat",
     "Start Rush": "Rush'ı Başlat",
-    "Start Ride": "Sürüşe Başla",
-    "Scroll to claim": "Ele geçirmek için kaydır",
-
+    "Start Ride": "Sürüşü Başlat",
+    "Scroll to claim": "Kaydır, ele geçir",
     "The difference": "Fark",
     "A tracker tells you where you went.": "Takipçi nereye gittiğini söyler.",
     "RouteRush tells you what you took.": "RouteRush neyi aldığını söyler.",
     "The same run, scored differently. Distance and pace are the receipt. The map is the score —\n          a permanent record of the streets you have actually covered, block by block, against everyone\n          else covering theirs.": "Aynı koşu, farklı bir puanlama. Mesafe ve tempo makbuzdur. Harita ise skordur —\n          gerçekten geçtiğin sokakların kalıcı kaydı; blok blok, kendi sokaklarını geçen\n          herkese karşı.",
-
     "Street resolution": "Sokak çözünürlüğü",
     "Fine enough that one side of a street is not the other.": "Bir sokağın bir yakasını öbür yakasından ayıracak kadar ince.",
     "Real globe": "Gerçek küre",
     "Your territory rendered on a true sphere, not a flat tile sheet.": "Bölgen düz bir döşeme yüzeyinde değil, gerçek bir küre üzerinde çizilir.",
     "Bars of signal required": "Gereken sinyal çubuğu",
     "Activities queue offline and sync themselves the moment you are back.": "Aktiviteler çevrimdışı sıraya girer, bağlantı döner dönmez kendiliğinden eşitlenir.",
-
     "Ground taken": "Alınan toprak",
     "The map remembers every street you have taken.": "Harita aldığın her sokağı hatırlar.",
     "Close a loop on your run and everything inside it becomes yours, in the shape of the streets you\n          took. Come back a different way and the shape of what you own changes.": "Koşunda bir döngü kapat, içindeki her şey senin olsun — aldığın sokakların şeklinde.\n          Başka bir yoldan dön, sahip olduğun şeklin kendisi değişsin.",
@@ -58,7 +49,6 @@
     "Every claim has a dominance record. Someone else running your route puts your claim under pressure.": "Her ele geçirmenin bir hâkimiyet kaydı vardır. Senin rotanda koşan biri o kaydı baskı altına alır.",
     "It compounds.": "Birikir.",
     "Territory carries between runs, so a neighbourhood is something you build over months.": "Bölge koşular arasında taşınır; bir mahalle aylar içinde inşa edilen bir şeydir.",
-
     "Boldi, the in-run coach": "Koşu içi koç Boldi",
     "A coach in your ear, not a podcast.": "Kulağında bir koç, podcast değil.",
     "Boldi watches the run as it happens — your pace, the ground ahead, how much you have left — and\n          says something when it is worth saying. The rest of the time he is quiet.": "Boldi koşuyu olurken izler — tempon, önündeki toprak, ne kadarın kaldığı — ve\n          söylemeye değdiğinde bir şey söyler. Geri kalan zamanda susar.",
@@ -66,13 +56,11 @@
     "Prompts arrive at splits and decision points, not on a fixed timer.": "Uyarılar sabit bir sayaçla değil, split'lerde ve karar anlarında gelir.",
     "Aware of the map.": "Haritanın farkında.",
     "He knows which ground is still unclaimed on the route in front of you.": "Önündeki rotada hangi toprağın hâlâ sahipsiz olduğunu bilir.",
-
     "Elapsed": "Geçen süre",
     "Distance": "Mesafe",
     "Pace": "Tempo",
     "Heart": "Nabız",
     "Two unclaimed blocks on the loop ahead. Hold this pace and they are both yours.": "Önündeki döngüde sahipsiz iki blok var. Bu tempoyu koru, ikisi de senin.",
-
     "Live Activity &amp; widget": "Live Activity ve widget",
     "Most of a run happens with the app closed.": "Bir koşunun büyük kısmı uygulama kapalıyken geçer.",
     "Time, distance and pace stay on the Lock Screen and in the Dynamic Island, and stay interactive —\n          pause and resume without unlocking. Starting is one tap from the Home Screen.": "Süre, mesafe ve tempo Kilit Ekranı'nda ve Dynamic Island'da kalır, üstelik etkileşimli —\n          kilidi açmadan duraklat ve devam et. Başlatmak Ana Ekran'dan tek dokunuş.",
@@ -85,13 +73,11 @@
     "Quick Start": "Hızlı Başlat",
     "Run · Ride": "Koşu · Sürüş",
     "Home Screen widget. One tap opens straight into a tracked run.": "Ana Ekran widget'ı. Tek dokunuş doğrudan kayıtlı bir koşuyu açar.",
-
     "Thirty runners.": "Otuz koşucu.",
     "One week.": "Bir hafta.",
     "Five go up.": "Beşi yükselir.",
     "Every week you are placed in a league of thirty at your tier. The top fifth is promoted, the\n          bottom fifth is relegated, and everyone starts again on Monday. Bronze, Silver and Gold,\n          each with three divisions.": "Her hafta kendi kademendeki otuz kişilik bir lige yerleştirilirsin. Üstteki beş kişi yükselir,\n          alttaki beş kişi düşer, pazartesi herkes yeniden başlar. Bronze, Silver ve Gold;\n          her biri üç divizyonlu.",
     "New to a tier? A newbie shield covers your first week, so a bad one cannot send you straight\n          back down.": "Kademeye yeni mi geldin? İlk haftanı Acemi Kalkanı korur; kötü geçen bir hafta seni\n          doğrudan geri gönderemez.",
-
     "Leaderboards": "Lider Tabloları",
     "Clubs": "Kulüpler",
     "League": "Lig",
@@ -123,7 +109,6 @@
     "Türkiye": "Türkiye",
     "United Kingdom": "Birleşik Krallık",
     "Germany": "Almanya",
-
     "Inside the app.": "Uygulamanın içi.",
     "Captured on iPhone, running the shipping build.": "iPhone'da, yayınlanan sürüm çalışırken çekildi.",
     "The globe you run on": "Üzerinde koştuğun küre",
@@ -133,7 +118,6 @@
     "League standings": "Lig sıralaması",
     "Where you stand": "Nerede durduğun",
     "Your league, live, with the promotion line in sight.": "Ligin, canlı olarak, yükselme çizgisi göz önünde.",
-
     "Everything else that ships in the box.": "Kutudan çıkan geri kalan her şey.",
     "No roadmap items. These are in the app today.": "Yol haritası maddesi yok. Bunlar bugün uygulamanın içinde.",
     "Clubs and a feed worth reading": "Kulüpler ve okunmaya değer bir akış",
@@ -147,16 +131,13 @@
     "Premium accounts carry a checkmark across the feed, clubs and leaderboards.": "PREMIUM hesaplar akışta, kulüplerde ve lider tablolarında bir onay işareti taşır.",
     "Offline queue": "Çevrimdışı sıra",
     "Tracking survives no signal. Activities queue on device and sync when the network returns.": "Takip sinyalsizliğe dayanır. Aktiviteler cihazda sıraya girer, ağ döndüğünde eşitlenir.",
-
     "Why it matters": "Neden önemli",
-    "The map only moves when you do.": "Harita ancak sen hareket edince hareket eder.",
+    "The map only moves when you do.": "Harita sen kımıldarsan kımıldar.",
     "Nothing on your map was given to you. Every inch of it is a street you actually ran.": "Haritandaki hiçbir şey sana verilmedi. Her karışı gerçekten koştuğun bir sokak.",
     "Go take some ground.": "Git, biraz toprak al.",
     "RouteRush is free to start. iPhone, iOS&nbsp;17 or later. Your first run claims its first ground about\n        twenty seconds in.": "RouteRush'a başlamak ücretsiz. iPhone, iOS&nbsp;17 veya üzeri. İlk koşun ilk toprağını\n        yaklaşık yirmi saniyede ele geçirir.",
     "Watch the map fill": "Haritanın dolmasını izle",
-
     "RouteRush is an iOS app that turns running and cycling into territorial conquest — close a loop on a run and the streets inside it become your territory.": "RouteRush, koşuyu ve bisikleti bölge fethine dönüştüren bir iOS uygulaması — koşuda bir döngü kapat, içinde kalan sokaklar senin bölgen olsun.",
-
     "Product": "Ürün",
     "Boldi coach": "Boldi koç",
     "Company": "Kurumsal",
@@ -168,47 +149,34 @@
     "Follow": "Takip et",
     "© 2026 RouteRush. All rights reserved. · Map data\n        ©": "© 2026 RouteRush. Tüm hakları saklıdır. · Harita verisi\n        ©"
   },
-
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "RouteRush SSS — Bölge Koşusu Nasıl Çalışır",
     "What RouteRush is, how territory claiming works, Rush Points, weekly leagues, Boldi the AI coach, pricing, and how it differs from a regular run tracker.": "RouteRush nedir, bölge ele geçirme nasıl çalışır, Rush Points, haftalık ligler, yapay zekâ koç Boldi, fiyatlandırma ve sıradan bir koşu takipçisinden farkı.",
     "RouteRush FAQ — territory running, explained": "RouteRush SSS — bölge koşusu, anlatıldı",
     "How claiming streets works, what Rush Points are, how weekly leagues promote and relegate, and what Boldi the AI coach actually does.": "Sokak ele geçirme nasıl çalışır, Rush Points nedir, haftalık ligler nasıl yükseltip düşürür ve yapay zekâ koç Boldi tam olarak ne yapar.",
-
     "FAQ": "SSS",
     "Territory running, explained": "Bölge koşusu, anlatıldı",
     "Updated August 2026": "Ağustos 2026'da güncellendi",
-
     "What is RouteRush?": "RouteRush nedir?",
     "RouteRush is an iOS app that turns running and cycling into territorial conquest. Close a loop on a run and the ground inside it becomes your territory, drawn in the shape of the streets you ran on a 3D map of your city. Territory earns Rush Points, Rush Points decide your rank in weekly leagues of thirty, and every claim can be contested by someone running the same streets. RouteRush is free to start, requires iOS 17 or later, and ships in English, German, Spanish, French, Italian and Turkish.": "RouteRush, koşuyu ve bisikleti bölge fethine dönüştüren bir iOS uygulamasıdır. Koşuda bir döngü kapattığında içinde kalan toprak senin bölgen olur ve şehrinin 3D haritasına, koştuğun sokakların şeklinde çizilir. Bölge Rush Points kazandırır, Rush Points otuz kişilik haftalık liglerdeki sıranı belirler ve her ele geçirme, aynı sokaklarda koşan biri tarafından çekişmeye açıktır. RouteRush'a başlamak ücretsizdir, iOS 17 veya üzerini gerektirir ve İngilizce, Almanca, İspanyolca, Fransızca, İtalyanca ve Türkçe olarak sunulur.",
-
     "How does claiming territory work?": "Bölge ele geçirme nasıl çalışır?",
     "Record a run or ride with GPS. When your route closes a loop, everything inside it becomes yours — not a circle around your position, but the actual shape of the streets you covered. Scoring happens on a hexagonal grid fine enough that one side of a street is not the other (roughly 25 metres). Territory carries between runs, so a neighbourhood is something you build over months.": "GPS ile bir koşu veya sürüş kaydet. Rotan bir döngü kapattığında içindeki her şey senin olur — konumunun etrafındaki bir daire değil, geçtiğin sokakların gerçek şekli. Puanlama, bir sokağın bir yakasını öbür yakasından ayıracak kadar ince (yaklaşık 25 metre) altıgen bir ızgara üzerinde yapılır. Bölge koşular arasında taşınır; bir mahalle aylar içinde inşa edilen bir şeydir.",
-
     "What are Rush Points?": "Rush Points nedir?",
     "Rush Points are RouteRush's score. They are awarded per activity from the ground you actually covered — not from step counts or minutes moved. Rush Points decide your position in your weekly league.": "Rush Points, RouteRush'ın skorudur. Her aktivitede adım sayısından ya da hareket dakikasından değil, gerçekten kapladığın topraktan verilir. Rush Points haftalık lig sıralamandaki yerini belirler.",
-
     "How do leagues work?": "Ligler nasıl çalışır?",
     "Every week you are placed in a league of thirty runners at your tier — Bronze, Silver or Gold, each with three divisions. The top five are promoted, the bottom five are relegated, and a new week begins. Your first week in a new tier is covered by a newbie shield, so one bad week cannot send you straight back down.": "Her hafta kendi kademendeki otuz koşucudan oluşan bir lige yerleştirilirsin — Bronze, Silver veya Gold; her biri üç divizyonlu. İlk beş yükselir, son beş düşer ve yeni bir hafta başlar. Yeni bir kademedeki ilk haftanı Acemi Kalkanı korur; kötü geçen tek bir hafta seni doğrudan geri gönderemez.",
-
     "Can other players take my territory?": "Diğer oyuncular bölgemi alabilir mi?",
     "Yes. Every claim carries a dominance record, and someone repeatedly running your streets puts that claim under pressure. Territory also decays if you stop running — the map is only yours while you keep moving. One layer is permanent: the Atlas records everything you have ever conquered, in bronze, forever.": "Evet. Her ele geçirme bir hâkimiyet kaydı taşır ve senin sokaklarında tekrar tekrar koşan biri o kaydı baskı altına alır. Ayrıca koşmayı bırakırsan bölge erir — harita yalnızca hareket ettiğin sürece senindir. Tek bir katman kalıcıdır: Atlas, bugüne kadar fethettiğin her şeyi bronz renginde, sonsuza dek kaydeder.",
-
     "What is Boldi?": "Boldi nedir?",
     "Boldi is RouteRush's AI running coach. He speaks during the run — about your pace, unclaimed ground on the route ahead, and how much you have left — and stays quiet the rest of the time. Boldi also comes attached to structured training plans, from first run to 5K.": "Boldi, RouteRush'ın yapay zekâ koşu koçudur. Koşu sırasında konuşur — tempon, önündeki rotadaki sahipsiz toprak ve ne kadarının kaldığı hakkında — geri kalan zamanda susar. Boldi ayrıca ilk koşudan 5K'ya kadar yapılandırılmış antrenman planlarına da bağlıdır.",
-
     "Is RouteRush free?": "RouteRush ücretsiz mi?",
     "RouteRush is free to download and free to play: GPS tracking, territory, leagues and clubs are all included. An optional Pro subscription adds premium features, marked by a cyan ring on your map avatar.": "RouteRush'ı indirmek ve oynamak ücretsizdir: GPS takibi, bölge, ligler ve kulüpler dahildir. İsteğe bağlı PRO aboneliği, harita avatarının çevresindeki camgöbeği halkayla belli olan premium özellikleri ekler.",
-
     "How is RouteRush different from Strava?": "RouteRush'ın Strava'dan farkı ne?",
     "A tracker tells you where you went; RouteRush tells you what you took. Distance and pace are the receipt — the map is the score. Strava is a training log with a social layer. RouteRush turns your city into a game board where every street is claimable, contestable ground. They coexist fine: RouteRush reads and writes Apple Health, so nothing locks you in.": "Takipçi nereye gittiğini söyler; RouteRush neyi aldığını söyler. Mesafe ve tempo makbuzdur — harita ise skordur. Strava, sosyal katmanı olan bir antrenman günlüğüdür. RouteRush ise şehrini, her sokağın ele geçirilebilir ve çekişmeye açık bir toprak olduğu bir oyun tahtasına çevirir. İkisi rahatça bir arada durur: RouteRush Apple Health'e hem okur hem yazar, yani seni hiçbir yere kilitlemez.",
-
     "Does RouteRush work with a poor signal?": "RouteRush zayıf sinyalde çalışır mı?",
     "Yes. Tracking is built to survive dropped GPS and no network at all: the recorded line is Kalman-filtered to street resolution, and activities queue on the device and sync the moment a connection returns.": "Evet. Takip, kopan GPS'e ve hiç ağ olmamasına dayanacak şekilde kurulmuştur: kaydedilen çizgi sokak çözünürlüğüne Kalman filtresiyle oturtulur, aktiviteler cihazda sıraya girer ve bağlantı döner dönmez eşitlenir.",
-
     "Who makes RouteRush?": "RouteRush'ı kim yapıyor?",
     "RouteRush is built by Fethi Omur, an independent developer based in Turin, Italy. It is a solo project — design, code, the map engine and the Boldi coach are one person's work.": "RouteRush, İtalya'nın Torino kentinde yaşayan bağımsız geliştirici Fethi Omur tarafından yapılıyor. Tek kişilik bir proje — tasarım, kod, harita motoru ve Boldi koç tek bir kişinin işi.",
-
     "See the map for yourself —": "Haritayı kendin gör —",
     "© 2026 RouteRush": "© 2026 RouteRush",
     "Home": "Ana sayfa",

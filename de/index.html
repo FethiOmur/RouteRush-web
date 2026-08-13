@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="RouteRush macht aus Laufen eine Eroberung. Schließe eine Runde und die Straßen darin gehören dir — auf einer 3D-Live-Karte deiner Stadt. Kostenloser Einstieg, iOS 17+.">
+<meta name="description" content="RouteRush macht Laufen zur Eroberung: Schließe eine Runde und die Straßen darin gehören dir — auf der 3D-Live-Karte deiner Stadt. Kostenloser Einstieg, iOS 17+.">
 <meta name="theme-color" content="#000000">
 <!-- Content policy. GitHub Pages cannot serve custom response headers, so the
      policy ships in the document instead. It is deliberately strict because the
@@ -28,7 +28,7 @@
   object-src 'none'">
 <!-- Cross-origin navigations leak only the origin, never the path. -->
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>RouteRush — Lauf-App zum Gebiete erobern für iOS</title>
+<title>RouteRush — Lauf-App für iPhone: Gebiete erobern</title>
 <link rel="icon" href="/assets/routerush-appicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="canonical" href="https://routerushapp.com/de/">
@@ -49,16 +49,16 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="de_DE">
 <meta property="og:site_name" content="RouteRush">
-<meta property="og:title" content="RouteRush — Lauf-App zum Gebiete erobern für iOS">
-<meta property="og:description" content="Schließe beim Laufen eine Runde und die Straßen darin werden dein Gebiet — auf einer 3D-Nachtkarte deiner Stadt, live. Wöchentliche Ligen, ein KI-Coach, echte Eroberung.">
+<meta property="og:title" content="RouteRush — Lauf-App für iPhone: Gebiete erobern">
+<meta property="og:description" content="Schließe beim Laufen eine Runde und die Straßen darin werden dein Gebiet — live, auf einer 3D-Nachtkarte deiner Stadt. Wöchentliche Ligen, ein KI-Coach, echte Eroberung.">
 <meta property="og:url" content="https://routerushapp.com/de/">
 <meta property="og:image" content="https://routerushapp.com/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="RouteRush-Schriftzug über einer Nachtkarte von Turin voller erobertem Gebiet">
+<meta property="og:image:alt" content="RouteRush-Schriftzug über einer Nachtkarte von Turin, bedeckt mit erobertem Gebiet">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RouteRush — Lauf-App zum Gebiete erobern für iOS">
-<meta name="twitter:description" content="Schließe beim Laufen eine Runde und die Straßen darin werden dein Gebiet — auf einer 3D-Nachtkarte deiner Stadt, live.">
+<meta name="twitter:title" content="RouteRush — Lauf-App für iPhone: Gebiete erobern">
+<meta name="twitter:description" content="Schließe beim Laufen eine Runde und die Straßen darin werden dein Gebiet — live, auf einer 3D-Nachtkarte deiner Stadt.">
 <meta name="twitter:image" content="https://routerushapp.com/assets/og.jpg">
 <link rel="stylesheet" href="/assets/vendor/mapbox-gl-3.18.0.css">
 <link rel="preconnect" href="https://api.mapbox.com" crossorigin>
@@ -1197,6 +1197,37 @@
       display: inline-block; padding-block: 15px; margin-block: -15px;
     }
   }
+  /* Language hint. A suggestion, never a redirect — see the script for why.
+     Fixed so it cannot shift the hero, and it only ever paints after load. */
+  .lang-hint {
+    position: fixed; z-index: 60; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(14px);
+    display: none; align-items: center; gap: 14px;
+    padding: 11px 12px 11px 18px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(18,18,22,.82); backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    font-size: 14px; color: var(--text-2);
+    opacity: 0; transition: opacity .4s ease, transform .4s ease;
+    max-width: calc(100vw - 32px);
+  }
+  .lang-hint.is-shown { display: flex; }
+  .lang-hint.is-in { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .lang-hint a {
+    flex: none; padding: 7px 15px; border-radius: 999px;
+    background: #fff; color: #000; font-size: 13px; font-weight: 560; text-decoration: none;
+  }
+  .lang-hint button {
+    flex: none; width: 30px; height: 30px; border: 0; border-radius: 50%;
+    background: transparent; color: var(--text-4); font-size: 17px; line-height: 1;
+    cursor: pointer;
+  }
+  .lang-hint button:hover { color: #fff; }
+  @media (prefers-reduced-motion: reduce) { .lang-hint { transition: none; } }
+  @media (max-width: 460px) {
+    .lang-hint { gap: 10px; padding-left: 14px; font-size: 13px; }
+  }
+
   .foot-lang { margin-top: 40px; }
   .foot-lang ul { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; }
   .foot-lang a { font-size: 13px; color: var(--text-4); transition: color .3s ease; }
@@ -1518,7 +1549,7 @@
       "name": "RouteRush",
       "operatingSystem": "iOS 17.0 or later",
       "applicationCategory": "SportsApplication",
-      "description": "RouteRush ist eine iOS-App, die Laufen und Radfahren in Gebietseroberung verwandelt — schließe beim Laufen eine Runde und die Straßen darin werden dein Gebiet.",
+      "description": "RouteRush ist eine iOS-App, die Laufen und Radfahren zur Gebietseroberung macht — schließe beim Laufen eine Runde und die Straßen darin werden dein Gebiet.",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
       "inLanguage": ["en", "de", "es", "fr", "it", "tr"],
       "screenshot": [
@@ -1611,7 +1642,7 @@
         <!-- The sequence communicates ordered information, so the same three
              states also exist as readable text for assistive technology. -->
         <ol class="sr-only">
-          <li>Schritt eins. Zeichne einen Lauf oder eine Fahrt auf — mit GPS-Tracking, das auch ohne Signal weiterläuft.</li>
+          <li>Schritt eins. Zeichne einen Lauf oder eine Fahrt auf — mit GPS-Tracking, das Funklöcher übersteht.</li>
           <li>Schritt zwei. Schließe eine Runde und das Gebiet darin wird deins.</li>
           <li>Schritt drei. Erobertes Gebiet wird zu Rush Points, und Rush Points entscheiden deinen Platz in der Wochenliga.</li>
         </ol>
@@ -1634,7 +1665,7 @@
         <div class="hero-cta">
           <a class="btn btn-primary" href="#download">
             <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.47 2.24-1.23 3.04-.82.87-2.16 1.54-3.28 1.45-.14-1.1.42-2.27 1.16-3.02.83-.86 2.27-1.49 3.35-1.47zM20.9 17.2c-.55 1.27-.82 1.84-1.53 2.96-.99 1.56-2.39 3.5-4.12 3.52-1.54.01-1.93-1-4.02-.99-2.09.01-2.52 1.01-4.06.99-1.73-.02-3.06-1.77-4.05-3.33-2.77-4.36-3.06-9.48-1.35-12.2 1.21-1.93 3.13-3.06 4.93-3.06 1.84 0 2.99 1.01 4.51 1.01 1.47 0 2.37-1.01 4.49-1.01 1.61 0 3.31.88 4.53 2.39-3.98 2.18-3.33 7.86.67 9.72z"/></svg>
-            Im App Store laden
+            Laden im App Store
           </a>
           <a class="btn btn-ghost" href="#territory">So funktioniert Gebiet</a>
         </div>
@@ -1654,7 +1685,7 @@
              golden harness). The map fades in over it once warmed. -->
         <img class="poster" id="hero-poster" src="/assets/hero/poster-start.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" width="1600" height="1000">
         <div id="seq-map" aria-hidden="true"></div>
-        <span class="cue" aria-hidden="true">Scrollen zum Erobern</span>
+        <span class="cue" aria-hidden="true">Scrollen</span>
       </div>
     </div>
   </section>
@@ -1669,8 +1700,8 @@
         <h2 class="h2" id="claim-title" data-reveal style="--d:60ms; margin-top:18px">Ein Tracker sagt dir, wo du warst.<br>RouteRush sagt dir, was du genommen hast.</h2>
         <p class="lede" data-reveal style="--d:120ms; max-width:52ch; margin-top:22px">
           Derselbe Lauf, anders gewertet. Distanz und Pace sind der Beleg. Die Karte ist der Punktestand —
-          ein bleibendes Verzeichnis der Straßen, die du tatsächlich abgedeckt hast, Block für Block, gegen alle
-          anderen, die ihre abdecken.
+          ein bleibendes Verzeichnis der Straßen, die du wirklich gelaufen bist, Block für Block,
+          gegen alle, die ihre laufen.
         </p>
       </div>
       <dl class="specs" data-reveal style="--d:160ms">
@@ -1680,11 +1711,11 @@
         </div>
         <div class="spec">
           <dt>3D</dt>
-          <dd><b>Echter Globus</b>Dein Gebiet auf einer echten Kugel gezeichnet, nicht auf einer flachen Kachelfläche.</dd>
+          <dd><b>Echter Globus</b>Dein Gebiet auf einer echten Kugel gezeichnet, nicht auf flachen Kacheln.</dd>
         </div>
         <div class="spec">
           <dt>0</dt>
-          <dd><b>Nötige Signalbalken</b>Aktivitäten reihen sich offline ein und synchronisieren sich, sobald du wieder online bist.</dd>
+          <dd><b>Nötige Signalbalken</b>Aktivitäten warten offline und synchronisieren sich, sobald du wieder online bist.</dd>
         </div>
       </dl>
     </div>
@@ -1699,10 +1730,10 @@
     <div class="wrap frow">
       <div>
         <p class="eyebrow" data-reveal>Erobertes Gebiet</p>
-        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="territory-title">Die Karte merkt sich jede Straße, die du genommen hast.</h2>
+        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="territory-title">Die Karte merkt sich jede Straße, die du nimmst.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
           Schließe beim Laufen eine Runde und alles darin gehört dir — in der Form der Straßen, die du
-          genommen hast. Komm auf einem anderen Weg zurück und die Form deines Besitzes ändert sich.
+          genommen hast. Komm auf einem anderen Weg zurück und die Form deines Gebiets ändert sich.
         </p>
         <div class="fpoints" data-reveal style="--d:160ms">
           <div class="fpoint">
@@ -1710,7 +1741,7 @@
                  actually has. This was two nested hexagons, the one piece of
                  honeycomb still visible on the page. -->
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.4 8.2h7.2V4.4h10v9.2h-4.6v6.2H8.6v-5.4H3.4z"/><path d="M10.6 8.2v5.8h5.4"/></svg>
-            <p><b>Wertung auf Bodenhöhe.</b> Rush Points gibt es pro Aktivität für das Gebiet, das du tatsächlich abgedeckt hast — nicht für Schritte.</p>
+            <p><b>Am Boden gewertet.</b> Rush Points gibt es pro Aktivität für das Gebiet, das du tatsächlich abgedeckt hast — nicht für Schritte.</p>
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M2.8 12h18.4"/><path d="M12 2.8c2.4 2.6 3.7 5.8 3.7 9.2s-1.3 6.6-3.7 9.2c-2.4-2.6-3.7-5.8-3.7-9.2S9.6 5.4 12 2.8z"/></svg>
@@ -1758,13 +1789,13 @@
         <p class="eyebrow" data-reveal>Boldi, der Coach im Lauf</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="coach-title">Ein Coach im Ohr, kein Podcast.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
-          Boldi verfolgt den Lauf, während er passiert — deine Pace, das Gebiet voraus, wie viel noch übrig ist — und
+          Boldi verfolgt den Lauf mit — deine Pace, das Gebiet voraus, wie viel noch übrig ist — und
           sagt etwas, wenn es sich lohnt. Den Rest der Zeit schweigt er.
         </p>
         <div class="fpoints" data-reveal style="--d:160ms">
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 12.4c0 4.1-3.8 7.4-8.5 7.4a10 10 0 0 1-2.6-.34L4.6 21l1.2-3.4A7 7 0 0 1 3.5 12.4C3.5 8.3 7.3 5 12 5s8.5 3.3 8.5 7.4z"/></svg>
-            <p><b>Im Takt der Anstrengung.</b> Hinweise kommen bei Zwischenzeiten und Entscheidungspunkten, nicht nach festem Timer.</p>
+            <p><b>Im Takt der Anstrengung.</b> Hinweise kommen bei Zwischenzeiten und Entscheidungspunkten, nicht nach der Uhr.</p>
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.5"/><path d="M8.6 6.4 12 3l3.4 3.4"/><circle cx="12" cy="17.6" r="3.4"/></svg>
@@ -1786,7 +1817,7 @@
 
             <div class="screen-body">
               <div style="text-align:center; padding:16px 0 10px">
-                <p style="font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--text-4)">Verstrichen</p>
+                <p style="font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--text-4)">Dauer</p>
                 <p style="font-size:46px; font-weight:640; letter-spacing:-.05em; line-height:1; font-variant-numeric:tabular-nums; margin-top:5px">32:14</p>
               </div>
               <div class="gcard">
@@ -1830,7 +1861,7 @@
                 <span class="boldi-avatar" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2.5 5 13.5h5.5L10 21.5l8.5-11H13z"/></svg>
                 </span>
-                <p class="bubble">Zwei freie Blöcke auf der Runde vor dir. Halte diese Pace und beide gehören dir.</p>
+                <p class="bubble">Zwei freie Blöcke auf der Runde vor dir. Halt die Pace, dann gehören beide dir.</p>
               </div>
             </div>
 
@@ -1856,10 +1887,10 @@
     <div class="wrap frow">
       <div>
         <p class="eyebrow" data-reveal>Live Activity und Widget</p>
-        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="live-title">Das meiste eines Laufs passiert bei geschlossener App.</h2>
+        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="live-title">Das meiste am Lauf passiert bei geschlossener App.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
           Zeit, Distanz und Pace bleiben auf dem Sperrbildschirm und in der Dynamic Island — und bleiben bedienbar:
-          pausieren und fortsetzen ohne zu entsperren. Gestartet wird mit einem Tipp vom Home-Bildschirm.
+          pausieren und fortsetzen, ohne zu entsperren. Gestartet wird mit einem Tipp vom Home-Bildschirm.
         </p>
       </div>
       <div class="frow-media" data-reveal style="--d:120ms">
@@ -1892,7 +1923,7 @@
               <img decoding="async" src="/assets/routerush-logo-64.png" alt="" width="26" height="26">
               <div><b>Schnellstart</b><br><i>Lauf · Fahrt</i></div>
             </div>
-            <p class="small" style="max-width:170px">Home-Bildschirm-Widget. Ein Tipp öffnet direkt einen aufgezeichneten Lauf.</p>
+            <p class="small" style="max-width:170px">Home-Bildschirm-Widget. Ein Tipp startet direkt die Aufzeichnung.</p>
           </div>
         </div>
       </div>
@@ -1910,8 +1941,8 @@
         <p class="eyebrow" data-reveal>Ligen</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="leagues-title">Dreißig Läufer.<br>Eine Woche.<br>Fünf steigen auf.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:42ch">
-          Jede Woche landest du in einer Liga mit dreißig auf deiner Stufe. Das obere Fünftel steigt auf, das
-          untere Fünftel steigt ab, und montags fangen alle neu an. Bronze, Silver und Gold,
+          Jede Woche kommst du in eine Liga mit dreißig Läufern auf deiner Stufe. Das obere Fünftel steigt auf,
+          das untere Fünftel steigt ab, und montags fangen alle neu an. Bronze, Silver und Gold,
           jeweils mit drei Divisionen.
         </p>
         <p class="small" data-reveal style="--d:150ms; margin-top:18px; max-width:42ch">
@@ -2135,7 +2166,7 @@
             <span class="rank">#1</span>
             <span class="who">
               <span class="line1"><span class="name">Vereinigte Staaten</span></span>
-              <span class="mt">Meistes Gebiet:</span>
+              <span class="mt">Größtes Gebiet:</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Unbekannt</b>
@@ -2148,7 +2179,7 @@
             <span class="rank">#2</span>
             <span class="who">
               <span class="line1"><span class="name">Kanada</span></span>
-              <span class="mt">Meistes Gebiet:</span>
+              <span class="mt">Größtes Gebiet:</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Unbekannt</b>
@@ -2161,7 +2192,7 @@
             <span class="rank">#3</span>
             <span class="who">
               <span class="line1"><span class="name">Australien</span></span>
-              <span class="mt">Meistes Gebiet:</span>
+              <span class="mt">Größtes Gebiet:</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Unbekannt</b>
@@ -2174,7 +2205,7 @@
             <span class="rank">#4</span>
             <span class="who">
               <span class="line1"><span class="name">Türkei</span></span>
-              <span class="mt">Meistes Gebiet:</span>
+              <span class="mt">Größtes Gebiet:</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Unbekannt</b>
@@ -2187,7 +2218,7 @@
             <span class="rank">#5</span>
             <span class="who">
               <span class="line1"><span class="name">Vereinigtes Königreich</span></span>
-              <span class="mt">Meistes Gebiet:</span>
+              <span class="mt">Größtes Gebiet:</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Unbekannt</b>
@@ -2200,7 +2231,7 @@
             <span class="rank">#6</span>
             <span class="who">
               <span class="line1"><span class="name">Deutschland</span></span>
-              <span class="mt">Meistes Gebiet:</span>
+              <span class="mt">Größtes Gebiet:</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Unbekannt</b>
@@ -2224,7 +2255,7 @@
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:44px">
         <h2 class="h2" id="tour-title" data-reveal>In der App.</h2>
-        <p class="lede" data-reveal style="--d:80ms">Aufgenommen auf dem iPhone, mit dem ausgelieferten Build.</p>
+        <p class="lede" data-reveal style="--d:80ms">Aufnahmen vom iPhone, im ausgelieferten Build.</p>
       </div>
 
       <div class="tour">
@@ -2235,7 +2266,7 @@
                    alt="RouteRush run summary: route on the map with distance, time, pace, elevation and cadence">
             </div>
           </div>
-          <figcaption class="small"><b>Der Globus, auf dem du läufst</b>Der Startbildschirm ist ein echter 3D-Globus, keine flache Kachelfläche. Dein Gebiet füllt sich, während du es abdeckst.</figcaption>
+          <figcaption class="small"><b>Der Globus, auf dem du läufst</b>Die Startansicht ist ein echter 3D-Globus, keine flachen Kacheln. Dein Gebiet füllt sich, während du es abdeckst.</figcaption>
         </figure>
 
         <figure data-reveal style="--d:90ms">
@@ -2245,7 +2276,7 @@
                    alt="RouteRush Plans screen featuring Boldi the coach and structured training plans">
             </div>
           </div>
-          <figcaption class="small"><b>Boldi und ein Plan zum Folgen</b>Strukturierte Pläne vom ersten Lauf bis 5 km, mit dem Coach daran gekoppelt.</figcaption>
+          <figcaption class="small"><b>Boldi und ein Plan, dem du folgst</b>Strukturierte Pläne vom ersten Lauf bis 5 km, mit dem Coach dabei.</figcaption>
         </figure>
 
         <figure data-reveal style="--d:180ms">
@@ -2280,13 +2311,13 @@
         <article class="tile t-wide" data-reveal>
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20v-1.6A3.4 3.4 0 0 1 9.4 15h1.8"/><circle cx="9" cy="8.4" r="3"/><path d="M14.5 20v-1.6A3.4 3.4 0 0 1 17.9 15"/><circle cx="16.6" cy="8.4" r="3"/><path d="M11 20h9"/></svg>
           <h3 class="h3">Clubs und ein Feed, der sich lohnt</h3>
-          <p>Tritt einem Club bei, poste den Lauf, kommentiere den von jemand anderem. Der Social-Feed ist um Aktivitäten herum gebaut, also steckt hinter dem Bild immer etwas auf der Karte.</p>
+          <p>Tritt einem Club bei, poste deinen Lauf, kommentiere den von anderen. Der Social-Feed ist um Aktivitäten herum gebaut — hinter jedem Bild steckt etwas auf der Karte.</p>
         </article>
 
         <article class="tile t-half" data-reveal style="--d:70ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 8.6c0 4.6-8.4 10.4-8.4 10.4S3.6 13.2 3.6 8.6a4.4 4.4 0 0 1 8.4-1.8 4.4 4.4 0 0 1 8.4 1.8z"/></svg>
-          <h3 class="h3">Direkte Challenges</h3>
-          <p>Wähle jemanden, wähle eine Metrik, setze den Zeitraum. Die VS-Karte verfolgt euch beide, bis sie schließt.</p>
+          <h3 class="h3">Kopf-an-Kopf-Challenges</h3>
+          <p>Wähle Gegner, Metrik und Zeitraum. Die VS-Karte verfolgt euch beide, bis sie schließt.</p>
           <div class="vs" aria-hidden="true">
             <div class="side"><b>18.4</b><i>Du · km</i></div>
             <div class="mid">VS</div>
@@ -2297,7 +2328,7 @@
         <article class="tile t-third" data-reveal style="--d:120ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12.5h4l2-4.5 3 9 2.5-4.5h5.5"/></svg>
           <h3 class="h3">HealthKit, in beide Richtungen</h3>
-          <p>Schritte, Gewicht und Herzfrequenz werden eingelesen. Workouts werden zurückgeschrieben.</p>
+          <p>Liest Schritte, Gewicht und Herzfrequenz. Schreibt Workouts zurück.</p>
         </article>
 
         <article class="tile t-third" data-reveal style="--d:170ms">
@@ -2309,7 +2340,7 @@
         <article class="tile t-third" data-reveal style="--d:220ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19.5h.01"/><path d="M4.5 9a10.6 10.6 0 0 1 15 0"/><path d="M7.8 12.6a6 6 0 0 1 8.4 0"/><path d="m3 3 18 18"/></svg>
           <h3 class="h3">Offline-Warteschlange</h3>
-          <p>Das Tracking übersteht fehlendes Signal. Aktivitäten reihen sich auf dem Gerät ein und synchronisieren, sobald das Netz zurück ist.</p>
+          <p>Tracking übersteht Funklöcher. Aktivitäten warten auf dem Gerät und synchronisieren bei Empfang.</p>
         </article>
       </div>
     </div>
@@ -2334,7 +2365,7 @@
          loading="lazy" decoding="async">
     <div class="wrap" data-reveal>
       <p class="eyebrow">Warum das zählt</p>
-      <h2 class="h2" id="why-title">Die Karte bewegt sich nur, wenn du dich bewegst.</h2>
+      <h2 class="h2" id="why-title">Die Karte bewegt sich nur mit dir.</h2>
       <p class="lede">Nichts auf deiner Karte wurde dir geschenkt. Jeder Zentimeter ist eine Straße, die du wirklich gelaufen bist.</p>
     </div>
   </section>
@@ -2359,9 +2390,9 @@
       <div class="final-cta" data-reveal style="--d:160ms">
         <a class="btn btn-primary" href="#download">
           <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.47 2.24-1.23 3.04-.82.87-2.16 1.54-3.28 1.45-.14-1.1.42-2.27 1.16-3.02.83-.86 2.27-1.49 3.35-1.47zM20.9 17.2c-.55 1.27-.82 1.84-1.53 2.96-.99 1.56-2.39 3.5-4.12 3.52-1.54.01-1.93-1-4.02-.99-2.09.01-2.52 1.01-4.06.99-1.73-.02-3.06-1.77-4.05-3.33-2.77-4.36-3.06-9.48-1.35-12.2 1.21-1.93 3.13-3.06 4.93-3.06 1.84 0 2.99 1.01 4.51 1.01 1.47 0 2.37-1.01 4.49-1.01 1.61 0 3.31.88 4.53 2.39-3.98 2.18-3.33 7.86.67 9.72z"/></svg>
-          Im App Store laden
+          Laden im App Store
         </a>
-        <a class="btn btn-ghost" href="#territory">Sieh zu, wie sich die Karte füllt</a>
+        <a class="btn btn-ghost" href="#territory">Sieh die Karte wachsen</a>
       </div>
     </div>
   </section>
@@ -2375,14 +2406,14 @@
           <span>RouteRush</span>
         </a>
         <p class="small" style="margin-top:14px; max-width:34ch">
-          RouteRush ist eine iOS-App, die Laufen und Radfahren in Gebietseroberung verwandelt — schließe beim Laufen eine Runde und die Straßen darin werden dein Gebiet.
+          RouteRush ist eine iOS-App, die Laufen und Radfahren zur Gebietseroberung macht — schließe beim Laufen eine Runde und die Straßen darin werden dein Gebiet.
         </p>
       </div>
       <nav aria-label="Produkt">
         <h4>Produkt</h4>
         <ul>
           <li><a href="#territory">Gebiet</a></li>
-          <li><a href="#coach">Boldi Coach</a></li>
+          <li><a href="#coach">Coach Boldi</a></li>
           <li><a href="#leagues">Ligen</a></li>
           <li><a href="#more">Funktionen</a></li>
         </ul>
@@ -2449,6 +2480,81 @@
   </div>
 </footer>
 
+<!-- Language hint. Deliberately NOT a redirect.
+
+     Automatic redirection by IP country would undo the whole point of shipping
+     six locales: Googlebot crawls almost entirely from US addresses, so it
+     would be bounced off /tr/, /it/, /de/, /es/ and /fr/ every time and would
+     never index any of them. Country is also a poor proxy for language — a
+     Turkish speaker in Germany is not a German reader — and Google's own
+     multi-regional guidance advises against it for exactly these reasons.
+
+     So: read the language the visitor actually set in their browser, offer the
+     matching page once, and let them decide. Whatever they choose is
+     remembered, so nobody is asked twice. Every locale stays independently
+     reachable and independently crawlable. -->
+<div class="lang-hint" id="lang-hint" role="region" aria-live="polite">
+  <span id="lang-hint-msg"></span>
+  <a id="lang-hint-go" href="/"></a>
+  <button type="button" id="lang-hint-x" aria-label="Dismiss">&times;</button>
+</div>
+<script>
+(function () {
+  // Each entry speaks for itself: the message is written in the language it
+  // offers, because it is addressed to someone who does not read this page's.
+  var L = {
+    en: { path: '/',    msg: 'Read this page in English?',           cta: 'English'  },
+    tr: { path: '/tr/', msg: 'Bu sayfayı Türkçe okumak ister misin?', cta: 'Türkçe'   },
+    it: { path: '/it/', msg: 'Vuoi leggere questa pagina in italiano?', cta: 'Italiano' },
+    de: { path: '/de/', msg: 'Diese Seite auf Deutsch lesen?',       cta: 'Deutsch'  },
+    es: { path: '/es/', msg: '¿Quieres leer esta página en español?', cta: 'Español'  },
+    fr: { path: '/fr/', msg: 'Lire cette page en français ?',        cta: 'Français' }
+  };
+  var KEY = 'rr-lang-hint';
+  var here = (document.documentElement.lang || 'en').slice(0, 2);
+
+  var store;
+  try { store = window.localStorage; } catch (e) { store = null; }   // private mode
+  if (store && store.getItem(KEY)) return;
+
+  // navigator.languages is the ordered preference list the visitor configured.
+  // First match wins; anything we do not publish is skipped rather than
+  // approximated, since a wrong guess is worse than leaving them on English.
+  var prefs = navigator.languages || [navigator.language || 'en'];
+  var want = null;
+  for (var i = 0; i < prefs.length && !want; i++) {
+    var code = String(prefs[i]).slice(0, 2).toLowerCase();
+    if (L[code]) want = code;
+  }
+  if (!want || want === here) return;
+
+  var el = document.getElementById('lang-hint');
+  var go = document.getElementById('lang-hint-go');
+  document.getElementById('lang-hint-msg').textContent = L[want].msg;
+  go.textContent = L[want].cta;
+  go.setAttribute('lang', want);
+  go.setAttribute('hreflang', want);
+  // Keep the visitor on the page they asked for, in the language they want.
+  go.href = L[want].path + (location.pathname.endsWith('faq.html') ? 'faq.html' : '') +
+            location.search + location.hash;
+  el.setAttribute('lang', want);
+
+  function remember() { try { store && store.setItem(KEY, '1'); } catch (e) {} }
+  go.addEventListener('click', remember);
+  document.getElementById('lang-hint-x').addEventListener('click', function () {
+    remember();
+    el.classList.remove('is-in');
+    setTimeout(function () { el.classList.remove('is-shown'); }, 400);
+  });
+
+  // After the hero has had its moment. Nothing here can shift layout — the
+  // element is fixed — but arriving mid-flight would still be a distraction.
+  setTimeout(function () {
+    el.classList.add('is-shown');
+    requestAnimationFrame(function () { el.classList.add('is-in'); });
+  }, 2200);
+})();
+</script>
 <script src="/assets/vendor/mapbox-gl-3.18.0.js"></script>
 <script>
 /* ================================================================

@@ -12,3 +12,7 @@ _shot.html
 ._*
 .Spotlight-V100
 .Trashes
+
+# Build tooling byproduct
+__pycache__/
+*.pyc

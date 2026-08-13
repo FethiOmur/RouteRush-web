@@ -17,6 +17,7 @@ KEEP = {
     "Instagram", "TikTok", "Torino", "Rush", "Atlas", "PRO", "PREMIUM",
     "HealthKit", "iPhone", "iOS", "App Store", "Live Activity", "Dynamic Island",
     "VS", "LIVE", "RP", "km", "km²", "m", "bpm", "/km", "3D",
+    "&times;",                       # the language hint's dismiss glyph
     "Torino Runners", "Po River Pace", "Mole Milers", "San Salvario SC",
     "Valentino AC", "M. Kaya · km",
     "English", "Türkçe", "Italiano", "Deutsch", "Español", "Français",

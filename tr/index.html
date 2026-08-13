@@ -1197,6 +1197,37 @@
       display: inline-block; padding-block: 15px; margin-block: -15px;
     }
   }
+  /* Language hint. A suggestion, never a redirect — see the script for why.
+     Fixed so it cannot shift the hero, and it only ever paints after load. */
+  .lang-hint {
+    position: fixed; z-index: 60; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(14px);
+    display: none; align-items: center; gap: 14px;
+    padding: 11px 12px 11px 18px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(18,18,22,.82); backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    font-size: 14px; color: var(--text-2);
+    opacity: 0; transition: opacity .4s ease, transform .4s ease;
+    max-width: calc(100vw - 32px);
+  }
+  .lang-hint.is-shown { display: flex; }
+  .lang-hint.is-in { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .lang-hint a {
+    flex: none; padding: 7px 15px; border-radius: 999px;
+    background: #fff; color: #000; font-size: 13px; font-weight: 560; text-decoration: none;
+  }
+  .lang-hint button {
+    flex: none; width: 30px; height: 30px; border: 0; border-radius: 50%;
+    background: transparent; color: var(--text-4); font-size: 17px; line-height: 1;
+    cursor: pointer;
+  }
+  .lang-hint button:hover { color: #fff; }
+  @media (prefers-reduced-motion: reduce) { .lang-hint { transition: none; } }
+  @media (max-width: 460px) {
+    .lang-hint { gap: 10px; padding-left: 14px; font-size: 13px; }
+  }
+
   .foot-lang { margin-top: 40px; }
   .foot-lang ul { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; }
   .foot-lang a { font-size: 13px; color: var(--text-4); transition: color .3s ease; }
@@ -1642,8 +1673,8 @@
         <div class="startctl" aria-hidden="true">
           <img class="mark" decoding="async" src="/assets/routerush-logo-64.png" alt="">
           <span class="roll">
-            <span class="ghost">Koşuya Başla</span><span class="ghost">Rush'ı Başlat</span><span class="ghost">Sürüşe Başla</span>
-            <b class="run">Koşuya Başla</b><b class="rush">Rush'ı Başlat</b><b class="ride">Sürüşe Başla</b>
+            <span class="ghost">Koşuyu Başlat</span><span class="ghost">Rush'ı Başlat</span><span class="ghost">Sürüşü Başlat</span>
+            <b class="run">Koşuyu Başlat</b><b class="rush">Rush'ı Başlat</b><b class="ride">Sürüşü Başlat</b>
           </span>
         </div>
       </div>
@@ -1654,7 +1685,7 @@
              golden harness). The map fades in over it once warmed. -->
         <img class="poster" id="hero-poster" src="/assets/hero/poster-start.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" width="1600" height="1000">
         <div id="seq-map" aria-hidden="true"></div>
-        <span class="cue" aria-hidden="true">Ele geçirmek için kaydır</span>
+        <span class="cue" aria-hidden="true">Kaydır, ele geçir</span>
       </div>
     </div>
   </section>
@@ -2334,7 +2365,7 @@
          loading="lazy" decoding="async">
     <div class="wrap" data-reveal>
       <p class="eyebrow">Neden önemli</p>
-      <h2 class="h2" id="why-title">Harita ancak sen hareket edince hareket eder.</h2>
+      <h2 class="h2" id="why-title">Harita sen kımıldarsan kımıldar.</h2>
       <p class="lede">Haritandaki hiçbir şey sana verilmedi. Her karışı gerçekten koştuğun bir sokak.</p>
     </div>
   </section>
@@ -2449,6 +2480,81 @@
   </div>
 </footer>
 
+<!-- Language hint. Deliberately NOT a redirect.
+
+     Automatic redirection by IP country would undo the whole point of shipping
+     six locales: Googlebot crawls almost entirely from US addresses, so it
+     would be bounced off /tr/, /it/, /de/, /es/ and /fr/ every time and would
+     never index any of them. Country is also a poor proxy for language — a
+     Turkish speaker in Germany is not a German reader — and Google's own
+     multi-regional guidance advises against it for exactly these reasons.
+
+     So: read the language the visitor actually set in their browser, offer the
+     matching page once, and let them decide. Whatever they choose is
+     remembered, so nobody is asked twice. Every locale stays independently
+     reachable and independently crawlable. -->
+<div class="lang-hint" id="lang-hint" role="region" aria-live="polite">
+  <span id="lang-hint-msg"></span>
+  <a id="lang-hint-go" href="/"></a>
+  <button type="button" id="lang-hint-x" aria-label="Dismiss">&times;</button>
+</div>
+<script>
+(function () {
+  // Each entry speaks for itself: the message is written in the language it
+  // offers, because it is addressed to someone who does not read this page's.
+  var L = {
+    en: { path: '/',    msg: 'Read this page in English?',           cta: 'English'  },
+    tr: { path: '/tr/', msg: 'Bu sayfayı Türkçe okumak ister misin?', cta: 'Türkçe'   },
+    it: { path: '/it/', msg: 'Vuoi leggere questa pagina in italiano?', cta: 'Italiano' },
+    de: { path: '/de/', msg: 'Diese Seite auf Deutsch lesen?',       cta: 'Deutsch'  },
+    es: { path: '/es/', msg: '¿Quieres leer esta página en español?', cta: 'Español'  },
+    fr: { path: '/fr/', msg: 'Lire cette page en français ?',        cta: 'Français' }
+  };
+  var KEY = 'rr-lang-hint';
+  var here = (document.documentElement.lang || 'en').slice(0, 2);
+
+  var store;
+  try { store = window.localStorage; } catch (e) { store = null; }   // private mode
+  if (store && store.getItem(KEY)) return;
+
+  // navigator.languages is the ordered preference list the visitor configured.
+  // First match wins; anything we do not publish is skipped rather than
+  // approximated, since a wrong guess is worse than leaving them on English.
+  var prefs = navigator.languages || [navigator.language || 'en'];
+  var want = null;
+  for (var i = 0; i < prefs.length && !want; i++) {
+    var code = String(prefs[i]).slice(0, 2).toLowerCase();
+    if (L[code]) want = code;
+  }
+  if (!want || want === here) return;
+
+  var el = document.getElementById('lang-hint');
+  var go = document.getElementById('lang-hint-go');
+  document.getElementById('lang-hint-msg').textContent = L[want].msg;
+  go.textContent = L[want].cta;
+  go.setAttribute('lang', want);
+  go.setAttribute('hreflang', want);
+  // Keep the visitor on the page they asked for, in the language they want.
+  go.href = L[want].path + (location.pathname.endsWith('faq.html') ? 'faq.html' : '') +
+            location.search + location.hash;
+  el.setAttribute('lang', want);
+
+  function remember() { try { store && store.setItem(KEY, '1'); } catch (e) {} }
+  go.addEventListener('click', remember);
+  document.getElementById('lang-hint-x').addEventListener('click', function () {
+    remember();
+    el.classList.remove('is-in');
+    setTimeout(function () { el.classList.remove('is-shown'); }, 400);
+  });
+
+  // After the hero has had its moment. Nothing here can shift layout — the
+  // element is fixed — but arriving mid-flight would still be a distraction.
+  setTimeout(function () {
+    el.classList.add('is-shown');
+    requestAnimationFrame(function () { el.classList.add('is-in'); });
+  }, 2200);
+})();
+</script>
 <script src="/assets/vendor/mapbox-gl-3.18.0.js"></script>
 <script>
 /* ================================================================

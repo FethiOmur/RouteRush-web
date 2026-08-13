@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="RouteRush transforme la course en conquête territoriale. Ferme une boucle et les rues à l'intérieur sont à toi, sur une carte 3D en direct de ta ville. Gratuit pour commencer, iOS 17+.">
+<meta name="description" content="RouteRush transforme la course à pied en conquête de territoire. Ferme une boucle : les rues à l'intérieur sont à toi, sur une carte 3D en direct de ta ville. Gratuit, iOS 17+.">
 <meta name="theme-color" content="#000000">
 <!-- Content policy. GitHub Pages cannot serve custom response headers, so the
      policy ships in the document instead. It is deliberately strict because the
@@ -28,7 +28,7 @@
   object-src 'none'">
 <!-- Cross-origin navigations leak only the origin, never the path. -->
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>RouteRush — L'appli de course à conquête de territoire pour iOS</title>
+<title>RouteRush — Appli de course à pied, conquête de territoire</title>
 <link rel="icon" href="/assets/routerush-appicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="canonical" href="https://routerushapp.com/fr/">
@@ -49,16 +49,16 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:site_name" content="RouteRush">
-<meta property="og:title" content="RouteRush — L'appli de course à conquête de territoire pour iOS">
-<meta property="og:description" content="Ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire — sur une carte de nuit 3D en direct de ta ville. Ligues hebdomadaires, un coach IA, une vraie conquête.">
+<meta property="og:title" content="RouteRush — Appli de course à pied, conquête de territoire">
+<meta property="og:description" content="Ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire — sur une carte 3D nocturne de ta ville, en direct. Ligues hebdomadaires, un coach IA, une vraie conquête.">
 <meta property="og:url" content="https://routerushapp.com/fr/">
 <meta property="og:image" content="https://routerushapp.com/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Le logotype RouteRush sur une carte de nuit de Turin couverte de territoire conquis">
+<meta property="og:image:alt" content="Le logotype RouteRush sur une carte nocturne de Turin couverte de territoire conquis">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RouteRush — L'appli de course à conquête de territoire pour iOS">
-<meta name="twitter:description" content="Ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire — sur une carte de nuit 3D en direct de ta ville.">
+<meta name="twitter:title" content="RouteRush — Appli de course à pied, conquête de territoire">
+<meta name="twitter:description" content="Ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire — sur une carte 3D nocturne de ta ville, en direct.">
 <meta name="twitter:image" content="https://routerushapp.com/assets/og.jpg">
 <link rel="stylesheet" href="/assets/vendor/mapbox-gl-3.18.0.css">
 <link rel="preconnect" href="https://api.mapbox.com" crossorigin>
@@ -1197,6 +1197,37 @@
       display: inline-block; padding-block: 15px; margin-block: -15px;
     }
   }
+  /* Language hint. A suggestion, never a redirect — see the script for why.
+     Fixed so it cannot shift the hero, and it only ever paints after load. */
+  .lang-hint {
+    position: fixed; z-index: 60; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(14px);
+    display: none; align-items: center; gap: 14px;
+    padding: 11px 12px 11px 18px; border-radius: 999px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(18,18,22,.82); backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    font-size: 14px; color: var(--text-2);
+    opacity: 0; transition: opacity .4s ease, transform .4s ease;
+    max-width: calc(100vw - 32px);
+  }
+  .lang-hint.is-shown { display: flex; }
+  .lang-hint.is-in { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .lang-hint a {
+    flex: none; padding: 7px 15px; border-radius: 999px;
+    background: #fff; color: #000; font-size: 13px; font-weight: 560; text-decoration: none;
+  }
+  .lang-hint button {
+    flex: none; width: 30px; height: 30px; border: 0; border-radius: 50%;
+    background: transparent; color: var(--text-4); font-size: 17px; line-height: 1;
+    cursor: pointer;
+  }
+  .lang-hint button:hover { color: #fff; }
+  @media (prefers-reduced-motion: reduce) { .lang-hint { transition: none; } }
+  @media (max-width: 460px) {
+    .lang-hint { gap: 10px; padding-left: 14px; font-size: 13px; }
+  }
+
   .foot-lang { margin-top: 40px; }
   .foot-lang ul { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; }
   .foot-lang a { font-size: 13px; color: var(--text-4); transition: color .3s ease; }
@@ -1518,7 +1549,7 @@
       "name": "RouteRush",
       "operatingSystem": "iOS 17.0 or later",
       "applicationCategory": "SportsApplication",
-      "description": "RouteRush est une appli iOS qui transforme la course et le vélo en conquête territoriale : ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire.",
+      "description": "RouteRush est une appli iOS qui transforme la course et le vélo en conquête territoriale : ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire.",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
       "inLanguage": ["en", "de", "es", "fr", "it", "tr"],
       "screenshot": [
@@ -1623,11 +1654,11 @@
           </div>
           <div class="state">
             <b>02 — Conquérir</b>
-            <p>Ferme une boucle et le terrain à l'intérieur devient le tien. Le territoire suit les rues que tu as courues, à la résolution où tu les as courues.</p>
+            <p>Ferme une boucle et le terrain à l'intérieur devient le tien. Le territoire suit les rues que tu as courues, telles quelles.</p>
           </div>
           <div class="state">
             <b>03 — Le garder</b>
-            <p>Le territoire devient des Rush Points, les Rush Points deviennent un rang, et le rang est remis à zéro chaque semaine. La carte n'est à toi que tant que tu continues à courir.</p>
+            <p>Le territoire devient des Rush Points, les Rush Points un rang, remis à zéro chaque semaine. La carte n'est à toi que tant que tu cours.</p>
           </div>
         </div>
 
@@ -1636,7 +1667,7 @@
             <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.47 2.24-1.23 3.04-.82.87-2.16 1.54-3.28 1.45-.14-1.1.42-2.27 1.16-3.02.83-.86 2.27-1.49 3.35-1.47zM20.9 17.2c-.55 1.27-.82 1.84-1.53 2.96-.99 1.56-2.39 3.5-4.12 3.52-1.54.01-1.93-1-4.02-.99-2.09.01-2.52 1.01-4.06.99-1.73-.02-3.06-1.77-4.05-3.33-2.77-4.36-3.06-9.48-1.35-12.2 1.21-1.93 3.13-3.06 4.93-3.06 1.84 0 2.99 1.01 4.51 1.01 1.47 0 2.37-1.01 4.49-1.01 1.61 0 3.31.88 4.53 2.39-3.98 2.18-3.33 7.86.67 9.72z"/></svg>
             Télécharger dans l'App Store
           </a>
-          <a class="btn btn-ghost" href="#territory">Voir comment marche le territoire</a>
+          <a class="btn btn-ghost" href="#territory">Comment ça marche</a>
         </div>
 
         <div class="startctl" aria-hidden="true">
@@ -1654,7 +1685,7 @@
              golden harness). The map fades in over it once warmed. -->
         <img class="poster" id="hero-poster" src="/assets/hero/poster-start.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" width="1600" height="1000">
         <div id="seq-map" aria-hidden="true"></div>
-        <span class="cue" aria-hidden="true">Fais défiler pour conquérir</span>
+        <span class="cue" aria-hidden="true">Fais défiler</span>
       </div>
     </div>
   </section>
@@ -1669,8 +1700,8 @@
         <h2 class="h2" id="claim-title" data-reveal style="--d:60ms; margin-top:18px">Un tracker te dit où tu es allé.<br>RouteRush te dit ce que tu as pris.</h2>
         <p class="lede" data-reveal style="--d:120ms; max-width:52ch; margin-top:22px">
           La même course, comptée autrement. La distance et l'allure sont le reçu. La carte est le score —
-          un relevé permanent des rues que tu as vraiment couvertes, pâté de maisons après pâté de maisons, face à tous
-          les autres qui couvrent les leurs.
+          un relevé permanent des rues que tu as vraiment couvertes, bloc après bloc, face à tous
+          ceux qui couvrent les leurs.
         </p>
       </div>
       <dl class="specs" data-reveal style="--d:160ms">
@@ -1701,8 +1732,8 @@
         <p class="eyebrow" data-reveal>Terrain pris</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="territory-title">La carte se souvient de chaque rue que tu as prise.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
-          Ferme une boucle pendant ta course et tout ce qui est à l'intérieur devient à toi, dans la forme des rues que tu
-          as prises. Reviens par un autre chemin et la forme de ce que tu possèdes change.
+          Ferme une boucle en courant et tout ce qui est à l'intérieur te revient, dans la forme des rues que tu
+          as prises. Reviens par un autre chemin et ce que tu possèdes change de forme.
         </p>
         <div class="fpoints" data-reveal style="--d:160ms">
           <div class="fpoint">
@@ -1718,7 +1749,7 @@
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17.5 9.2 12l3.4 3.4L20 7.4"/><path d="M20 12.4V7.4h-5"/></svg>
-            <p><b>Ça s'accumule.</b> Le territoire se garde d'une course à l'autre : un quartier, ça se construit sur des mois.</p>
+            <p><b>Ça s'accumule.</b> Le territoire se garde d'une course à l'autre : un quartier, ça se construit sur des mois.</p>
           </div>
         </div>
       </div>
@@ -1758,13 +1789,13 @@
         <p class="eyebrow" data-reveal>Boldi, le coach pendant la course</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="coach-title">Un coach dans l'oreille, pas un podcast.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
-          Boldi suit la course pendant qu'elle se passe — ton allure, le terrain devant, ce qu'il te reste — et
+          Boldi suit la course en direct — ton allure, le terrain devant, ce qu'il te reste — et
           dit quelque chose quand ça vaut la peine. Le reste du temps, il se tait.
         </p>
         <div class="fpoints" data-reveal style="--d:160ms">
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 12.4c0 4.1-3.8 7.4-8.5 7.4a10 10 0 0 1-2.6-.34L4.6 21l1.2-3.4A7 7 0 0 1 3.5 12.4C3.5 8.3 7.3 5 12 5s8.5 3.3 8.5 7.4z"/></svg>
-            <p><b>Au rythme de l'effort.</b> Les messages arrivent aux temps de passage et aux points de décision, pas sur un minuteur fixe.</p>
+            <p><b>Au rythme de l'effort.</b> Les messages arrivent aux temps de passage et aux points de décision, pas à intervalle fixe.</p>
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.5"/><path d="M8.6 6.4 12 3l3.4 3.4"/><circle cx="12" cy="17.6" r="3.4"/></svg>
@@ -1858,8 +1889,8 @@
         <p class="eyebrow" data-reveal>Live Activity et widget</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="live-title">L'essentiel d'une course se passe appli fermée.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
-          Le temps, la distance et l'allure restent sur l'écran verrouillé et dans la Dynamic Island, et restent interactifs :
-          mets en pause et reprends sans déverrouiller. Démarrer, c'est une touche depuis l'écran d'accueil.
+          Le temps, la distance et l'allure restent sur l'écran verrouillé et dans la Dynamic Island, et restent interactifs :
+          pause et reprise sans déverrouiller. Démarrer, c'est une touche depuis l'accueil.
         </p>
       </div>
       <div class="frow-media" data-reveal style="--d:120ms">
@@ -1890,9 +1921,9 @@
           <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; justify-content:center">
             <div class="widget">
               <img decoding="async" src="/assets/routerush-logo-64.png" alt="" width="26" height="26">
-              <div><b>Démarrage rapide</b><br><i>Course · Sortie</i></div>
+              <div><b>Départ rapide</b><br><i>Course · Sortie</i></div>
             </div>
-            <p class="small" style="max-width:170px">Widget d'écran d'accueil. Une touche ouvre directement une course suivie.</p>
+            <p class="small" style="max-width:170px">Widget d'écran d'accueil. Une touche lance une course suivie.</p>
           </div>
         </div>
       </div>
@@ -1910,12 +1941,12 @@
         <p class="eyebrow" data-reveal>Ligues</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="leagues-title">Trente coureurs.<br>Une semaine.<br>Cinq montent.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:42ch">
-          Chaque semaine, tu es placé dans une ligue de trente à ton palier. Le cinquième du haut monte, le
+          Chaque semaine, tu entres dans une ligue de trente à ton palier. Le cinquième du haut monte, le
           cinquième du bas descend, et tout le monde repart le lundi. Bronze, Silver et Gold,
           chacun avec trois divisions.
         </p>
         <p class="small" data-reveal style="--d:150ms; margin-top:18px; max-width:42ch">
-          Nouveau à un palier ? Le Bouclier du débutant couvre ta première semaine, pour qu'une mauvaise ne te
+          Tu débutes à un palier ? Le Bouclier du débutant couvre ta première semaine, pour qu'une mauvaise ne te
           renvoie pas en bas tout de suite.
         </p>
       </div>
@@ -1946,7 +1977,7 @@
             <span class="av" aria-hidden="true">MK</span><span class="rank">1</span>
             <span class="who">
               <span class="line1"><span class="name">M. Kaya</span></span>
-              <span class="sub"><span class="at">@mkaya</span> · En tête à la distance</span>
+              <span class="sub"><span class="at">@mkaya</span> · En tête sur la distance</span>
             </span>
             <span class="rpwrap"><span class="rp">12.4<span class="u"> km²</span></span><span class="rpcap">Surface conquise</span></span>
           </div>
@@ -1954,7 +1985,7 @@
             <span class="av" aria-hidden="true">JD</span><span class="rank">2</span>
             <span class="who">
               <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Verified"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              <span class="sub"><span class="at">@jduarte</span> · En tête à la distance</span>
+              <span class="sub"><span class="at">@jduarte</span> · En tête sur la distance</span>
             </span>
             <span class="rpwrap"><span class="rp">11.1<span class="u"> km²</span></span><span class="rpcap">Surface conquise</span></span>
           </div>
@@ -1962,7 +1993,7 @@
             <span class="av" aria-hidden="true">AR</span><span class="rank">3</span>
             <span class="who">
               <span class="line1"><span class="name">A. Rossi</span></span>
-              <span class="sub"><span class="at">@arossi</span> · En tête à la distance</span>
+              <span class="sub"><span class="at">@arossi</span> · En tête sur la distance</span>
             </span>
             <span class="rpwrap"><span class="rp">9.8<span class="u"> km²</span></span><span class="rpcap">Surface conquise</span></span>
           </div>
@@ -1970,7 +2001,7 @@
             <span class="av" aria-hidden="true">LN</span><span class="rank">4</span>
             <span class="who">
               <span class="line1"><span class="name">L. Novak</span></span>
-              <span class="sub"><span class="at">@lnovak</span> · En tête à la distance</span>
+              <span class="sub"><span class="at">@lnovak</span> · En tête sur la distance</span>
             </span>
             <span class="rpwrap"><span class="rp">8.2<span class="u"> km²</span></span><span class="rpcap">Surface conquise</span></span>
           </div>
@@ -1978,7 +2009,7 @@
             <span class="av" aria-hidden="true">PB</span><span class="rank">5</span>
             <span class="who">
               <span class="line1"><span class="name">P. Bauer</span></span>
-              <span class="sub"><span class="at">@pbauer</span> · En tête à la distance</span>
+              <span class="sub"><span class="at">@pbauer</span> · En tête sur la distance</span>
             </span>
             <span class="rpwrap"><span class="rp">7.6<span class="u"> km²</span></span><span class="rpcap">Surface conquise</span></span>
           </div>
@@ -2135,7 +2166,7 @@
             <span class="rank">#1</span>
             <span class="who">
               <span class="line1"><span class="name">États-Unis</span></span>
-              <span class="mt">Plus de territoire :</span>
+              <span class="mt">Le plus de territoire :</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Inconnu</b>
@@ -2148,7 +2179,7 @@
             <span class="rank">#2</span>
             <span class="who">
               <span class="line1"><span class="name">Canada</span></span>
-              <span class="mt">Plus de territoire :</span>
+              <span class="mt">Le plus de territoire :</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Inconnu</b>
@@ -2161,7 +2192,7 @@
             <span class="rank">#3</span>
             <span class="who">
               <span class="line1"><span class="name">Australie</span></span>
-              <span class="mt">Plus de territoire :</span>
+              <span class="mt">Le plus de territoire :</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Inconnu</b>
@@ -2174,7 +2205,7 @@
             <span class="rank">#4</span>
             <span class="who">
               <span class="line1"><span class="name">Turquie</span></span>
-              <span class="mt">Plus de territoire :</span>
+              <span class="mt">Le plus de territoire :</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Inconnu</b>
@@ -2187,7 +2218,7 @@
             <span class="rank">#5</span>
             <span class="who">
               <span class="line1"><span class="name">Royaume-Uni</span></span>
-              <span class="mt">Plus de territoire :</span>
+              <span class="mt">Le plus de territoire :</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Inconnu</b>
@@ -2200,7 +2231,7 @@
             <span class="rank">#6</span>
             <span class="who">
               <span class="line1"><span class="name">Allemagne</span></span>
-              <span class="mt">Plus de territoire :</span>
+              <span class="mt">Le plus de territoire :</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Inconnu</b>
@@ -2273,20 +2304,20 @@
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:38px">
         <h2 class="h2" id="more-title" data-reveal>Tout le reste qui vient avec.</h2>
-        <p class="lede" data-reveal style="--d:80ms">Rien qui vienne d'une roadmap. Tout ça est dans l'appli aujourd'hui.</p>
+        <p class="lede" data-reveal style="--d:80ms">Aucun élément de roadmap. Tout est dans l'appli aujourd'hui.</p>
       </div>
 
       <div class="bento">
         <article class="tile t-wide" data-reveal>
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20v-1.6A3.4 3.4 0 0 1 9.4 15h1.8"/><circle cx="9" cy="8.4" r="3"/><path d="M14.5 20v-1.6A3.4 3.4 0 0 1 17.9 15"/><circle cx="16.6" cy="8.4" r="3"/><path d="M11 20h9"/></svg>
           <h3 class="h3">Des clubs et un fil qui vaut la lecture</h3>
-          <p>Rejoins un club, publie ta course, commente celle de quelqu'un d'autre. Le fil social est construit autour des activités, donc il y a toujours quelque chose sur la carte derrière la photo.</p>
+          <p>Rejoins un club, publie ta course, commente celle d'un autre. Le fil social tourne autour des activités : il y a toujours quelque chose sur la carte derrière la photo.</p>
         </article>
 
         <article class="tile t-half" data-reveal style="--d:70ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 8.6c0 4.6-8.4 10.4-8.4 10.4S3.6 13.2 3.6 8.6a4.4 4.4 0 0 1 8.4-1.8 4.4 4.4 0 0 1 8.4 1.8z"/></svg>
           <h3 class="h3">Défis en tête-à-tête</h3>
-          <p>Choisis quelqu'un, choisis une métrique, fixe la période. La carte VS vous suit tous les deux jusqu'à la clôture.</p>
+          <p>Choisis quelqu'un, une métrique, une période. La carte VS vous suit jusqu'à la clôture.</p>
           <div class="vs" aria-hidden="true">
             <div class="side"><b>18.4</b><i>Toi · km</i></div>
             <div class="mid">VS</div>
@@ -2297,7 +2328,7 @@
         <article class="tile t-third" data-reveal style="--d:120ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12.5h4l2-4.5 3 9 2.5-4.5h5.5"/></svg>
           <h3 class="h3">HealthKit, dans les deux sens</h3>
-          <p>Pas, poids et fréquence cardiaque lus en entrée. Séances réécrites en sortie.</p>
+          <p>Pas, poids et fréquence cardiaque lus. Séances réécrites.</p>
         </article>
 
         <article class="tile t-third" data-reveal style="--d:170ms">
@@ -2309,7 +2340,7 @@
         <article class="tile t-third" data-reveal style="--d:220ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19.5h.01"/><path d="M4.5 9a10.6 10.6 0 0 1 15 0"/><path d="M7.8 12.6a6 6 0 0 1 8.4 0"/><path d="m3 3 18 18"/></svg>
           <h3 class="h3">File hors ligne</h3>
-          <p>Le suivi tient sans signal. Les activités se mettent en file sur l'appareil et se synchronisent au retour du réseau.</p>
+          <p>Le suivi tient sans signal. Les activités attendent sur l'appareil et se synchronisent au retour du réseau.</p>
         </article>
       </div>
     </div>
@@ -2334,7 +2365,7 @@
          loading="lazy" decoding="async">
     <div class="wrap" data-reveal>
       <p class="eyebrow">Pourquoi ça compte</p>
-      <h2 class="h2" id="why-title">La carte ne bouge que quand tu bouges.</h2>
+      <h2 class="h2" id="why-title">La carte ne bouge que par toi.</h2>
       <p class="lede">Rien sur ta carte ne t'a été donné. Chaque centimètre est une rue que tu as vraiment courue.</p>
     </div>
   </section>
@@ -2353,8 +2384,8 @@
       </div>
       <h2 class="display" id="dl-title" data-reveal style="--d:60ms">Va prendre du terrain.</h2>
       <p class="lede" data-reveal style="--d:110ms">
-        Commencer avec RouteRush est gratuit. iPhone, iOS&nbsp;17 ou plus récent. Ta première course conquiert son premier terrain
-        au bout d'une vingtaine de secondes.
+        RouteRush est gratuit pour commencer. iPhone, iOS&nbsp;17 ou plus. Ta première course conquiert du terrain
+        en une vingtaine de secondes.
       </p>
       <div class="final-cta" data-reveal style="--d:160ms">
         <a class="btn btn-primary" href="#download">
@@ -2375,7 +2406,7 @@
           <span>RouteRush</span>
         </a>
         <p class="small" style="margin-top:14px; max-width:34ch">
-          RouteRush est une appli iOS qui transforme la course et le vélo en conquête territoriale : ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire.
+          RouteRush est une appli iOS qui transforme la course et le vélo en conquête territoriale : ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire.
         </p>
       </div>
       <nav aria-label="Produit">
@@ -2449,6 +2480,81 @@
   </div>
 </footer>
 
+<!-- Language hint. Deliberately NOT a redirect.
+
+     Automatic redirection by IP country would undo the whole point of shipping
+     six locales: Googlebot crawls almost entirely from US addresses, so it
+     would be bounced off /tr/, /it/, /de/, /es/ and /fr/ every time and would
+     never index any of them. Country is also a poor proxy for language — a
+     Turkish speaker in Germany is not a German reader — and Google's own
+     multi-regional guidance advises against it for exactly these reasons.
+
+     So: read the language the visitor actually set in their browser, offer the
+     matching page once, and let them decide. Whatever they choose is
+     remembered, so nobody is asked twice. Every locale stays independently
+     reachable and independently crawlable. -->
+<div class="lang-hint" id="lang-hint" role="region" aria-live="polite">
+  <span id="lang-hint-msg"></span>
+  <a id="lang-hint-go" href="/"></a>
+  <button type="button" id="lang-hint-x" aria-label="Dismiss">&times;</button>
+</div>
+<script>
+(function () {
+  // Each entry speaks for itself: the message is written in the language it
+  // offers, because it is addressed to someone who does not read this page's.
+  var L = {
+    en: { path: '/',    msg: 'Read this page in English?',           cta: 'English'  },
+    tr: { path: '/tr/', msg: 'Bu sayfayı Türkçe okumak ister misin?', cta: 'Türkçe'   },
+    it: { path: '/it/', msg: 'Vuoi leggere questa pagina in italiano?', cta: 'Italiano' },
+    de: { path: '/de/', msg: 'Diese Seite auf Deutsch lesen?',       cta: 'Deutsch'  },
+    es: { path: '/es/', msg: '¿Quieres leer esta página en español?', cta: 'Español'  },
+    fr: { path: '/fr/', msg: 'Lire cette page en français ?',        cta: 'Français' }
+  };
+  var KEY = 'rr-lang-hint';
+  var here = (document.documentElement.lang || 'en').slice(0, 2);
+
+  var store;
+  try { store = window.localStorage; } catch (e) { store = null; }   // private mode
+  if (store && store.getItem(KEY)) return;
+
+  // navigator.languages is the ordered preference list the visitor configured.
+  // First match wins; anything we do not publish is skipped rather than
+  // approximated, since a wrong guess is worse than leaving them on English.
+  var prefs = navigator.languages || [navigator.language || 'en'];
+  var want = null;
+  for (var i = 0; i < prefs.length && !want; i++) {
+    var code = String(prefs[i]).slice(0, 2).toLowerCase();
+    if (L[code]) want = code;
+  }
+  if (!want || want === here) return;
+
+  var el = document.getElementById('lang-hint');
+  var go = document.getElementById('lang-hint-go');
+  document.getElementById('lang-hint-msg').textContent = L[want].msg;
+  go.textContent = L[want].cta;
+  go.setAttribute('lang', want);
+  go.setAttribute('hreflang', want);
+  // Keep the visitor on the page they asked for, in the language they want.
+  go.href = L[want].path + (location.pathname.endsWith('faq.html') ? 'faq.html' : '') +
+            location.search + location.hash;
+  el.setAttribute('lang', want);
+
+  function remember() { try { store && store.setItem(KEY, '1'); } catch (e) {} }
+  go.addEventListener('click', remember);
+  document.getElementById('lang-hint-x').addEventListener('click', function () {
+    remember();
+    el.classList.remove('is-in');
+    setTimeout(function () { el.classList.remove('is-shown'); }, 400);
+  });
+
+  // After the hero has had its moment. Nothing here can shift layout — the
+  // element is fixed — but arriving mid-flight would still be a distraction.
+  setTimeout(function () {
+    el.classList.add('is-shown');
+    requestAnimationFrame(function () { el.classList.add('is-in'); });
+  }, 2200);
+})();
+</script>
 <script src="/assets/vendor/mapbox-gl-3.18.0.js"></script>
 <script>
 /* ================================================================
