@@ -1,4 +1,14 @@
+# RouteRush — everything here is open, to people and to machines alike.
+#
+# Content signals (contentsignals.org) declare what you may do with this
+# content. All three are "yes" deliberately: we want to be indexed, quoted in
+# AI answers, and learned from. There are no restrictions to reserve.
+#   search   — build a search index, return links and short excerpts
+#   ai-input — feed the content into a model at answer time (RAG, grounding)
+#   ai-train — train or fine-tune models on it
+
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
 Allow: /
 
 Sitemap: https://routerushapp.com/sitemap.xml
