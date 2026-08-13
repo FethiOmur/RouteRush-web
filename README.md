@@ -113,6 +113,47 @@ Then visit <http://localhost:8899>.
   are all honoured. If glass moves to a different element, update those
   overrides to match.
 
+## Languages
+
+The site ships in the app's six languages: English at the root, plus `/tr/`,
+`/it/`, `/de/`, `/es/`, `/fr/`.
+
+**English is the only source.** `index.html` and `faq.html` are written and
+edited in English; the other five are generated. Never hand-edit a file under
+a locale directory — the next build overwrites it.
+
+```bash
+python3 tools/build-locales.py            # regenerate all locales + sitemap.xml
+python3 tools/build-locales.py --check    # fail if the committed output is stale
+```
+
+Run the build after **any** copy change to `index.html` or `faq.html`, and
+commit the regenerated files with it. If an English phrase changed, the build
+fails and names it — that failure is the point: it is the only thing standing
+between a copy edit and five translations that quietly still say the old
+sentence.
+
+Translations live in `i18n/<lang>.json`, keyed by the English text so they can
+be read and corrected without touching HTML. Vocabulary is pinned to the app's
+own `Localizable.xcstrings` (territory → bölge / territorio / Gebiet /
+territorio / territoire) so the site and the product never call the same thing
+two different names; `Rush`, `Rush Points`, `Atlas`, `PRO` and `Boldi` stay
+English because the app leaves them English. Every locale addresses the reader
+informally — `du`, `tu`, `tú` — matching the app.
+
+Two guards exist because both failures actually happened during the build-out:
+
+- **Replacement is confined to text nodes, human-readable attributes and the
+  JSON-LD.** A whole-file replace turned `setTimeout` into `setSüreout` and
+  killed the map.
+- **`<title>` and the meta description must be translated explicitly.** Left to
+  word substitution they ship as half-English —
+  `RouteRush — Bölge Running App for iOS`. These fields are also where a
+  literal rendering is wrong on purpose: the phrase a Turkish runner searches
+  for is not a translation of the phrase an English one searches for.
+
+`press.html` is English-only by choice.
+
 ## License
 
 All rights reserved.

@@ -1,6 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://routerushapp.com/</loc><lastmod>2026-08-13</lastmod></url>
-  <url><loc>https://routerushapp.com/faq.html</loc><lastmod>2026-08-13</lastmod></url>
-  <url><loc>https://routerushapp.com/press.html</loc><lastmod>2026-08-13</lastmod></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://routerushapp.com/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://routerushapp.com/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://routerushapp.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://routerushapp.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://routerushapp.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://routerushapp.com/"/>
+    <lastmod>2026-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://routerushapp.com/tr/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://routerushapp.com/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://routerushapp.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://routerushapp.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://routerushapp.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://routerushapp.com/"/>
+    <lastmod>2026-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://routerushapp.com/it/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://routerushapp.com/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://routerushapp.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://routerushapp.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://routerushapp.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://routerushapp.com/"/>
+    <lastmod>2026-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://routerushapp.com/de/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://routerushapp.com/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://routerushapp.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://routerushapp.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://routerushapp.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://routerushapp.com/"/>
+    <lastmod>2026-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://routerushapp.com/es/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://routerushapp.com/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://routerushapp.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://routerushapp.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://routerushapp.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://routerushapp.com/"/>
+    <lastmod>2026-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://routerushapp.com/fr/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://routerushapp.com/"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://routerushapp.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://routerushapp.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://routerushapp.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://routerushapp.com/"/>
+    <lastmod>2026-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://routerushapp.com/faq.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://routerushapp.com/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://routerushapp.com/it/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://routerushapp.com/de/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://routerushapp.com/es/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://routerushapp.com/faq.html"/>
+    <lastmod>2026-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://routerushapp.com/tr/faq.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://routerushapp.com/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://routerushapp.com/it/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://routerushapp.com/de/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://routerushapp.com/es/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://routerushapp.com/faq.html"/>
+    <lastmod>2026-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://routerushapp.com/it/faq.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://routerushapp.com/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://routerushapp.com/it/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://routerushapp.com/de/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://routerushapp.com/es/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://routerushapp.com/faq.html"/>
+    <lastmod>2026-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://routerushapp.com/de/faq.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://routerushapp.com/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://routerushapp.com/it/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://routerushapp.com/de/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://routerushapp.com/es/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://routerushapp.com/faq.html"/>
+    <lastmod>2026-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://routerushapp.com/es/faq.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://routerushapp.com/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://routerushapp.com/it/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://routerushapp.com/de/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://routerushapp.com/es/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://routerushapp.com/faq.html"/>
+    <lastmod>2026-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://routerushapp.com/fr/faq.html</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://routerushapp.com/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://routerushapp.com/it/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://routerushapp.com/de/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://routerushapp.com/es/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/faq.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://routerushapp.com/faq.html"/>
+    <lastmod>2026-08-13</lastmod>
+  </url>
+  <url>
+    <loc>https://routerushapp.com/press.html</loc>
+    <lastmod>2026-08-13</lastmod>
+  </url>
 </urlset>
