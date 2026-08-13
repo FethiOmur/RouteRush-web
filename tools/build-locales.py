@@ -198,21 +198,41 @@ def rewrite_head(html, lang, page):
     """
     path = f"/{lang}/" if page == "index.html" else f"/{lang}/{page}"
     url = ORIGIN + path
-    html = html.replace('<html lang="en">', f'<html lang="{lang}">', 1)
-    html = re.sub(r'<link rel="canonical" href="[^"]*">',
-                  f'<link rel="canonical" href="{url}">', html, count=1)
-    html = re.sub(r'<meta property="og:url" content="[^"]*">',
-                  f'<meta property="og:url" content="{url}">', html, count=1)
-    if 'property="og:locale"' in html:
-        html = re.sub(r'<meta property="og:locale" content="[^"]*">',
-                      f'<meta property="og:locale" content="{OG_LOCALE[lang]}">',
-                      html, count=1)
-    else:
-        html = html.replace('<meta property="og:type" content="website">',
-                            '<meta property="og:type" content="website">\n'
-                            f'<meta property="og:locale" content="{OG_LOCALE[lang]}">', 1)
-    # inLanguage on the JSON-LD graph, where the page declares one.
-    html = html.replace('"inLanguage": "en"', f'"inLanguage": "{lang}"')
+
+    # Every rewrite here asserts it actually matched. This is not defensive
+    # habit — it is a bug that shipped: the old code also tried to rewrite
+    # `"inLanguage": "en"`, the source had written it as an array, and the
+    # replacement silently did nothing for weeks. A no-op that looks like a
+    # success is the worst failure mode a generator has, and the translation
+    # path already refused to allow it while the head path did not.
+    def sub1(pattern, repl, s, what):
+        out, n = re.subn(pattern, repl, s, count=1)
+        if n != 1:
+            fail(f"{lang}/{page}: expected exactly one {what} to rewrite, "
+                 f"matched {n}. The source head changed shape — fix this "
+                 f"function rather than letting the rewrite quietly skip.")
+        return out
+
+    html = sub1(r'<html lang="en">', f'<html lang="{lang}">', html, "<html lang>")
+    html = sub1(r'<link rel="canonical" href="[^"]*">',
+                f'<link rel="canonical" href="{url}">', html, "canonical")
+    html = sub1(r'<meta property="og:url" content="[^"]*">',
+                f'<meta property="og:url" content="{url}">', html, "og:url")
+    html = sub1(r'<meta property="og:locale" content="[^"]*">',
+                f'<meta property="og:locale" content="{OG_LOCALE[lang]}">',
+                html, "og:locale")
+    # The FAQ's own language, which is the page's. Deliberately NOT the app's
+    # `inLanguage` array on the MobileApplication node: that lists the six
+    # languages the product ships in and is the same claim on every page.
+    if page == "faq.html":
+        html = sub1(r'"inLanguage": "en"', f'"inLanguage": "{lang}"',
+                    html, "FAQPage inLanguage")
+        # Each translation is its own node. Sharing one @id across six pages
+        # would assert they are the same thing, which is exactly the claim
+        # hreflang exists to deny. isPartOf/about keep pointing at the site
+        # and app nodes, which genuinely are shared.
+        html = sub1(r'"@id": "https://routerushapp\.com/faq\.html#faq"',
+                    f'"@id": "{ORIGIN}/{lang}/faq.html#faq"', html, "FAQPage @id")
     return html
 
 

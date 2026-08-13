@@ -9,6 +9,20 @@
 <link rel="icon" href="/assets/routerush-appicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="canonical" href="https://routerushapp.com/it/faq.html">
+<!-- Locale cluster for THIS page. Every member of a cluster carries the same
+     list, which is why the build can copy this block through untouched and
+     only rewrite canonical/og:url per locale — the same arrangement index.html
+     uses. The list has to name the FAQ URLs, not the home ones: a cluster that
+     points at /tr/ from /tr/faq.html is not reciprocal, and Google discards
+     hreflang it cannot confirm from both ends. Sitemap alternates alone are
+     the weaker signal, so both are declared. -->
+<link rel="alternate" hreflang="en" href="https://routerushapp.com/faq.html">
+<link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/faq.html">
+<link rel="alternate" hreflang="it" href="https://routerushapp.com/it/faq.html">
+<link rel="alternate" hreflang="de" href="https://routerushapp.com/de/faq.html">
+<link rel="alternate" hreflang="es" href="https://routerushapp.com/es/faq.html">
+<link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/faq.html">
+<link rel="alternate" hreflang="x-default" href="https://routerushapp.com/faq.html">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="it_IT">
 <meta property="og:site_name" content="RouteRush">
@@ -62,6 +76,10 @@
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
+  "@id": "https://routerushapp.com/it/faq.html#faq",
+  "inLanguage": "it",
+  "isPartOf": { "@id": "https://routerushapp.com/#site" },
+  "about": { "@id": "https://routerushapp.com/#app" },
   "mainEntity": [
     {
       "@type": "Question",

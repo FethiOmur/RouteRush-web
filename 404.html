@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<!-- A 404 must never be indexed, and must never be mistaken for a real page. -->
+<meta name="robots" content="noindex, follow">
+<link rel="icon" href="/assets/routerush-appicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<title>Page not found — RouteRush</title>
+<style>
+  /* The press.html utility template. Deliberately the plainest page we ship:
+     a 404 is the one page that must render even when something is wrong, so it
+     carries no script, no map, no webfont dependency beyond the wordmark. */
+  @font-face {
+    font-family: 'Splash';
+    src: url('/assets/fonts/Splash-Subset.ttf') format('truetype');
+    /* the subset carries ONLY the glyphs of "RouteRush" — never set other text in it */
+    font-display: block;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --text-2: rgba(255,255,255,.78); --text-3: rgba(255,255,255,.55);
+    --text-4: rgba(255,255,255,.38); --hair: rgba(255,255,255,.10);
+    --accent: #00E0FF;
+  }
+  html { color-scheme: dark; }
+  body {
+    background: #000; color: #fff; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 560px; padding: 48px 24px; text-align: center; }
+  .wordmark { font-family: 'Splash', cursive; font-size: 46px; font-weight: 400; }
+  .wordmark a { color: #fff; text-decoration: none; }
+  .code { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--text-4); margin-bottom: 16px; }
+  p { color: var(--text-2); margin-top: 14px; }
+  .sub { color: var(--text-3); font-size: 15px; }
+
+  /* Every language is offered rather than guessed. Someone reaches a 404 from
+     a broken link that could have pointed at any locale, and picking one for
+     them would strand the other five. Each name is written in its own
+     language, the one convention every visitor already scans for. */
+  nav { margin-top: 34px; padding-top: 24px; border-top: 1px solid var(--hair); }
+  nav ul { display: flex; flex-wrap: wrap; gap: 10px 20px; list-style: none; justify-content: center; }
+  nav a { font-size: 14px; color: var(--text-3); text-decoration: none; transition: color .3s ease; }
+  nav a:hover { color: #fff; }
+  @media (pointer: coarse) { nav a { display: inline-block; padding-block: 10px; } }
+  footer { margin-top: 28px; font-size: 13px; color: var(--text-4); }
+  footer a { color: var(--text-3); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="code">Error 404</p>
+  <div class="wordmark"><a href="/">RouteRush</a></div>
+  <p>This page does not exist.</p>
+  <p class="sub">Nothing here has been claimed yet. Pick a language and start from the map.</p>
+
+  <nav aria-label="Language">
+    <ul>
+      <li><a href="/" hreflang="en">English</a></li>
+      <li><a href="/tr/" hreflang="tr">Türkçe</a></li>
+      <li><a href="/it/" hreflang="it">Italiano</a></li>
+      <li><a href="/de/" hreflang="de">Deutsch</a></li>
+      <li><a href="/es/" hreflang="es">Español</a></li>
+      <li><a href="/fr/" hreflang="fr">Français</a></li>
+    </ul>
+  </nav>
+
+  <footer>
+    <a href="/faq.html">FAQ</a> &middot;
+    <a href="/press.html">Press kit</a> &middot;
+    <!--email_off--><a href="mailto:support@routerushapp.com">support@routerushapp.com</a><!--/email_off-->
+  </footer>
+</div>
+</body>
+</html>
