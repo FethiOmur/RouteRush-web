@@ -1,13 +1,11 @@
 {
   "//": "German. Vocabulary pinned to the app's Localizable.xcstrings: territory=Gebiet, conquer/claim=erobern, League=Liga, Leaderboards=Bestenlisten, Clubs=Clubs, Country=Land, Area=Fläche, Distance=Distanz, Time=Zeit, Pause=Pause, Verified=Verifiziert, AI Coach=KI-Coach. Rush, Rush Points, Atlas, PRO and Boldi stay English, as they do in the app. Address is informal 'du' throughout — the app uses du, and a website that switches to Sie would read as a different product.",
-
   "index.html": {
     "RouteRush — Territory Running App for iOS": "RouteRush — Lauf-App für iPhone: Gebiete erobern",
     "RouteRush turns running into territorial conquest. Close a loop and the streets inside it become yours, on a live 3D map of your city. Free to start, iOS 17+.": "RouteRush macht Laufen zur Eroberung: Schließe eine Runde und die Straßen darin gehören dir — auf der 3D-Live-Karte deiner Stadt. Kostenloser Einstieg, iOS 17+.",
     "Close a loop on a run and the streets inside it become your territory — on a live 3D night map of your city. Weekly leagues, an AI coach, real conquest.": "Schließe beim Laufen eine Runde und die Straßen darin werden dein Gebiet — live, auf einer 3D-Nachtkarte deiner Stadt. Wöchentliche Ligen, ein KI-Coach, echte Eroberung.",
     "Close a loop on a run and the streets inside it become your territory — on a live 3D night map of your city.": "Schließe beim Laufen eine Runde und die Straßen darin werden dein Gebiet — live, auf einer 3D-Nachtkarte deiner Stadt.",
     "RouteRush wordmark over a night map of Turin covered in claimed territory": "RouteRush-Schriftzug über einer Nachtkarte von Turin, bedeckt mit erobertem Gebiet",
-
     "Skip to content": "Zum Inhalt springen",
     "Territory": "Gebiet",
     "Coach": "Coach",
@@ -15,39 +13,32 @@
     "Features": "Funktionen",
     "Get the app": "App holen",
     "RouteRush for iOS": "RouteRush für iOS",
-
     "<h1 class=\"hero-h1 display\" id=\"hero-title\">Running is how<br>you take <em>ground.</em></h1>": "<h1 class=\"hero-h1 display\" id=\"hero-title\">Gebiet<br>erobert man <em>laufend.</em></h1>",
-
     "Step one. Record a run or a ride with GPS tracking that survives lost signal.": "Schritt eins. Zeichne einen Lauf oder eine Fahrt auf — mit GPS-Tracking, das Funklöcher übersteht.",
     "Step two. Close a loop and the ground inside it becomes your territory.": "Schritt zwei. Schließe eine Runde und das Gebiet darin wird deins.",
     "Step three. Claimed territory becomes Rush Points, and Rush Points decide your weekly league rank.": "Schritt drei. Erobertes Gebiet wird zu Rush Points, und Rush Points entscheiden deinen Platz in der Wochenliga.",
-
     "01 — Record": "01 — Aufzeichnen",
     "Start a run or a ride. RouteRush follows your line at street resolution, and keeps recording when the signal drops out.": "Starte einen Lauf oder eine Fahrt. RouteRush folgt deiner Linie in Straßenauflösung und zeichnet weiter auf, wenn das Signal wegbricht.",
     "02 — Conquer": "02 — Erobern",
     "Close a loop and the ground inside it turns yours. Territory follows the streets you ran, at the resolution you ran them.": "Schließe eine Runde und das Gebiet darin gehört dir. Das Gebiet folgt den Straßen, die du gelaufen bist — in der Auflösung, in der du sie gelaufen bist.",
     "03 — Hold it": "03 — Halten",
     "Territory becomes Rush Points, Rush Points become rank, and rank resets every week. The map is only yours while you keep running.": "Gebiet wird zu Rush Points, Rush Points werden zum Rang, und der Rang wird jede Woche zurückgesetzt. Die Karte gehört dir nur, solange du weiterläufst.",
-
     "Download on the App Store": "Laden im App Store",
     "See how territory works": "So funktioniert Gebiet",
     "Start Run": "Lauf starten",
     "Start Rush": "Rush starten",
     "Start Ride": "Fahrt starten",
     "Scroll to claim": "Scrollen",
-
     "The difference": "Der Unterschied",
     "A tracker tells you where you went.": "Ein Tracker sagt dir, wo du warst.",
     "RouteRush tells you what you took.": "RouteRush sagt dir, was du genommen hast.",
     "The same run, scored differently. Distance and pace are the receipt. The map is the score —\n          a permanent record of the streets you have actually covered, block by block, against everyone\n          else covering theirs.": "Derselbe Lauf, anders gewertet. Distanz und Pace sind der Beleg. Die Karte ist der Punktestand —\n          ein bleibendes Verzeichnis der Straßen, die du wirklich gelaufen bist, Block für Block,\n          gegen alle, die ihre laufen.",
-
     "Street resolution": "Straßenauflösung",
     "Fine enough that one side of a street is not the other.": "Fein genug, dass die eine Straßenseite nicht die andere ist.",
     "Real globe": "Echter Globus",
     "Your territory rendered on a true sphere, not a flat tile sheet.": "Dein Gebiet auf einer echten Kugel gezeichnet, nicht auf flachen Kacheln.",
     "Bars of signal required": "Nötige Signalbalken",
     "Activities queue offline and sync themselves the moment you are back.": "Aktivitäten warten offline und synchronisieren sich, sobald du wieder online bist.",
-
     "Ground taken": "Erobertes Gebiet",
     "The map remembers every street you have taken.": "Die Karte merkt sich jede Straße, die du nimmst.",
     "Close a loop on your run and everything inside it becomes yours, in the shape of the streets you\n          took. Come back a different way and the shape of what you own changes.": "Schließe beim Laufen eine Runde und alles darin gehört dir — in der Form der Straßen, die du\n          genommen hast. Komm auf einem anderen Weg zurück und die Form deines Gebiets ändert sich.",
@@ -57,7 +48,6 @@
     "Every claim has a dominance record. Someone else running your route puts your claim under pressure.": "Jede Eroberung hat einen Dominanzwert. Wer deine Route läuft, setzt deine Eroberung unter Druck.",
     "It compounds.": "Es summiert sich.",
     "Territory carries between runs, so a neighbourhood is something you build over months.": "Gebiet bleibt von Lauf zu Lauf bestehen — ein Viertel baust du über Monate auf.",
-
     "Boldi, the in-run coach": "Boldi, der Coach im Lauf",
     "A coach in your ear, not a podcast.": "Ein Coach im Ohr, kein Podcast.",
     "Boldi watches the run as it happens — your pace, the ground ahead, how much you have left — and\n          says something when it is worth saying. The rest of the time he is quiet.": "Boldi verfolgt den Lauf mit — deine Pace, das Gebiet voraus, wie viel noch übrig ist — und\n          sagt etwas, wenn es sich lohnt. Den Rest der Zeit schweigt er.",
@@ -65,13 +55,11 @@
     "Prompts arrive at splits and decision points, not on a fixed timer.": "Hinweise kommen bei Zwischenzeiten und Entscheidungspunkten, nicht nach der Uhr.",
     "Aware of the map.": "Kennt die Karte.",
     "He knows which ground is still unclaimed on the route in front of you.": "Er weiß, welches Gebiet auf der Strecke vor dir noch frei ist.",
-
     "Elapsed": "Dauer",
     "Distance": "Distanz",
     "Pace": "Pace",
     "Heart": "Puls",
     "Two unclaimed blocks on the loop ahead. Hold this pace and they are both yours.": "Zwei freie Blöcke auf der Runde vor dir. Halt die Pace, dann gehören beide dir.",
-
     "Live Activity &amp; widget": "Live Activity und Widget",
     "Most of a run happens with the app closed.": "Das meiste am Lauf passiert bei geschlossener App.",
     "Time, distance and pace stay on the Lock Screen and in the Dynamic Island, and stay interactive —\n          pause and resume without unlocking. Starting is one tap from the Home Screen.": "Zeit, Distanz und Pace bleiben auf dem Sperrbildschirm und in der Dynamic Island — und bleiben bedienbar:\n          pausieren und fortsetzen, ohne zu entsperren. Gestartet wird mit einem Tipp vom Home-Bildschirm.",
@@ -84,13 +72,11 @@
     "Quick Start": "Schnellstart",
     "Run · Ride": "Lauf · Fahrt",
     "Home Screen widget. One tap opens straight into a tracked run.": "Home-Bildschirm-Widget. Ein Tipp startet direkt die Aufzeichnung.",
-
     "Thirty runners.": "Dreißig Läufer.",
     "One week.": "Eine Woche.",
     "Five go up.": "Fünf steigen auf.",
     "Every week you are placed in a league of thirty at your tier. The top fifth is promoted, the\n          bottom fifth is relegated, and everyone starts again on Monday. Bronze, Silver and Gold,\n          each with three divisions.": "Jede Woche kommst du in eine Liga mit dreißig Läufern auf deiner Stufe. Das obere Fünftel steigt auf,\n          das untere Fünftel steigt ab, und montags fangen alle neu an. Bronze, Silver und Gold,\n          jeweils mit drei Divisionen.",
     "New to a tier? A newbie shield covers your first week, so a bad one cannot send you straight\n          back down.": "Neu auf einer Stufe? Der Newbie-Schutz deckt deine erste Woche ab, damit eine schlechte dich nicht\n          sofort wieder runterschickt.",
-
     "Leaderboards": "Bestenlisten",
     "Clubs": "Clubs",
     "League": "Liga",
@@ -122,7 +108,6 @@
     "Türkiye": "Türkei",
     "United Kingdom": "Vereinigtes Königreich",
     "Germany": "Deutschland",
-
     "Inside the app.": "In der App.",
     "Captured on iPhone, running the shipping build.": "Aufnahmen vom iPhone, im ausgelieferten Build.",
     "The globe you run on": "Der Globus, auf dem du läufst",
@@ -132,7 +117,6 @@
     "League standings": "Liga-Tabelle",
     "Where you stand": "Wo du stehst",
     "Your league, live, with the promotion line in sight.": "Deine Liga, live, mit der Aufstiegslinie im Blick.",
-
     "Everything else that ships in the box.": "Alles andere, was mitgeliefert wird.",
     "No roadmap items. These are in the app today.": "Keine Roadmap-Punkte. Das steckt heute in der App.",
     "Clubs and a feed worth reading": "Clubs und ein Feed, der sich lohnt",
@@ -146,16 +130,13 @@
     "Premium accounts carry a checkmark across the feed, clubs and leaderboards.": "PREMIUM-Accounts tragen ein Häkchen im Feed, in Clubs und in Bestenlisten.",
     "Offline queue": "Offline-Warteschlange",
     "Tracking survives no signal. Activities queue on device and sync when the network returns.": "Tracking übersteht Funklöcher. Aktivitäten warten auf dem Gerät und synchronisieren bei Empfang.",
-
     "Why it matters": "Warum das zählt",
     "The map only moves when you do.": "Die Karte bewegt sich nur mit dir.",
     "Nothing on your map was given to you. Every inch of it is a street you actually ran.": "Nichts auf deiner Karte wurde dir geschenkt. Jeder Zentimeter ist eine Straße, die du wirklich gelaufen bist.",
     "Go take some ground.": "Los, hol dir Gebiet.",
     "RouteRush is free to start. iPhone, iOS&nbsp;17 or later. Your first run claims its first ground about\n        twenty seconds in.": "Der Einstieg in RouteRush ist kostenlos. iPhone, iOS&nbsp;17 oder neuer. Dein erster Lauf erobert sein erstes Gebiet\n        nach etwa zwanzig Sekunden.",
-    "Watch the map fill": "Sieh die Karte wachsen",
-
+    "Watch the map fill": "Sieh die Karte füllen",
     "RouteRush is an iOS app that turns running and cycling into territorial conquest — close a loop on a run and the streets inside it become your territory.": "RouteRush ist eine iOS-App, die Laufen und Radfahren zur Gebietseroberung macht — schließe beim Laufen eine Runde und die Straßen darin werden dein Gebiet.",
-
     "Product": "Produkt",
     "Boldi coach": "Coach Boldi",
     "Company": "Unternehmen",
@@ -167,47 +148,34 @@
     "Follow": "Folgen",
     "© 2026 RouteRush. All rights reserved. · Map data\n        ©": "© 2026 RouteRush. Alle Rechte vorbehalten. · Kartendaten\n        ©"
   },
-
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "RouteRush FAQ — Gebiete erobern beim Laufen",
     "What RouteRush is, how territory claiming works, Rush Points, weekly leagues, Boldi the AI coach, pricing, and how it differs from a regular run tracker.": "Was RouteRush ist, wie das Erobern von Gebiet funktioniert, Rush Points, Wochenligen, KI-Coach Boldi, Preise und der Unterschied zum normalen Lauf-Tracker.",
     "RouteRush FAQ — territory running, explained": "RouteRush FAQ — Gebiete erobern, erklärt",
     "How claiming streets works, what Rush Points are, how weekly leagues promote and relegate, and what Boldi the AI coach actually does.": "Wie man Straßen erobert, was Rush Points sind, wie Auf- und Abstieg in den Wochenligen funktionieren und was der KI-Coach Boldi wirklich macht.",
-
     "FAQ": "FAQ",
     "Territory running, explained": "Gebiete erobern, erklärt",
     "Updated August 2026": "Aktualisiert im August 2026",
-
     "What is RouteRush?": "Was ist RouteRush?",
     "RouteRush is an iOS app that turns running and cycling into territorial conquest. Close a loop on a run and the ground inside it becomes your territory, drawn in the shape of the streets you ran on a 3D map of your city. Territory earns Rush Points, Rush Points decide your rank in weekly leagues of thirty, and every claim can be contested by someone running the same streets. RouteRush is free to start, requires iOS 17 or later, and ships in English, German, Spanish, French, Italian and Turkish.": "RouteRush ist eine iOS-App, die Laufen und Radfahren zur Gebietseroberung macht. Schließe beim Laufen eine Runde und das Gebiet darin wird deins — gezeichnet in der Form der Straßen, die du gelaufen bist, auf einer 3D-Karte deiner Stadt. Gebiet bringt Rush Points, Rush Points entscheiden deinen Platz in Wochenligen mit dreißig Teilnehmern, und jede Eroberung kann von jemandem angefochten werden, der dieselben Straßen läuft. Der Einstieg ist kostenlos, es braucht iOS 17 oder neuer, und es gibt die App auf Englisch, Deutsch, Spanisch, Französisch, Italienisch und Türkisch.",
-
     "How does claiming territory work?": "Wie funktioniert das Erobern von Gebiet?",
     "Record a run or ride with GPS. When your route closes a loop, everything inside it becomes yours — not a circle around your position, but the actual shape of the streets you covered. Scoring happens on a hexagonal grid fine enough that one side of a street is not the other (roughly 25 metres). Territory carries between runs, so a neighbourhood is something you build over months.": "Zeichne einen Lauf oder eine Fahrt mit GPS auf. Sobald deine Route eine Runde schließt, gehört alles darin dir — kein Kreis um deine Position, sondern die tatsächliche Form der Straßen, die du abgedeckt hast. Gewertet wird auf einem Sechseckraster, das fein genug ist, dass die eine Straßenseite nicht die andere ist (rund 25 Meter). Gebiet bleibt von Lauf zu Lauf bestehen — ein Viertel baust du über Monate auf.",
-
     "What are Rush Points?": "Was sind Rush Points?",
     "Rush Points are RouteRush's score. They are awarded per activity from the ground you actually covered — not from step counts or minutes moved. Rush Points decide your position in your weekly league.": "Rush Points sind die Wertung von RouteRush. Es gibt sie pro Aktivität für das Gebiet, das du tatsächlich abgedeckt hast — nicht für Schrittzahlen oder Bewegungsminuten. Rush Points entscheiden deinen Platz in der Wochenliga.",
-
     "How do leagues work?": "Wie funktionieren die Ligen?",
     "Every week you are placed in a league of thirty runners at your tier — Bronze, Silver or Gold, each with three divisions. The top five are promoted, the bottom five are relegated, and a new week begins. Your first week in a new tier is covered by a newbie shield, so one bad week cannot send you straight back down.": "Jede Woche landest du in einer Liga mit dreißig Läufern auf deiner Stufe — Bronze, Silver oder Gold, jeweils mit drei Divisionen. Die besten fünf steigen auf, die letzten fünf steigen ab, und eine neue Woche beginnt. Deine erste Woche auf einer neuen Stufe deckt der Newbie-Schutz ab, damit eine schlechte Woche dich nicht sofort wieder runterschickt.",
-
     "Can other players take my territory?": "Können andere Spieler mein Gebiet nehmen?",
     "Yes. Every claim carries a dominance record, and someone repeatedly running your streets puts that claim under pressure. Territory also decays if you stop running — the map is only yours while you keep moving. One layer is permanent: the Atlas records everything you have ever conquered, in bronze, forever.": "Ja. Jede Eroberung trägt einen Dominanzwert, und wer deine Straßen immer wieder läuft, setzt sie unter Druck. Gebiet verfällt außerdem, wenn du aufhörst zu laufen — die Karte gehört dir nur, solange du in Bewegung bleibst. Eine Ebene ist dauerhaft: Der Atlas hält alles, was du je erobert hast, in Bronze fest, für immer.",
-
     "What is Boldi?": "Wer ist Boldi?",
     "Boldi is RouteRush's AI running coach. He speaks during the run — about your pace, unclaimed ground on the route ahead, and how much you have left — and stays quiet the rest of the time. Boldi also comes attached to structured training plans, from first run to 5K.": "Boldi ist der KI-Laufcoach von RouteRush. Er spricht während des Laufs — über deine Pace, freies Gebiet auf der Strecke voraus und wie viel noch übrig ist — und schweigt den Rest der Zeit. Boldi begleitet außerdem die strukturierten Trainingspläne, vom ersten Lauf bis 5 km.",
-
     "Is RouteRush free?": "Ist RouteRush kostenlos?",
     "RouteRush is free to download and free to play: GPS tracking, territory, leagues and clubs are all included. An optional Pro subscription adds premium features, marked by a cyan ring on your map avatar.": "RouteRush ist kostenlos herunterzuladen und kostenlos zu spielen: GPS-Tracking, Gebiet, Ligen und Clubs sind alle dabei. Ein optionales PRO-Abo bringt Premium-Funktionen, erkennbar an einem cyanfarbenen Ring um deinen Avatar auf der Karte.",
-
     "How is RouteRush different from Strava?": "Worin unterscheidet sich RouteRush von Strava?",
     "A tracker tells you where you went; RouteRush tells you what you took. Distance and pace are the receipt — the map is the score. Strava is a training log with a social layer. RouteRush turns your city into a game board where every street is claimable, contestable ground. They coexist fine: RouteRush reads and writes Apple Health, so nothing locks you in.": "Ein Tracker sagt dir, wo du warst; RouteRush sagt dir, was du genommen hast. Distanz und Pace sind der Beleg — die Karte ist der Punktestand. Strava ist ein Trainingstagebuch mit einer sozialen Ebene. RouteRush macht aus deiner Stadt ein Spielbrett, auf dem jede Straße erobert und umkämpft werden kann. Beides geht problemlos nebeneinander: RouteRush liest und schreibt Apple Health, es bindet dich also nirgendwo fest.",
-
     "Does RouteRush work with a poor signal?": "Funktioniert RouteRush bei schlechtem Empfang?",
     "Yes. Tracking is built to survive dropped GPS and no network at all: the recorded line is Kalman-filtered to street resolution, and activities queue on the device and sync the moment a connection returns.": "Ja. Das Tracking ist darauf gebaut, GPS-Aussetzer und komplett fehlendes Netz zu überstehen: Die aufgezeichnete Linie wird per Kalman-Filter auf Straßenauflösung gebracht, und Aktivitäten warten auf dem Gerät und synchronisieren, sobald wieder eine Verbindung da ist.",
-
     "Who makes RouteRush?": "Wer macht RouteRush?",
     "RouteRush is built by Fethi Omur, an independent developer based in Turin, Italy. It is a solo project — design, code, the map engine and the Boldi coach are one person's work.": "RouteRush wird von Fethi Omur gebaut, einem unabhängigen Entwickler in Turin, Italien. Es ist ein Ein-Personen-Projekt — Design, Code, die Karten-Engine und der Coach Boldi sind die Arbeit eines Einzelnen.",
-
     "See the map for yourself —": "Sieh dir die Karte selbst an —",
     "© 2026 RouteRush": "© 2026 RouteRush",
     "Home": "Startseite",
