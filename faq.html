@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="description" content="What RouteRush is, how territory claiming works, Rush Points, weekly leagues, Boldi the AI coach, pricing, and how it differs from a regular run tracker.">
+<link rel="icon" href="assets/routerush-appicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="canonical" href="https://routerushapp.com/faq.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RouteRush">
+<meta property="og:title" content="RouteRush FAQ — territory running, explained">
+<meta property="og:description" content="How claiming streets works, what Rush Points are, how weekly leagues promote and relegate, and what Boldi the AI coach actually does.">
+<meta property="og:url" content="https://routerushapp.com/faq.html">
+<meta property="og:image" content="https://routerushapp.com/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="RouteRush FAQ — territory running, explained">
+<meta name="twitter:image" content="https://routerushapp.com/assets/og.jpg">
+<title>RouteRush FAQ — How Territory Running Works</title>
+<style>
+  /* The press.html utility template: the site's palette and type, none of the
+     scroll machinery. Answer text is deliberately plain — these blocks are
+     written to be quoted, by people and by answer engines. */
+  @font-face {
+    font-family: 'Splash';
+    src: url('assets/fonts/Splash-Subset.ttf') format('truetype');
+    font-display: block;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --text-2: rgba(255,255,255,.78); --text-3: rgba(255,255,255,.55);
+    --text-4: rgba(255,255,255,.38); --hair: rgba(255,255,255,.10);
+    --accent: #00E0FF;
+  }
+  html { color-scheme: dark; }
+  body {
+    background: #000; color: #fff;
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 56px 24px 72px; }
+  .wordmark { font-family: 'Splash', cursive; font-size: 40px; font-weight: 400; }
+  .wordmark a { color: #fff; text-decoration: none; }
+  .eyebrow { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-4); margin-bottom: 14px; }
+  .updated { font-size: 12px; color: var(--text-4); margin-top: 10px; }
+  h1 { font-size: 15px; font-weight: 500; color: var(--text-3); margin-top: 10px; }
+  h2 { font-size: 19px; font-weight: 620; margin: 46px 0 12px; letter-spacing: -.01em; }
+  p  { color: var(--text-2); }
+  a  { color: #fff; }
+  a:hover { color: var(--accent); }
+  .cta { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--hair); }
+  .cta a { font-weight: 560; }
+  footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair); font-size: 13px; color: var(--text-4); display: flex; gap: 18px; flex-wrap: wrap; }
+  footer a { color: var(--text-3); text-decoration: none; }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is RouteRush?",
+      "acceptedAnswer": { "@type": "Answer", "text": "RouteRush is an iOS app that turns running and cycling into territorial conquest. Close a loop on a run and the ground inside it becomes your territory, drawn in the shape of the streets you ran on a 3D map of your city. Territory earns Rush Points, Rush Points decide your rank in weekly leagues of thirty, and every claim can be contested by someone running the same streets. RouteRush is free to start, requires iOS 17 or later, and ships in English, German, Spanish, French, Italian and Turkish." }
+    },
+    {
+      "@type": "Question",
+      "name": "How does claiming territory work?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Record a run or ride with GPS. When your route closes a loop, everything inside it becomes yours — not a circle around your position, but the actual shape of the streets you covered. Scoring happens on a hexagonal grid fine enough that one side of a street is not the other (roughly 25 metres). Territory carries between runs, so a neighbourhood is something you build over months." }
+    },
+    {
+      "@type": "Question",
+      "name": "What are Rush Points?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Rush Points are RouteRush's score. They are awarded per activity from the ground you actually covered — not from step counts or minutes moved. Rush Points decide your position in your weekly league." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do leagues work?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Every week you are placed in a league of thirty runners at your tier — Bronze, Silver or Gold, each with three divisions. The top five are promoted, the bottom five are relegated, and a new week begins. Your first week in a new tier is covered by a newbie shield, so one bad week cannot send you straight back down." }
+    },
+    {
+      "@type": "Question",
+      "name": "Can other players take my territory?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every claim carries a dominance record, and someone repeatedly running your streets puts that claim under pressure. Territory also decays if you stop running — the map is only yours while you keep moving. One layer is permanent: the Atlas records everything you have ever conquered, in bronze, forever." }
+    },
+    {
+      "@type": "Question",
+      "name": "What is Boldi?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Boldi is RouteRush's AI running coach. He speaks during the run — about your pace, unclaimed ground on the route ahead, and how much you have left — and stays quiet the rest of the time. Boldi also comes attached to structured training plans, from first run to 5K." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is RouteRush free?",
+      "acceptedAnswer": { "@type": "Answer", "text": "RouteRush is free to download and free to play: GPS tracking, territory, leagues and clubs are all included. An optional Pro subscription adds premium features, marked by a cyan ring on your map avatar." }
+    },
+    {
+      "@type": "Question",
+      "name": "How is RouteRush different from Strava?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A tracker tells you where you went; RouteRush tells you what you took. Distance and pace are the receipt — the map is the score. Strava is a training log with a social layer. RouteRush turns your city into a game board where every street is claimable, contestable ground. They coexist fine: RouteRush reads and writes Apple Health, so nothing locks you in." }
+    },
+    {
+      "@type": "Question",
+      "name": "Does RouteRush work with a poor signal?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Tracking is built to survive dropped GPS and no network at all: the recorded line is Kalman-filtered to street resolution, and activities queue on the device and sync the moment a connection returns." }
+    },
+    {
+      "@type": "Question",
+      "name": "Who makes RouteRush?",
+      "acceptedAnswer": { "@type": "Answer", "text": "RouteRush is built by Fethi Omur, an independent developer based in Turin, Italy. It is a solo project — design, code, the map engine and the Boldi coach are one person's work." }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">FAQ</p>
+  <div class="wordmark"><a href="/">RouteRush</a></div>
+  <h1>Territory running, explained</h1>
+  <p class="updated">Updated August 2026</p>
+
+  <h2>What is RouteRush?</h2>
+  <p>RouteRush is an iOS app that turns running and cycling into territorial conquest. Close a loop on a run and the ground inside it becomes your territory, drawn in the shape of the streets you ran on a 3D map of your city. Territory earns Rush Points, Rush Points decide your rank in weekly leagues of thirty, and every claim can be contested by someone running the same streets. RouteRush is free to start, requires iOS 17 or later, and ships in English, German, Spanish, French, Italian and Turkish.</p>
+
+  <h2>How does claiming territory work?</h2>
+  <p>Record a run or ride with GPS. When your route closes a loop, everything inside it becomes yours — not a circle around your position, but the actual shape of the streets you covered. Scoring happens on a hexagonal grid fine enough that one side of a street is not the other (roughly 25 metres). Territory carries between runs, so a neighbourhood is something you build over months.</p>
+
+  <h2>What are Rush Points?</h2>
+  <p>Rush Points are RouteRush's score. They are awarded per activity from the ground you actually covered — not from step counts or minutes moved. Rush Points decide your position in your weekly league.</p>
+
+  <h2>How do leagues work?</h2>
+  <p>Every week you are placed in a league of thirty runners at your tier — Bronze, Silver or Gold, each with three divisions. The top five are promoted, the bottom five are relegated, and a new week begins. Your first week in a new tier is covered by a newbie shield, so one bad week cannot send you straight back down.</p>
+
+  <h2>Can other players take my territory?</h2>
+  <p>Yes. Every claim carries a dominance record, and someone repeatedly running your streets puts that claim under pressure. Territory also decays if you stop running — the map is only yours while you keep moving. One layer is permanent: the Atlas records everything you have ever conquered, in bronze, forever.</p>
+
+  <h2>What is Boldi?</h2>
+  <p>Boldi is RouteRush's AI running coach. He speaks during the run — about your pace, unclaimed ground on the route ahead, and how much you have left — and stays quiet the rest of the time. Boldi also comes attached to structured training plans, from first run to 5K.</p>
+
+  <h2>Is RouteRush free?</h2>
+  <p>RouteRush is free to download and free to play: GPS tracking, territory, leagues and clubs are all included. An optional Pro subscription adds premium features, marked by a cyan ring on your map avatar.</p>
+
+  <h2>How is RouteRush different from Strava?</h2>
+  <p>A tracker tells you where you went; RouteRush tells you what you took. Distance and pace are the receipt — the map is the score. Strava is a training log with a social layer. RouteRush turns your city into a game board where every street is claimable, contestable ground. They coexist fine: RouteRush reads and writes Apple Health, so nothing locks you in.</p>
+
+  <h2>Does RouteRush work with a poor signal?</h2>
+  <p>Yes. Tracking is built to survive dropped GPS and no network at all: the recorded line is Kalman-filtered to street resolution, and activities queue on the device and sync the moment a connection returns.</p>
+
+  <h2>Who makes RouteRush?</h2>
+  <p>RouteRush is built by Fethi Omur, an independent developer based in Turin, Italy. It is a solo project — design, code, the map engine and the Boldi coach are one person's work.</p>
+
+  <p class="cta">See the map for yourself — <a href="/">routerushapp.com</a></p>
+
+  <footer>
+    <span>© 2026 RouteRush</span>
+    <a href="/">Home</a>
+    <a href="press.html">Press kit</a>
+    <a href="https://fethiomur.github.io/RouteRush-legal/privacy.html">Privacy</a>
+    <a href="https://fethiomur.github.io/RouteRush-legal/terms.html">Terms</a>
+  </footer>
+</div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="RouteRush is a gamified fitness tracker for iOS. Run or ride, conquer real ground on a 3D globe, earn Rush Points and climb weekly leagues.">
+<meta name="description" content="RouteRush turns running into territorial conquest. Close a loop and the streets inside it become yours, on a live 3D map of your city. Free to start, iOS 17+.">
 <meta name="theme-color" content="#000000">
 <!-- Content policy. GitHub Pages cannot serve custom response headers, so the
      policy ships in the document instead. It is deliberately strict because the
@@ -28,10 +28,26 @@
   object-src 'none'">
 <!-- Cross-origin navigations leak only the origin, never the path. -->
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>RouteRush — Running is how you take ground</title>
+<title>RouteRush — Territory Running App for iOS</title>
 <link rel="icon" href="assets/routerush-appicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<link rel="canonical" href="https://routerushapp.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="RouteRush">
+<meta property="og:title" content="RouteRush — Territory Running App for iOS">
+<meta property="og:description" content="Close a loop on a run and the streets inside it become your territory — on a live 3D night map of your city. Weekly leagues, an AI coach, real conquest.">
+<meta property="og:url" content="https://routerushapp.com/">
+<meta property="og:image" content="https://routerushapp.com/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="RouteRush wordmark over a night map of Turin covered in claimed territory">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="RouteRush — Territory Running App for iOS">
+<meta name="twitter:description" content="Close a loop on a run and the streets inside it become your territory — on a live 3D night map of your city.">
+<meta name="twitter:image" content="https://routerushapp.com/assets/og.jpg">
 <link rel="stylesheet" href="assets/vendor/mapbox-gl-3.18.0.css">
 <link rel="preconnect" href="https://api.mapbox.com" crossorigin>
+<link rel="preload" as="image" href="assets/hero/poster-start.webp" fetchpriority="high">
 <!-- The brand face is the first thing a visitor reads, so it must not arrive
      late. Preloading it is only affordable because it is subset (see below):
      the full family took 40s to land on a throttled phone, and the wordmark
@@ -1444,6 +1460,57 @@
   /* Full-bleed layout: the copy column now owns the top-left, so the H3 HUD
      moves to the right shoulder, clear of the eyebrow. */
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://routerushapp.com/#org",
+      "name": "RouteRush",
+      "url": "https://routerushapp.com/",
+      "logo": "https://routerushapp.com/assets/routerush-appicon.png",
+      "sameAs": [
+        "https://www.instagram.com/routerushapp/",
+        "https://www.tiktok.com/@routerush"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://routerushapp.com/#founder",
+      "name": "Fethi Omur",
+      "jobTitle": "Independent iOS Developer",
+      "homeLocation": { "@type": "Place", "name": "Turin, Italy" },
+      "worksFor": { "@id": "https://routerushapp.com/#org" }
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://routerushapp.com/#site",
+      "url": "https://routerushapp.com/",
+      "name": "RouteRush",
+      "publisher": { "@id": "https://routerushapp.com/#org" }
+    },
+    {
+      "@type": ["MobileApplication", "SoftwareApplication"],
+      "@id": "https://routerushapp.com/#app",
+      "name": "RouteRush",
+      "operatingSystem": "iOS 17.0 or later",
+      "applicationCategory": "SportsApplication",
+      "description": "RouteRush is an iOS app that turns running and cycling into territorial conquest — close a loop on a run and the streets inside it become your territory.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+      "inLanguage": ["en", "de", "es", "fr", "it", "tr"],
+      "screenshot": [
+        "https://routerushapp.com/assets/screens/dev-mapmodes.webp",
+        "https://routerushapp.com/assets/screens/dev-summary.webp",
+        "https://routerushapp.com/assets/screens/dev-league.webp"
+      ],
+      "author": { "@id": "https://routerushapp.com/#founder" },
+      "publisher": { "@id": "https://routerushapp.com/#org" },
+      "url": "https://routerushapp.com/"
+    }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="hero-loading" id="hero-loading" hidden>
@@ -1490,7 +1557,7 @@
 <header class="nav" id="nav">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="RouteRush home">
-      <img decoding="async" src="assets/routerush-logo.png" alt="RouteRush" width="30" height="30">
+      <img decoding="async" src="assets/routerush-logo-64.png" alt="RouteRush" width="30" height="30">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a href="#territory">Territory</a>
@@ -1551,7 +1618,7 @@
         </div>
 
         <div class="startctl" aria-hidden="true">
-          <img class="mark" decoding="async" src="assets/routerush-logo.png" alt="">
+          <img class="mark" decoding="async" src="assets/routerush-logo-64.png" alt="">
           <span class="roll">
             <span class="ghost">Start Run</span><span class="ghost">Start Rush</span><span class="ghost">Start Ride</span>
             <b class="run">Start Run</b><b class="rush">Start Rush</b><b class="ride">Start Ride</b>
@@ -1563,7 +1630,7 @@
         <!-- Poster paints instantly and is the whole hero when the live map
              cannot run (reduced motion, save-data, no WebGL, ?nomap=1 for the
              golden harness). The map fades in over it once warmed. -->
-        <img class="poster" id="hero-poster" src="assets/hero/poster-start.webp" alt="" aria-hidden="true" decoding="async">
+        <img class="poster" id="hero-poster" src="assets/hero/poster-start.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" width="1600" height="1000">
         <div id="seq-map" aria-hidden="true"></div>
         <span class="cue" aria-hidden="true">Scroll to claim</span>
       </div>
@@ -1800,7 +1867,7 @@
           </div>
           <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; justify-content:center">
             <div class="widget">
-              <img decoding="async" src="assets/routerush-logo.png" alt="" width="26" height="26">
+              <img decoding="async" src="assets/routerush-logo-64.png" alt="" width="26" height="26">
               <div><b>Quick Start</b><br><i>Run · Ride</i></div>
             </div>
             <p class="small" style="max-width:170px">Home Screen widget. One tap opens straight into a tracked run.</p>
@@ -2286,7 +2353,7 @@
           <span>RouteRush</span>
         </a>
         <p class="small" style="margin-top:14px; max-width:34ch">
-          Gamified run and ride tracking for iOS. Conquer the map one street at a time.
+          RouteRush is an iOS app that turns running and cycling into territorial conquest — close a loop on a run and the streets inside it become your territory.
         </p>
       </div>
       <nav aria-label="Product">
@@ -2306,6 +2373,7 @@
                here can never break them. Link them exactly as registered. -->
           <li><a href="https://fethiomur.github.io/RouteRush-legal/privacy.html">Privacy</a></li>
           <li><a href="https://fethiomur.github.io/RouteRush-legal/terms.html">Terms</a></li>
+          <li><a href="faq.html">FAQ</a></li>
           <li><a href="mailto:support@routerushapp.com">Support</a></li>
           <li><a href="press.html">Press kit</a></li>
         </ul>
