@@ -896,6 +896,13 @@
     -webkit-mask: linear-gradient(90deg, #000 0%, #000 30%, transparent 100%);
             mask: linear-gradient(90deg, #000 0%, #000 30%, transparent 100%);
   }
+  /* The row's copy sits on top of the flag, and a dark flag (Türkiye's red,
+     Germany's black band) swallowed the small "Most territory:" label. A scrim
+     under the text keeps every row legible without washing the flag out. */
+  .row.ctry .flagbg::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(90deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,.42) 55%, transparent 100%);
+  }
   .row.ctry .rank {
     justify-self: start; align-self: start; margin: 10px 0 0 10px;
     padding: 4px 8px; border-radius: 999px;
@@ -2187,7 +2194,7 @@
               <span class="mt">Top-Eroberer:</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
-                <b>Unbekannt</b>
+                <b>@rmiller</b>
               </span>
             </span>
             <span class="rpwrap"><span class="rp">85 000<span class="u"> km²</span></span><span class="rpcap">Land erobert</span></span>
@@ -2200,7 +2207,7 @@
               <span class="mt">Top-Eroberer:</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
-                <b>Unbekannt</b>
+                <b>@tlaflamme</b>
               </span>
             </span>
             <span class="rpwrap"><span class="rp">55 000<span class="u"> km²</span></span><span class="rpcap">Land erobert</span></span>
@@ -2213,7 +2220,7 @@
               <span class="mt">Top-Eroberer:</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
-                <b>Unbekannt</b>
+                <b>@jbennett</b>
               </span>
             </span>
             <span class="rpwrap"><span class="rp">50 000<span class="u"> km²</span></span><span class="rpcap">Land erobert</span></span>
@@ -2226,7 +2233,7 @@
               <span class="mt">Top-Eroberer:</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
-                <b>Unbekannt</b>
+                <b>@eyilmaz</b>
               </span>
             </span>
             <span class="rpwrap"><span class="rp">35 000<span class="u"> km²</span></span><span class="rpcap">Land erobert</span></span>
@@ -2239,7 +2246,7 @@
               <span class="mt">Top-Eroberer:</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
-                <b>Unbekannt</b>
+                <b>@choward</b>
               </span>
             </span>
             <span class="rpwrap"><span class="rp">32 000<span class="u"> km²</span></span><span class="rpcap">Land erobert</span></span>
@@ -2252,7 +2259,7 @@
               <span class="mt">Top-Eroberer:</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
-                <b>Unbekannt</b>
+                <b>@lschmidt</b>
               </span>
             </span>
             <span class="rpwrap"><span class="rp">27 000<span class="u"> km²</span></span><span class="rpcap">Land erobert</span></span>
