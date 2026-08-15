@@ -1828,8 +1828,6 @@
       <div class="frow-media" data-reveal style="--d:120ms">
         <div class="phone">
           <div class="screen">
-            <!-- SWAP: point src at the real in-run / tracking capture -->
-            <img class="shot" loading="lazy" decoding="async" src="assets/screens/dev-league.webp" alt="RouteRush Plans screen: Boldi the coach offering training plans">
             <div class="island" aria-hidden="true"></div>
             <div class="statusbar"><span>9:41</span><span class="sb-icons">
               <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
@@ -2193,7 +2191,7 @@
                 <b>Unknown</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">85.000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
+            <span class="rpwrap"><span class="rp">85 000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
           </div>
           <div class="row ctry top3">
             <span class="flagbg" style="background-image:url(assets/flags/ca.png)" aria-hidden="true"></span>
@@ -2206,7 +2204,7 @@
                 <b>Unknown</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">55.000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
+            <span class="rpwrap"><span class="rp">55 000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
           </div>
           <div class="row ctry top3">
             <span class="flagbg" style="background-image:url(assets/flags/au.png)" aria-hidden="true"></span>
@@ -2219,7 +2217,7 @@
                 <b>Unknown</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">50.000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
+            <span class="rpwrap"><span class="rp">50 000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
           </div>
           <div class="row ctry">
             <span class="flagbg" style="background-image:url(assets/flags/tr.png)" aria-hidden="true"></span>
@@ -2232,7 +2230,7 @@
                 <b>Unknown</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">35.000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
+            <span class="rpwrap"><span class="rp">35 000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
           </div>
           <div class="row ctry">
             <span class="flagbg" style="background-image:url(assets/flags/gb.png)" aria-hidden="true"></span>
@@ -2245,7 +2243,7 @@
                 <b>Unknown</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">32.000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
+            <span class="rpwrap"><span class="rp">32 000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
           </div>
           <div class="row ctry">
             <span class="flagbg" style="background-image:url(assets/flags/de.png)" aria-hidden="true"></span>
@@ -2258,7 +2256,7 @@
                 <b>Unknown</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">27.000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
+            <span class="rpwrap"><span class="rp">27 000<span class="u"> km²</span></span><span class="rpcap">Land captured</span></span>
           </div>
         </div>
       </div>
@@ -2287,7 +2285,7 @@
                    alt="RouteRush run summary: route on the map with distance, time, pace, elevation and cadence">
             </div>
           </div>
-          <figcaption class="small"><b>The globe you run on</b>Home is a real 3D globe, not a flat tile sheet. Your ground fills in as you cover it.</figcaption>
+          <figcaption class="small"><b>The run, in full</b>The line you actually ran, with distance, pace, elevation and cadence.</figcaption>
         </figure>
 
         <figure data-reveal style="--d:90ms">
@@ -2303,11 +2301,8 @@
         <figure data-reveal style="--d:180ms">
           <div class="phone">
             <div class="screen">
-              <img class="shot" loading="lazy" decoding="async" src="assets/screens/dev-challenges.webp" alt="RouteRush club challenges with a head-to-head card and open challenges">
-              <div class="pending" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M6 20V11M12 20V5M18 20v-6"/></svg>
-                League standings
-              </div>
+              <img class="shot" loading="lazy" decoding="async" src="assets/screens/dev-league.webp"
+                   alt="RouteRush league screen: Bronze III with Rush Points, weekly rank and recent runs">
             </div>
           </div>
           <figcaption class="small"><b>Where you stand</b>Your league, live, with the promotion line in sight.</figcaption>
@@ -3373,25 +3368,36 @@
   document.querySelectorAll('.lb-panel .row .rp, .vs .side b').forEach(function (el) {
     var node = el.firstChild;
     if (!node || node.nodeType !== 3) return;
-    var m = node.textContent.match(/^\s*(\d[\d\s]*(?:\.\d+)?)\s*$/);
+    /* These figures are copy, so they are localized: the English page writes
+       "12.4" and every translation writes "12,4". The count-up therefore reads
+       the decimal mark out of the text rather than assuming one — otherwise it
+       would animate a translated number straight back into English form, and
+       an earlier build of this matched only "." so a comma stopped the
+       animation dead without a word.
+
+       Thousands need no guessing any more: the source groups them with a space
+       ("85 000", the same grouping the RP values already used), which is right
+       in all six locales. The old heuristic here read three digits after a dot
+       as grouping, to cope with "85.000" — that form is gone from the source
+       and guessing it back would misread a genuine three-decimal number. */
+    var m = node.textContent.match(/^\s*(\d[\d\s]*(?:[.,]\d+)?)\s*$/);
     if (!m) return;
-    var frac = m[1].split('.')[1] || '';
-    /* "12.4" is a decimal; "85.000" is dot-grouped thousands (the country
-       sheet's Italian-style figures). Three digits after the dot means
-       grouping — count the integer and put the dot back on format. */
-    var dotGrouped = frac.length === 3;
+    var raw = m[1];
+    var markMatch = raw.match(/[.,]/);
+    var mark = markMatch ? markMatch[0] : '';
+    var frac = mark ? raw.split(mark)[1] : '';
     counters.push({
       node: node, host: el, done: false,
-      final: dotGrouped ? parseFloat(m[1].replace(/[.\s]/g, ''))
-                        : parseFloat(m[1].replace(/\s+/g, '')),
-      dec: dotGrouped ? 0 : frac.length,
-      sep: dotGrouped ? '.' : (/\d\s\d/.test(m[1]) ? ' ' : '')
+      final: parseFloat(raw.replace(/\s+/g, '').replace(',', '.')),
+      dec: frac.length,
+      mark: mark || '.',
+      sep: /\d\s\d/.test(raw) ? ' ' : ''
     });
   });
   function fmt(v, c) {
     var s = v.toFixed(c.dec), parts = s.split('.');
     if (c.sep) parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, c.sep);
-    return parts.join('.');
+    return parts.join(c.mark);
   }
   function count(c) {
     var t0 = performance.now(), D = 950;
