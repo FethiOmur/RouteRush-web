@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="RouteRush transforme la course à pied en conquête de territoire. Ferme une boucle : les rues à l'intérieur sont à toi, sur une carte 3D en direct de ta ville. Gratuit, iOS 17+.">
+<meta name="description" content="RouteRush transforme la course à pied en conquête de territoire. Ferme une boucle, les rues à l'intérieur sont à toi, sur la carte 3D de ta ville. Gratuit au départ, iOS 17+.">
 <meta name="theme-color" content="#000000">
 <!-- Content policy. GitHub Pages cannot serve custom response headers, so the
      policy ships in the document instead. It is deliberately strict because the
@@ -28,7 +28,7 @@
   object-src 'none'">
 <!-- Cross-origin navigations leak only the origin, never the path. -->
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>RouteRush — Appli de course à pied, conquête de territoire</title>
+<title>RouteRush — Appli de course à pied iOS : conquiers ta ville</title>
 <link rel="icon" href="/assets/routerush-appicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="canonical" href="https://routerushapp.com/fr/">
@@ -49,16 +49,16 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="fr_FR">
 <meta property="og:site_name" content="RouteRush">
-<meta property="og:title" content="RouteRush — Appli de course à pied, conquête de territoire">
-<meta property="og:description" content="Ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire — sur une carte 3D nocturne de ta ville, en direct. Ligues hebdomadaires, un coach IA, une vraie conquête.">
+<meta property="og:title" content="RouteRush — Appli de course à pied iOS : conquiers ta ville">
+<meta property="og:description" content="Ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire — sur la carte 3D nocturne de ta ville, en temps réel. Ligues hebdomadaires, un coach IA, une vraie conquête.">
 <meta property="og:url" content="https://routerushapp.com/fr/">
 <meta property="og:image" content="https://routerushapp.com/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Le logotype RouteRush sur une carte nocturne de Turin couverte de territoire conquis">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RouteRush — Appli de course à pied, conquête de territoire">
-<meta name="twitter:description" content="Ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire — sur une carte 3D nocturne de ta ville, en direct.">
+<meta name="twitter:title" content="RouteRush — Appli de course à pied iOS : conquiers ta ville">
+<meta name="twitter:description" content="Ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire — sur la carte 3D nocturne de ta ville, en temps réel.">
 <meta name="twitter:image" content="https://routerushapp.com/assets/og.jpg">
 <link rel="stylesheet" href="/assets/vendor/mapbox-gl-3.18.0.css">
 <link rel="preconnect" href="https://api.mapbox.com" crossorigin>
@@ -1554,7 +1554,7 @@
       "name": "RouteRush",
       "operatingSystem": "iOS 17.0 or later",
       "applicationCategory": "SportsApplication",
-      "description": "RouteRush est une appli iOS qui transforme la course et le vélo en conquête territoriale : ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire.",
+      "description": "RouteRush est une appli iOS qui transforme la course à pied et le vélo en conquête de territoire : ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire.",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
       "inLanguage": ["en", "de", "es", "fr", "it", "tr"],
       "screenshot": [
@@ -1630,16 +1630,16 @@
 
 <header class="nav" id="nav">
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="RouteRush home">
+    <a class="brand" href="#top" aria-label="Accueil RouteRush">
       <img decoding="async" src="/assets/routerush-logo-64.png" alt="RouteRush" width="30" height="30">
     </a>
-    <nav class="nav-links" aria-label="Primary">
+    <nav class="nav-links" aria-label="Navigation principale">
       <a href="#territory">Territoire</a>
       <a href="#coach">Coach</a>
       <a href="#leagues">Ligues</a>
       <a href="#more">Fonctions</a>
     </nav>
-    <a class="btn btn-primary btn-sm" href="#download">Télécharger l'appli</a>
+    <a class="btn btn-primary btn-sm" href="#download">Obtenir l'appli</a>
   </div>
 </header>
 
@@ -1658,28 +1658,28 @@
              the wordmark owns this space without doubling up. -->
         <p class="wordmark hero-wordmark">RouteRush</p>
 
-        <h1 class="hero-h1 display" id="hero-title">Le terrain<br>se conquiert <em>en courant.</em></h1>
+        <h1 class="hero-h1 display" id="hero-title">Courir,<br>c'est <em>conquérir.</em></h1>
 
         <!-- The sequence communicates ordered information, so the same three
              states also exist as readable text for assistive technology. -->
         <ol class="sr-only">
-          <li>Première étape. Enregistre une course ou une sortie à vélo avec un suivi GPS qui tient même sans signal.</li>
+          <li>Première étape. Enregistre une course ou une sortie à vélo avec un suivi GPS qui tient même quand le signal se perd.</li>
           <li>Deuxième étape. Ferme une boucle et le terrain à l'intérieur devient ton territoire.</li>
-          <li>Troisième étape. Le territoire conquis devient des Rush Points, et les Rush Points décident de ton rang dans la ligue de la semaine.</li>
+          <li>Troisième étape. Le territoire conquis devient des Points Rush, et les Points Rush décident de ton rang dans la ligue de la semaine.</li>
         </ol>
 
         <div class="states" id="states">
           <div class="state is-active">
             <b>01 — Enregistrer</b>
-            <p>Lance une course ou une sortie. RouteRush suit ta ligne à la résolution de la rue et continue d'enregistrer quand le signal tombe.</p>
+            <p>Lance une course ou une sortie à vélo. RouteRush suit ta trace rue par rue, et continue d'enregistrer quand le signal lâche.</p>
           </div>
           <div class="state">
             <b>02 — Conquérir</b>
-            <p>Ferme une boucle et le terrain à l'intérieur devient le tien. Le territoire suit les rues courues, à leur résolution.</p>
+            <p>Ferme une boucle et le terrain à l'intérieur devient le tien. Le territoire épouse les rues que tu as courues, exactement là où tu es passé.</p>
           </div>
           <div class="state">
             <b>03 — Le garder</b>
-            <p>Le territoire devient des Rush Points, les Rush Points un rang, remis à zéro chaque semaine. La carte n'est à toi que tant que tu cours.</p>
+            <p>Le territoire devient des Points Rush, les Points Rush un rang, et le rang repart à zéro chaque semaine. La carte n'est à toi que tant que tu cours.</p>
           </div>
         </div>
 
@@ -1706,7 +1706,7 @@
              golden harness). The map fades in over it once warmed. -->
         <img class="poster" id="hero-poster" src="/assets/hero/poster-start.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" width="1600" height="1000">
         <div id="seq-map" aria-hidden="true"></div>
-        <span class="cue" aria-hidden="true">Fais défiler</span>
+        <span class="cue" aria-hidden="true">Défile pour conquérir</span>
       </div>
     </div>
   </section>
@@ -1718,9 +1718,9 @@
     <div class="wrap claim">
       <div>
         <p class="eyebrow" data-reveal>La différence</p>
-        <h2 class="h2" id="claim-title" data-reveal style="--d:60ms; margin-top:18px">Un tracker te dit où tu as été.<br>RouteRush te dit ce que tu as pris.</h2>
+        <h2 class="h2" id="claim-title" data-reveal style="--d:60ms; margin-top:18px">Une appli de suivi te dit par où tu es passé.<br>RouteRush te dit ce que tu as conquis.</h2>
         <p class="lede" data-reveal style="--d:120ms; max-width:52ch; margin-top:22px">
-          La même course, comptée autrement. La distance et l'allure sont le reçu. La carte est le score —
+          La même course, comptée autrement. La distance et l'allure, c'est le justificatif. La carte, c'est le score —
           un relevé permanent des rues que tu as vraiment couvertes, bloc après bloc, face à tous
           ceux qui couvrent les leurs.
         </p>
@@ -1728,15 +1728,15 @@
       <dl class="specs" data-reveal style="--d:160ms">
         <div class="spec">
           <dt>3<span style="font-size:.5em; letter-spacing:0"> m</span></dt>
-          <dd><b>Résolution de la rue</b>Les frontières disputées s'affinent à des cellules de trois mètres : un côté de la rue n'est pas l'autre.</dd>
+          <dd><b>À la rue près</b>Les frontières disputées descendent à des cellules de trois mètres : un trottoir n'est pas l'autre.</dd>
         </div>
         <div class="spec">
           <dt>3D</dt>
-          <dd><b>Vrai globe</b>Ton territoire dessiné sur une vraie sphère, pas sur une nappe de tuiles à plat.</dd>
+          <dd><b>Vrai globe</b>Ton territoire dessiné sur une vraie sphère, pas sur un plan à plat.</dd>
         </div>
         <div class="spec">
           <dt>0</dt>
-          <dd><b>Barres de réseau nécessaires</b>Les activités se mettent en file hors ligne et se synchronisent dès que tu reviens.</dd>
+          <dd><b>Barre de réseau nécessaire</b>Les activités attendent hors ligne et se synchronisent dès que tu as du réseau.</dd>
         </div>
       </dl>
     </div>
@@ -1762,11 +1762,11 @@
                  actually has. This was two nested hexagons, the one piece of
                  honeycomb still visible on the page. -->
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.4 8.2h7.2V4.4h10v9.2h-4.6v6.2H8.6v-5.4H3.4z"/><path d="M10.6 8.2v5.8h5.4"/></svg>
-            <p><b>Un score au ras du sol.</b> Les Rush Points sont attribués par activité selon le terrain que tu as réellement couvert, pas selon un compteur de pas.</p>
+            <p><b>Un score qui vient du terrain.</b> Les Points Rush sont attribués à chaque activité selon le terrain que tu as vraiment couvert, pas selon un compteur de pas.</p>
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M2.8 12h18.4"/><path d="M12 2.8c2.4 2.6 3.7 5.8 3.7 9.2s-1.3 6.6-3.7 9.2c-2.4-2.6-3.7-5.8-3.7-9.2S9.6 5.4 12 2.8z"/></svg>
-            <p><b>Terrain disputé.</b> Chaque conquête porte un indice de domination. Quelqu'un qui court ton parcours met ta conquête sous pression.</p>
+            <p><b>Terrain disputé.</b> Chaque conquête a une force, et elle baisse dès que quelqu'un d'autre court ton parcours.</p>
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17.5 9.2 12l3.4 3.4L20 7.4"/><path d="M20 12.4V7.4h-5"/></svg>
@@ -1780,7 +1780,7 @@
           <div class="screen">
             <!-- SWAP: point src at the real globe/territory capture -->
             <img class="shot" loading="lazy" decoding="async" src="/assets/screens/dev-mapmodes.webp"
-                 alt="RouteRush Map Modes over London: Heatmap, Territory and Routes cards above the 3D city">
+                 alt="Les Modes de carte RouteRush au-dessus de Londres : les vignettes Carte de chaleur, Territoire et Parcours au-dessus de la ville en 3D">
             <!-- The screenshot is the phone's entire screen. A hand-built
                  mock UI used to sit under it — status bar, a drawn globe with
                  claims, a metrics card, a tab bar, ~75 lines — but the shot is
@@ -1807,16 +1807,16 @@
   <section class="sec" id="coach" aria-labelledby="coach-title">
     <div class="wrap frow flip">
       <div>
-        <p class="eyebrow" data-reveal>Boldi, le coach pendant la course</p>
+        <p class="eyebrow" data-reveal>Boldi, le coach en course</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="coach-title">Un coach dans l'oreille, pas un podcast.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
-          Boldi suit la course en direct — ton allure, le terrain devant, ce qu'il te reste — et
+          Boldi regarde la course se faire — ton allure, le terrain devant, ce qu'il te reste — et
           dit quelque chose quand ça vaut la peine. Le reste du temps, il se tait.
         </p>
         <div class="fpoints" data-reveal style="--d:160ms">
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 12.4c0 4.1-3.8 7.4-8.5 7.4a10 10 0 0 1-2.6-.34L4.6 21l1.2-3.4A7 7 0 0 1 3.5 12.4C3.5 8.3 7.3 5 12 5s8.5 3.3 8.5 7.4z"/></svg>
-            <p><b>Au rythme de l'effort.</b> Les messages arrivent aux temps de passage et aux points de décision, pas à intervalle fixe.</p>
+            <p><b>Au rythme de l'effort.</b> Il parle aux temps de passage et quand il y a un choix à faire, pas à intervalle régulier.</p>
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.5"/><path d="M8.6 6.4 12 3l3.4 3.4"/><circle cx="12" cy="17.6" r="3.4"/></svg>
@@ -1829,7 +1829,7 @@
         <div class="phone">
           <div class="screen">
             <!-- SWAP: point src at the real in-run / tracking capture -->
-            <img class="shot" loading="lazy" decoding="async" src="/assets/screens/dev-league.webp" alt="RouteRush Plans screen: Boldi the coach offering training plans">
+            <img class="shot" loading="lazy" decoding="async" src="/assets/screens/dev-league.webp" alt="L'écran Plans de RouteRush : Boldi, le coach, propose des plans d'entraînement">
             <div class="island" aria-hidden="true"></div>
             <div class="statusbar"><span>9:41</span><span class="sb-icons">
               <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
@@ -1845,7 +1845,7 @@
                 <div class="metric-row">
                   <div class="metric"><i>Distance</i><b>6.42<s>km</s></b></div>
                   <div class="metric"><i>Allure</i><b>5:01<s>/km</s></b></div>
-                  <div class="metric"><i>Cœur</i><b>158<s>bpm</s></b></div>
+                  <div class="metric"><i>FC</i><b>158<s>bpm</s></b></div>
                 </div>
               </div>
 
@@ -1911,7 +1911,7 @@
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="live-title">L'essentiel d'une course se passe appli fermée.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
           Le temps, la distance et l'allure restent sur l'écran verrouillé et dans la Dynamic Island, et restent interactifs :
-          pause et reprise sans déverrouiller. Démarrer, c'est une touche depuis l'écran d'accueil.
+          pause et reprise sans déverrouiller. Démarrer tient en un toucher depuis l'écran d'accueil.
         </p>
       </div>
       <div class="frow-media" data-reveal style="--d:120ms">
@@ -1935,16 +1935,16 @@
               <div class="metric"><i>Blocs</i><b>+41</b></div>
             </div>
             <div style="display:flex; gap:8px">
-              <span class="btn btn-primary" style="height:32px; font-size:12.5px; flex:1; padding:0 12px" role="img" aria-label="Pause control">Pause</span>
-              <span class="btn btn-ghost" style="height:32px; font-size:12.5px; flex:1; padding:0 12px" role="img" aria-label="Finish control">Terminer</span>
+              <span class="btn btn-primary" style="height:32px; font-size:12.5px; flex:1; padding:0 12px" role="img" aria-label="Commande Pause">Pause</span>
+              <span class="btn btn-ghost" style="height:32px; font-size:12.5px; flex:1; padding:0 12px" role="img" aria-label="Commande Terminer">Terminer</span>
             </div>
           </div>
           <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; justify-content:center">
             <div class="widget">
               <img decoding="async" src="/assets/routerush-logo-64.png" alt="" width="26" height="26">
-              <div><b>Départ rapide</b><br><i>Course · Sortie</i></div>
+              <div><b>Départ rapide</b><br><i>Course · Vélo</i></div>
             </div>
-            <p class="small" style="max-width:170px">Widget d'écran d'accueil. Une touche lance une course suivie.</p>
+            <p class="small" style="max-width:170px">Widget d'écran d'accueil. Un toucher et la course démarre, déjà suivie.</p>
           </div>
         </div>
       </div>
@@ -1962,13 +1962,13 @@
         <p class="eyebrow" data-reveal>Ligues</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="leagues-title">Trente coureurs.<br>Une semaine.<br>Cinq montent.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:42ch">
-          Chaque semaine, tu entres dans une ligue de trente à ton palier. Le cinquième du haut monte, le
-          cinquième du bas descend, et tout le monde repart le lundi. Bronze, Silver et Gold,
+          Chaque semaine, tu entres dans une ligue de trente à ton palier. Les cinq premiers montent, les
+          cinq derniers descendent, et tout le monde repart le lundi. Bronze, Argent et Or,
           chacun avec trois divisions.
         </p>
         <p class="small" data-reveal style="--d:150ms; margin-top:18px; max-width:42ch">
-          Tu débutes à un palier ? Le Bouclier du débutant couvre ta première semaine, pour qu'une mauvaise ne te
-          renvoie pas en bas tout de suite.
+          Tu débutes à un palier ? Le Bouclier du débutant couvre ta première semaine, pour qu'une mauvaise
+          semaine ne te renvoie pas en bas tout de suite.
         </p>
       </div>
 
@@ -1980,7 +1980,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
           </span>
         </div>
-        <div class="lb-tabs" role="tablist" aria-label="Leaderboard scope">
+        <div class="lb-tabs" role="tablist" aria-label="Périmètre du classement">
           <button type="button" role="tab" id="lbt-territory" aria-controls="lbp-territory" aria-selected="false">Territoire</button>
           <button type="button" role="tab" id="lbt-clubs"     aria-controls="lbp-clubs"     aria-selected="false">Clubs</button>
           <button type="button" role="tab" id="lbt-league"    aria-controls="lbp-league"    aria-selected="true">Ligue</button>
@@ -2000,15 +2000,15 @@
               <span class="line1"><span class="name">M. Kaya</span></span>
               <span class="sub"><span class="at">@mkaya</span> · En tête sur la distance</span>
             </span>
-            <span class="rpwrap"><span class="rp">12.4<span class="u"> km²</span></span><span class="rpcap">Surface conquise</span></span>
+            <span class="rpwrap"><span class="rp">12.4<span class="u"> km²</span></span><span class="rpcap">Surface capturée</span></span>
           </div>
           <div class="row top3">
             <span class="av" aria-hidden="true">JD</span><span class="rank">2</span>
             <span class="who">
-              <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Verified"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Vérifié"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               <span class="sub"><span class="at">@jduarte</span> · En tête sur la distance</span>
             </span>
-            <span class="rpwrap"><span class="rp">11.1<span class="u"> km²</span></span><span class="rpcap">Surface conquise</span></span>
+            <span class="rpwrap"><span class="rp">11.1<span class="u"> km²</span></span><span class="rpcap">Surface capturée</span></span>
           </div>
           <div class="row top3">
             <span class="av" aria-hidden="true">AR</span><span class="rank">3</span>
@@ -2016,7 +2016,7 @@
               <span class="line1"><span class="name">A. Rossi</span></span>
               <span class="sub"><span class="at">@arossi</span> · En tête sur la distance</span>
             </span>
-            <span class="rpwrap"><span class="rp">9.8<span class="u"> km²</span></span><span class="rpcap">Surface conquise</span></span>
+            <span class="rpwrap"><span class="rp">9.8<span class="u"> km²</span></span><span class="rpcap">Surface capturée</span></span>
           </div>
           <div class="row">
             <span class="av" aria-hidden="true">LN</span><span class="rank">4</span>
@@ -2024,7 +2024,7 @@
               <span class="line1"><span class="name">L. Novak</span></span>
               <span class="sub"><span class="at">@lnovak</span> · En tête sur la distance</span>
             </span>
-            <span class="rpwrap"><span class="rp">8.2<span class="u"> km²</span></span><span class="rpcap">Surface conquise</span></span>
+            <span class="rpwrap"><span class="rp">8.2<span class="u"> km²</span></span><span class="rpcap">Surface capturée</span></span>
           </div>
           <div class="row">
             <span class="av" aria-hidden="true">PB</span><span class="rank">5</span>
@@ -2032,7 +2032,7 @@
               <span class="line1"><span class="name">P. Bauer</span></span>
               <span class="sub"><span class="at">@pbauer</span> · En tête sur la distance</span>
             </span>
-            <span class="rpwrap"><span class="rp">7.6<span class="u"> km²</span></span><span class="rpcap">Surface conquise</span></span>
+            <span class="rpwrap"><span class="rp">7.6<span class="u"> km²</span></span><span class="rpcap">Surface capturée</span></span>
           </div>
         </div>
 
@@ -2040,7 +2040,7 @@
           <div class="lb-sec">
             <span class="grow">
               <span class="t">Clubs de Turin</span>
-              <span class="c" style="display:block">Les clubs qui conquièrent le plus de territoire</span>
+              <span class="c" style="display:block">Les clubs qui capturent le plus de territoire</span>
             </span>
           </div>
           <div class="row top3">
@@ -2049,7 +2049,7 @@
               <span class="line1"><span class="name">Torino Runners</span></span>
               <span class="sub">45 membres</span>
             </span>
-            <span class="rpwrap"><span class="rp">18.5<span class="u"> km²</span></span><span class="rpcap">km² conquis</span></span>
+            <span class="rpwrap"><span class="rp">18.5<span class="u"> km²</span></span><span class="rpcap">km² capturés</span></span>
           </div>
           <div class="row top3">
             <span class="av" aria-hidden="true">PO</span><span class="rank">2</span>
@@ -2057,7 +2057,7 @@
               <span class="line1"><span class="name">Po River Allure</span></span>
               <span class="sub">28 membres</span>
             </span>
-            <span class="rpwrap"><span class="rp">14.2<span class="u"> km²</span></span><span class="rpcap">km² conquis</span></span>
+            <span class="rpwrap"><span class="rp">14.2<span class="u"> km²</span></span><span class="rpcap">km² capturés</span></span>
           </div>
           <div class="row top3">
             <span class="av" aria-hidden="true">MO</span><span class="rank">3</span>
@@ -2065,7 +2065,7 @@
               <span class="line1"><span class="name">Mole Milers</span></span>
               <span class="sub">31 membres</span>
             </span>
-            <span class="rpwrap"><span class="rp">12.9<span class="u"> km²</span></span><span class="rpcap">km² conquis</span></span>
+            <span class="rpwrap"><span class="rp">12.9<span class="u"> km²</span></span><span class="rpcap">km² capturés</span></span>
           </div>
           <div class="row">
             <span class="av" aria-hidden="true">SS</span><span class="rank">4</span>
@@ -2073,7 +2073,7 @@
               <span class="line1"><span class="name">San Salvario SC</span></span>
               <span class="sub">19 membres</span>
             </span>
-            <span class="rpwrap"><span class="rp">9.4<span class="u"> km²</span></span><span class="rpcap">km² conquis</span></span>
+            <span class="rpwrap"><span class="rp">9.4<span class="u"> km²</span></span><span class="rpcap">km² capturés</span></span>
           </div>
           <div class="row">
             <span class="av" aria-hidden="true">VA</span><span class="rank">5</span>
@@ -2081,7 +2081,7 @@
               <span class="line1"><span class="name">Valentino AC</span></span>
               <span class="sub">23 membres</span>
             </span>
-            <span class="rpwrap"><span class="rp">8.1<span class="u"> km²</span></span><span class="rpcap">km² conquis</span></span>
+            <span class="rpwrap"><span class="rp">8.1<span class="u"> km²</span></span><span class="rpcap">km² capturés</span></span>
           </div>
         </div>
 
@@ -2089,14 +2089,14 @@
           <div class="lb-sec">
             <span class="grow">
               <span class="t">Ligue</span>
-              <span class="c" style="display:block">30 joueurs • Remise à zéro dans 3j 22h</span>
+              <span class="c" style="display:block">30 joueurs • Repart dans 3j 22h</span>
             </span>
             <span class="tierbadge">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="9" r="5.4"/><path d="M8.4 13.6 7 21.5l5-2.6 5 2.6-1.4-7.9"/></svg>
-              Silver II
+              Argent II
             </span>
           </div>
-          <p class="zone-label up"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V6"/><path d="M6.5 11.5 12 6l5.5 5.5"/></svg> Zone de promotion · top 5</p>
+          <p class="zone-label up"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V6"/><path d="M6.5 11.5 12 6l5.5 5.5"/></svg> Zone de promotion · 5 premiers</p>
 
           <div class="row up top3">
             <span class="av" aria-hidden="true">MK</span>
@@ -2111,7 +2111,7 @@
             <span class="av" aria-hidden="true">JD</span>
             <span class="rank">2</span>
             <span class="who">
-              <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Verified"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Vérifié"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               <span class="sub">79.6 km<span class="dot">•</span>980m ↑</span>
             </span>
             <span class="rpwrap"><span class="rp">4 512</span><span class="rpcap">RP</span></span>
@@ -2141,7 +2141,7 @@
             <span class="av" aria-hidden="true">LN</span>
             <span class="rank">13</span>
             <span class="who">
-              <span class="line1"><span class="name">L. Novak</span><svg class="shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-label="Newbie shield"><path d="M12 3l7 3v5.5c0 4-3 7.5-7 9.5-4-2-7-5.5-7-9.5V6z"/></svg></span>
+              <span class="line1"><span class="name">L. Novak</span><svg class="shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-label="Bouclier du débutant"><path d="M12 3l7 3v5.5c0 4-3 7.5-7 9.5-4-2-7-5.5-7-9.5V6z"/></svg></span>
               <span class="sub">46.2 km<span class="dot">•</span>520m ↑</span>
             </span>
             <span class="rpwrap"><span class="rp">2 830</span><span class="rpcap">RP</span></span>
@@ -2187,78 +2187,78 @@
             <span class="rank">#1</span>
             <span class="who">
               <span class="line1"><span class="name">États-Unis</span></span>
-              <span class="mt">Le plus de territoire :</span>
+              <span class="mt">Plus de territoire :</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Inconnu</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">85.000<span class="u"> km²</span></span><span class="rpcap">Terrain conquis</span></span>
+            <span class="rpwrap"><span class="rp">85.000<span class="u"> km²</span></span><span class="rpcap">Terrain capturé</span></span>
           </div>
           <div class="row ctry top3">
             <span class="flagbg" style="background-image:url(/assets/flags/ca.png)" aria-hidden="true"></span>
             <span class="rank">#2</span>
             <span class="who">
               <span class="line1"><span class="name">Canada</span></span>
-              <span class="mt">Le plus de territoire :</span>
+              <span class="mt">Plus de territoire :</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Inconnu</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">55.000<span class="u"> km²</span></span><span class="rpcap">Terrain conquis</span></span>
+            <span class="rpwrap"><span class="rp">55.000<span class="u"> km²</span></span><span class="rpcap">Terrain capturé</span></span>
           </div>
           <div class="row ctry top3">
             <span class="flagbg" style="background-image:url(/assets/flags/au.png)" aria-hidden="true"></span>
             <span class="rank">#3</span>
             <span class="who">
               <span class="line1"><span class="name">Australie</span></span>
-              <span class="mt">Le plus de territoire :</span>
+              <span class="mt">Plus de territoire :</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Inconnu</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">50.000<span class="u"> km²</span></span><span class="rpcap">Terrain conquis</span></span>
+            <span class="rpwrap"><span class="rp">50.000<span class="u"> km²</span></span><span class="rpcap">Terrain capturé</span></span>
           </div>
           <div class="row ctry">
             <span class="flagbg" style="background-image:url(/assets/flags/tr.png)" aria-hidden="true"></span>
             <span class="rank">#4</span>
             <span class="who">
               <span class="line1"><span class="name">Turquie</span></span>
-              <span class="mt">Le plus de territoire :</span>
+              <span class="mt">Plus de territoire :</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Inconnu</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">35.000<span class="u"> km²</span></span><span class="rpcap">Terrain conquis</span></span>
+            <span class="rpwrap"><span class="rp">35.000<span class="u"> km²</span></span><span class="rpcap">Terrain capturé</span></span>
           </div>
           <div class="row ctry">
             <span class="flagbg" style="background-image:url(/assets/flags/gb.png)" aria-hidden="true"></span>
             <span class="rank">#5</span>
             <span class="who">
               <span class="line1"><span class="name">Royaume-Uni</span></span>
-              <span class="mt">Le plus de territoire :</span>
+              <span class="mt">Plus de territoire :</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Inconnu</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">32.000<span class="u"> km²</span></span><span class="rpcap">Terrain conquis</span></span>
+            <span class="rpwrap"><span class="rp">32.000<span class="u"> km²</span></span><span class="rpcap">Terrain capturé</span></span>
           </div>
           <div class="row ctry">
             <span class="flagbg" style="background-image:url(/assets/flags/de.png)" aria-hidden="true"></span>
             <span class="rank">#6</span>
             <span class="who">
               <span class="line1"><span class="name">Allemagne</span></span>
-              <span class="mt">Le plus de territoire :</span>
+              <span class="mt">Plus de territoire :</span>
               <span class="contrib">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
                 <b>Inconnu</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">27.000<span class="u"> km²</span></span><span class="rpcap">Terrain conquis</span></span>
+            <span class="rpwrap"><span class="rp">27.000<span class="u"> km²</span></span><span class="rpcap">Terrain capturé</span></span>
           </div>
         </div>
       </div>
@@ -2276,7 +2276,7 @@
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:44px">
         <h2 class="h2" id="tour-title" data-reveal>Dans l'appli.</h2>
-        <p class="lede" data-reveal style="--d:80ms">Capturé sur iPhone, avec la version publiée.</p>
+        <p class="lede" data-reveal style="--d:80ms">Captures faites sur iPhone, sur la version publiée.</p>
       </div>
 
       <div class="tour">
@@ -2284,26 +2284,26 @@
           <div class="phone">
             <div class="screen">
               <img class="shot" loading="lazy" decoding="async" src="/assets/screens/dev-summary.webp"
-                   alt="RouteRush run summary: route on the map with distance, time, pace, elevation and cadence">
+                   alt="Résumé de course RouteRush : le parcours sur la carte avec la distance, le temps, l'allure, le dénivelé et la cadence">
             </div>
           </div>
-          <figcaption class="small"><b>Le globe sur lequel tu cours</b>L'accueil est un vrai globe 3D, pas une nappe de tuiles à plat. Ton terrain se remplit à mesure que tu le couvres.</figcaption>
+          <figcaption class="small"><b>Le globe sur lequel tu cours</b>L'accueil, c'est un vrai globe 3D, pas un plan à plat. Ton terrain se remplit à mesure que tu le couvres.</figcaption>
         </figure>
 
         <figure data-reveal style="--d:90ms">
           <div class="phone">
             <div class="screen">
               <img class="shot" loading="lazy" decoding="async" src="/assets/screens/en-02-plans-boldi.webp"
-                   alt="RouteRush Plans screen featuring Boldi the coach and structured training plans">
+                   alt="L'écran Plans de RouteRush, avec Boldi le coach et des plans d'entraînement structurés">
             </div>
           </div>
-          <figcaption class="small"><b>Boldi et un plan à suivre</b>Des plans structurés de la première course au 5 km, avec le coach rattaché.</figcaption>
+          <figcaption class="small"><b>Boldi et un plan à suivre</b>Des plans structurés, de la première course au 5 km, coach compris.</figcaption>
         </figure>
 
         <figure data-reveal style="--d:180ms">
           <div class="phone">
             <div class="screen">
-              <img class="shot" loading="lazy" decoding="async" src="/assets/screens/dev-challenges.webp" alt="RouteRush club challenges with a head-to-head card and open challenges">
+              <img class="shot" loading="lazy" decoding="async" src="/assets/screens/dev-challenges.webp" alt="Les défis de club RouteRush, avec une carte de duel et les défis ouverts">
               <div class="pending" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M6 20V11M12 20V5M18 20v-6"/></svg>
                 Classement de ligue
@@ -2324,21 +2324,21 @@
   <section class="sec" id="more" aria-labelledby="more-title">
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:38px">
-        <h2 class="h2" id="more-title" data-reveal>Tout le reste qui vient avec.</h2>
-        <p class="lede" data-reveal style="--d:80ms">Aucun élément de roadmap. Tout est dans l'appli aujourd'hui.</p>
+        <h2 class="h2" id="more-title" data-reveal>Tout le reste est livré avec.</h2>
+        <p class="lede" data-reveal style="--d:80ms">Rien n'est promis pour plus tard. Tout ça est déjà dans l'appli.</p>
       </div>
 
       <div class="bento">
         <article class="tile t-wide" data-reveal>
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20v-1.6A3.4 3.4 0 0 1 9.4 15h1.8"/><circle cx="9" cy="8.4" r="3"/><path d="M14.5 20v-1.6A3.4 3.4 0 0 1 17.9 15"/><circle cx="16.6" cy="8.4" r="3"/><path d="M11 20h9"/></svg>
-          <h3 class="h3">Des clubs et un fil qui vaut la lecture</h3>
+          <h3 class="h3">Des clubs, et un fil qu'on lit vraiment</h3>
           <p>Rejoins un club, publie ta course, commente celle d'un autre. Le fil social tourne autour des activités : il y a toujours quelque chose sur la carte derrière la photo.</p>
         </article>
 
         <article class="tile t-half" data-reveal style="--d:70ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 8.6c0 4.6-8.4 10.4-8.4 10.4S3.6 13.2 3.6 8.6a4.4 4.4 0 0 1 8.4-1.8 4.4 4.4 0 0 1 8.4 1.8z"/></svg>
-          <h3 class="h3">Défis en tête-à-tête</h3>
-          <p>Choisis quelqu'un, une métrique, une période. La carte VS vous suit jusqu'à la clôture.</p>
+          <h3 class="h3">Défis en duel</h3>
+          <p>Choisis un adversaire, un critère, une durée. La carte VS vous suit tous les deux jusqu'au bout.</p>
           <div class="vs" aria-hidden="true">
             <div class="side"><b>18.4</b><i>Toi · km</i></div>
             <div class="mid">VS</div>
@@ -2349,18 +2349,18 @@
         <article class="tile t-third" data-reveal style="--d:120ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12.5h4l2-4.5 3 9 2.5-4.5h5.5"/></svg>
           <h3 class="h3">HealthKit, dans les deux sens</h3>
-          <p>Pas, poids et fréquence cardiaque lus. Séances réécrites.</p>
+          <p>Pas, poids et fréquence cardiaque en entrée. Séances d'entraînement en sortie.</p>
         </article>
 
         <article class="tile t-third" data-reveal style="--d:170ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7.5 12 3.6l7.5 3.9v5c0 4.3-3.1 7.4-7.5 8.9-4.4-1.5-7.5-4.6-7.5-8.9z"/><path d="m9 12 2.2 2.2L15.4 10"/></svg>
           <h3 class="h3">Badge vérifié</h3>
-          <p>Les comptes PREMIUM portent une coche dans le fil, les clubs et les classements.</p>
+          <p>Les comptes Premium portent une coche dans le fil, les clubs et les classements.</p>
         </article>
 
         <article class="tile t-third" data-reveal style="--d:220ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19.5h.01"/><path d="M4.5 9a10.6 10.6 0 0 1 15 0"/><path d="M7.8 12.6a6 6 0 0 1 8.4 0"/><path d="m3 3 18 18"/></svg>
-          <h3 class="h3">File hors ligne</h3>
+          <h3 class="h3">File d'attente hors ligne</h3>
           <p>Le suivi tient sans signal. Les activités attendent sur l'appareil et se synchronisent au retour du réseau.</p>
         </article>
       </div>
@@ -2382,11 +2382,11 @@
        sourced, same asset the app ships in onboarding.
        ============================================================ -->
   <section class="photo-band" aria-labelledby="why-title">
-    <img src="/assets/dusk-run.webp" alt="A runner at dusk, silhouetted against a city skyline"
+    <img src="/assets/dusk-run.webp" alt="Une silhouette de coureur au crépuscule, devant les toits de la ville"
          loading="lazy" decoding="async">
     <div class="wrap" data-reveal>
       <p class="eyebrow">Pourquoi ça compte</p>
-      <h2 class="h2" id="why-title">La carte ne bouge que par toi.</h2>
+      <h2 class="h2" id="why-title">La carte ne bouge que si tu bouges.</h2>
       <p class="lede">Rien sur ta carte ne t'a été donné. Chaque centimètre est une rue que tu as vraiment courue.</p>
     </div>
   </section>
@@ -2405,8 +2405,8 @@
       </div>
       <h2 class="display" id="dl-title" data-reveal style="--d:60ms">Va prendre du terrain.</h2>
       <p class="lede" data-reveal style="--d:110ms">
-        RouteRush est gratuit pour commencer. iPhone, iOS&nbsp;17 ou plus. Ta première course conquiert du terrain
-        en une vingtaine de secondes.
+        RouteRush est gratuit pour commencer. iPhone, iOS&nbsp;17 ou plus récent. Ta première course conquiert son premier terrain
+        au bout d'une vingtaine de secondes.
       </p>
       <div class="final-cta" data-reveal style="--d:160ms">
         <a class="btn btn-primary" href="#download">
@@ -2423,11 +2423,11 @@
   <div class="wrap">
     <div class="foot">
       <div>
-        <a class="brand" href="#top" aria-label="RouteRush home">
+        <a class="brand" href="#top" aria-label="Accueil RouteRush">
           <span>RouteRush</span>
         </a>
         <p class="small" style="margin-top:14px; max-width:34ch">
-          RouteRush est une appli iOS qui transforme la course et le vélo en conquête territoriale : ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire.
+          RouteRush est une appli iOS qui transforme la course à pied et le vélo en conquête de territoire : ferme une boucle en courant et les rues à l'intérieur deviennent ton territoire.
         </p>
       </div>
       <nav aria-label="Produit">
@@ -2439,7 +2439,7 @@
           <li><a href="#more">Fonctions</a></li>
         </ul>
       </nav>
-      <nav aria-label="Legal and support">
+      <nav aria-label="Informations légales et assistance">
         <h4>Société</h4>
         <ul>
           <!-- These two URLs are registered with App Store Connect. They live in
@@ -2452,7 +2452,7 @@
           <li><a href="/press.html">Kit presse</a></li>
         </ul>
       </nav>
-      <nav aria-label="Social">
+      <nav aria-label="Réseaux sociaux">
         <h4>Nous suivre</h4>
         <!-- These are the two handles that carry the brand name on their
              profiles, and the same two listed in the Organization sameAs above.
@@ -2474,7 +2474,7 @@
          <select>, so the set is crawlable and each locale is discoverable from
          every other. The build script marks the current locale with
          aria-current and drops its href. -->
-    <nav class="foot-lang" aria-label="Language">
+    <nav class="foot-lang" aria-label="Langue">
       <ul>
         <li><a href="/" hreflang="en">English</a></li>
         <li><a href="/tr/" hreflang="tr">Türkçe</a></li>
@@ -2517,7 +2517,7 @@
 <div class="lang-hint" id="lang-hint" role="region" aria-live="polite">
   <span id="lang-hint-msg"></span>
   <a id="lang-hint-go" href="/"></a>
-  <button type="button" id="lang-hint-x" aria-label="Dismiss">&times;</button>
+  <button type="button" id="lang-hint-x" aria-label="Fermer">&times;</button>
 </div>
 <script>
 (function () {
