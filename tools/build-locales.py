@@ -419,10 +419,14 @@ def write_sitemap(check):
             lines.append("  </url>")
     # press.html is English-only on purpose: journalists asking for assets are
     # not the audience a translation serves, and a stale one would be worse.
-    lines.append("  <url>")
-    lines.append(f"    <loc>{ORIGIN}/press.html</loc>")
-    lines.append(f"    <lastmod>{stamp}</lastmod>")
-    lines.append("  </url>")
+    # privacy/terms are English-only for a different reason: a translated
+    # contract raises the question of which language governs, and the answer
+    # "the English one" is worth more than the convenience of six copies.
+    for page in ("press.html", "privacy.html", "terms.html"):
+        lines.append("  <url>")
+        lines.append(f"    <loc>{ORIGIN}/{page}</loc>")
+        lines.append(f"    <lastmod>{stamp}</lastmod>")
+        lines.append("  </url>")
     lines.append("</urlset>")
     xml = "\n".join(lines) + "\n"
 
