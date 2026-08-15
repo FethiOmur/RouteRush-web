@@ -1209,6 +1209,11 @@
     box-shadow: 0 12px 40px rgba(0,0,0,.5);
     font-size: 14px; color: var(--text-2);
     opacity: 0; transition: opacity .4s ease, transform .4s ease;
+    /* Fixed + left:50% leaves the box only half the viewport to be laid out in,
+       so shrink-to-fit collapsed it to ~195px on a phone and broke the sentence
+       across four lines. max-content sizes it to the copy; max-width still caps
+       it on the narrowest screens. */
+    width: max-content;
     max-width: calc(100vw - 32px);
   }
   .lang-hint.is-shown { display: flex; }
@@ -1563,6 +1568,22 @@
     }
   ]
 }
+</script>
+<script>
+  // Every visit starts at the top. Browsers restore the previous scroll offset
+  // on reload and on back-navigation, which on this page means landing halfway
+  // through the hero's camera flight with the first impression already spent.
+  // Turning restoration off has to happen here, in the head, because the
+  // browser restores before any deferred script would run. The pageshow half
+  // covers the back/forward cache, which restores a live page and ignores the
+  // flag above. An explicit #anchor is left alone — the nav links depend on it.
+  // The jump is instant on purpose: html has scroll-behavior:smooth, so the
+  // default would animate the page upward in front of the visitor.
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.addEventListener('pageshow', function () {
+    if (location.hash) return;
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  });
 </script>
 </head>
 <body>

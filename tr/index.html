@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="RouteRush koşuyu bölge fethine çevirir. Bir döngü kapat, içindeki sokaklar senin olsun — şehrinin canlı 3D haritasında. Başlaması ücretsiz, iOS 17+.">
+<meta name="description" content="RouteRush koşuyu bölge kapmaya çevirir. Turu kapat, içinde kalan sokaklar senin olur — şehrinin canlı 3D haritasında. Başlaması ücretsiz, iOS 17+.">
 <meta name="theme-color" content="#000000">
 <!-- Content policy. GitHub Pages cannot serve custom response headers, so the
      policy ships in the document instead. It is deliberately strict because the
@@ -28,7 +28,7 @@
   object-src 'none'">
 <!-- Cross-origin navigations leak only the origin, never the path. -->
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>RouteRush — iOS için Bölge Kapma Koşu Uygulaması</title>
+<title>RouteRush — iOS için Bölge Kapmalı Koşu Uygulaması</title>
 <link rel="icon" href="/assets/routerush-appicon.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <link rel="canonical" href="https://routerushapp.com/tr/">
@@ -49,16 +49,16 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="tr_TR">
 <meta property="og:site_name" content="RouteRush">
-<meta property="og:title" content="RouteRush — iOS için Bölge Kapma Koşu Uygulaması">
-<meta property="og:description" content="Koşuda bir döngü kapat, içinde kalan sokaklar senin bölgen olsun — şehrinin canlı 3D gece haritasında. Haftalık ligler, AI Koç, gerçek fetih.">
+<meta property="og:title" content="RouteRush — iOS için Bölge Kapmalı Koşu Uygulaması">
+<meta property="og:description" content="Koşarken turu kapat, içinde kalan sokaklar senin bölgen olur — şehrinin canlı 3D gece haritasında. Haftalık ligler, AI koç, gerçek fetih.">
 <meta property="og:url" content="https://routerushapp.com/tr/">
 <meta property="og:image" content="https://routerushapp.com/assets/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Ele geçirilmiş bölgelerle kaplı Torino gece haritası üzerinde RouteRush logosu">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RouteRush — iOS için Bölge Kapma Koşu Uygulaması">
-<meta name="twitter:description" content="Koşuda bir döngü kapat, içinde kalan sokaklar senin bölgen olsun — şehrinin canlı 3D gece haritasında.">
+<meta name="twitter:title" content="RouteRush — iOS için Bölge Kapmalı Koşu Uygulaması">
+<meta name="twitter:description" content="Koşarken turu kapat, içinde kalan sokaklar senin bölgen olur — şehrinin canlı 3D gece haritasında.">
 <meta name="twitter:image" content="https://routerushapp.com/assets/og.jpg">
 <link rel="stylesheet" href="/assets/vendor/mapbox-gl-3.18.0.css">
 <link rel="preconnect" href="https://api.mapbox.com" crossorigin>
@@ -1209,6 +1209,11 @@
     box-shadow: 0 12px 40px rgba(0,0,0,.5);
     font-size: 14px; color: var(--text-2);
     opacity: 0; transition: opacity .4s ease, transform .4s ease;
+    /* Fixed + left:50% leaves the box only half the viewport to be laid out in,
+       so shrink-to-fit collapsed it to ~195px on a phone and broke the sentence
+       across four lines. max-content sizes it to the copy; max-width still caps
+       it on the narrowest screens. */
+    width: max-content;
     max-width: calc(100vw - 32px);
   }
   .lang-hint.is-shown { display: flex; }
@@ -1549,7 +1554,7 @@
       "name": "RouteRush",
       "operatingSystem": "iOS 17.0 or later",
       "applicationCategory": "SportsApplication",
-      "description": "RouteRush, koşuyu ve sürüşü bölge fethine dönüştüren bir iOS uygulaması — koşuda bir döngü kapat, içinde kalan sokaklar senin bölgen olsun.",
+      "description": "RouteRush, koşuyu ve bisikleti bölge fethine çeviren bir iOS uygulaması — koşarken turu kapat, içinde kalan sokaklar senin bölgen olur.",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
       "inLanguage": ["en", "de", "es", "fr", "it", "tr"],
       "screenshot": [
@@ -1563,6 +1568,22 @@
     }
   ]
 }
+</script>
+<script>
+  // Every visit starts at the top. Browsers restore the previous scroll offset
+  // on reload and on back-navigation, which on this page means landing halfway
+  // through the hero's camera flight with the first impression already spent.
+  // Turning restoration off has to happen here, in the head, because the
+  // browser restores before any deferred script would run. The pageshow half
+  // covers the back/forward cache, which restores a live page and ignores the
+  // flag above. An explicit #anchor is left alone — the nav links depend on it.
+  // The jump is instant on purpose: html has scroll-behavior:smooth, so the
+  // default would animate the page upward in front of the visitor.
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  window.addEventListener('pageshow', function () {
+    if (location.hash) return;
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  });
 </script>
 </head>
 <body>
@@ -1637,28 +1658,28 @@
              the wordmark owns this space without doubling up. -->
         <p class="wordmark hero-wordmark">RouteRush</p>
 
-        <h1 class="hero-h1 display" id="hero-title">Toprak<br>koşarak <em>alınır.</em></h1>
+        <h1 class="hero-h1 display" id="hero-title">Koş, şehri<br><em>fethet.</em></h1>
 
         <!-- The sequence communicates ordered information, so the same three
              states also exist as readable text for assistive technology. -->
         <ol class="sr-only">
-          <li>Birinci adım. Sinyal kesilince de devam eden GPS takibiyle bir koşu ya da sürüş kaydet.</li>
-          <li>İkinci adım. Bir döngü kapat, içinde kalan toprak senin bölgen olsun.</li>
-          <li>Üçüncü adım. Ele geçirdiğin bölge Rush Points'e dönüşür, Rush Points de haftalık lig sıranı belirler.</li>
+          <li>Birinci adım. Sinyal kesilse de devam eden GPS takibiyle bir koşu ya da sürüş kaydet.</li>
+          <li>İkinci adım. Turu kapat, içinde kalan toprak senin bölgen olur.</li>
+          <li>Üçüncü adım. Ele geçirdiğin bölge Rush Puanı kazandırır, Rush Puanı da haftalık lig sıranı belirler.</li>
         </ol>
 
         <div class="states" id="states">
           <div class="state is-active">
             <b>01 — Kaydet</b>
-            <p>Bir koşu ya da sürüş başlat. RouteRush çizgini sokak çözünürlüğünde takip eder, sinyal kesildiğinde kaydetmeyi sürdürür.</p>
+            <p>Koşuya ya da sürüşe başla. RouteRush rotanı sokak çözünürlüğünde izler; sinyal kesilse de kaydetmeye devam eder.</p>
           </div>
           <div class="state">
-            <b>02 — Ele geçir</b>
-            <p>Bir döngü kapat, içinde kalan toprak senin olsun. Bölge koştuğun sokakları izler, hangi çözünürlükte koştuysan o çözünürlükte.</p>
+            <b>02 — Fethet</b>
+            <p>Turu kapat, içinde kalan toprak senin olur. Bölgen koştuğun sokakların şeklini alır; nereden geçtiysen sınır orası.</p>
           </div>
           <div class="state">
             <b>03 — Elinde tut</b>
-            <p>Bölge Rush Points olur, Rush Points sıraya dönüşür, sıra da her hafta sıfırlanır. Harita yalnızca koşmaya devam ettiğin sürece senindir.</p>
+            <p>Bölge Rush Puanı olur, Rush Puanı sıralamaya dönüşür, sıralama her hafta sıfırlanır. Harita, sen koştuğun sürece senin.</p>
           </div>
         </div>
 
@@ -1667,7 +1688,7 @@
             <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.47 2.24-1.23 3.04-.82.87-2.16 1.54-3.28 1.45-.14-1.1.42-2.27 1.16-3.02.83-.86 2.27-1.49 3.35-1.47zM20.9 17.2c-.55 1.27-.82 1.84-1.53 2.96-.99 1.56-2.39 3.5-4.12 3.52-1.54.01-1.93-1-4.02-.99-2.09.01-2.52 1.01-4.06.99-1.73-.02-3.06-1.77-4.05-3.33-2.77-4.36-3.06-9.48-1.35-12.2 1.21-1.93 3.13-3.06 4.93-3.06 1.84 0 2.99 1.01 4.51 1.01 1.47 0 2.37-1.01 4.49-1.01 1.61 0 3.31.88 4.53 2.39-3.98 2.18-3.33 7.86.67 9.72z"/></svg>
             App Store'dan indir
           </a>
-          <a class="btn btn-ghost" href="#territory">Bölge nasıl çalışıyor, gör</a>
+          <a class="btn btn-ghost" href="#territory">Bölge nasıl çalışır?</a>
         </div>
 
         <div class="startctl" aria-hidden="true">
@@ -1685,7 +1706,7 @@
              golden harness). The map fades in over it once warmed. -->
         <img class="poster" id="hero-poster" src="/assets/hero/poster-start.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" width="1600" height="1000">
         <div id="seq-map" aria-hidden="true"></div>
-        <span class="cue" aria-hidden="true">Kaydır, ele geçir</span>
+        <span class="cue" aria-hidden="true">Kaydır, fethet</span>
       </div>
     </div>
   </section>
@@ -1696,12 +1717,12 @@
   <section class="sec" aria-labelledby="claim-title">
     <div class="wrap claim">
       <div>
-        <p class="eyebrow" data-reveal>Fark</p>
-        <h2 class="h2" id="claim-title" data-reveal style="--d:60ms; margin-top:18px">Takipçi nereye gittiğini söyler.<br>RouteRush neyi aldığını söyler.</h2>
+        <p class="eyebrow" data-reveal>Aradaki fark</p>
+        <h2 class="h2" id="claim-title" data-reveal style="--d:60ms; margin-top:18px">Takip uygulaması nereye gittiğini söyler.<br>RouteRush nereyi aldığını söyler.</h2>
         <p class="lede" data-reveal style="--d:120ms; max-width:52ch; margin-top:22px">
-          Aynı koşu, farklı bir puanlama. Mesafe ve tempo makbuzdur. Harita ise skordur —
-          gerçekten geçtiğin sokakların kalıcı kaydı; blok blok, kendi sokaklarını geçen
-          herkese karşı.
+          Aynı koşu, başka bir puanlama. Mesafe ve tempo sadece kayıt; asıl skor haritada —
+          gerçekten geçtiğin sokakların blok blok kalıcı dökümü. Karşında da kendi
+          sokaklarını geçen herkes var.
         </p>
       </div>
       <dl class="specs" data-reveal style="--d:160ms">
@@ -1711,7 +1732,7 @@
         </div>
         <div class="spec">
           <dt>3D</dt>
-          <dd><b>Gerçek küre</b>Bölgen düz bir döşeme yüzeyinde değil, gerçek bir küre üzerinde çizilir.</dd>
+          <dd><b>Gerçek küre</b>Bölgen düz bir harita üzerinde değil, gerçek bir küre üzerinde çizilir.</dd>
         </div>
         <div class="spec">
           <dt>0</dt>
@@ -1732,8 +1753,8 @@
         <p class="eyebrow" data-reveal>Alınan toprak</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="territory-title">Harita aldığın her sokağı hatırlar.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
-          Koşunda bir döngü kapat, içindeki her şey senin olsun — aldığın sokakların şeklinde.
-          Başka bir yoldan dön, sahip olduğun şeklin kendisi değişsin.
+          Koşarken turu kapat, içinde kalan her şey senin olur — aldığın sokakların şeklinde.
+          Dönüşte başka bir yol seç, elindeki alanın şekli de değişir.
         </p>
         <div class="fpoints" data-reveal style="--d:160ms">
           <div class="fpoint">
@@ -1741,15 +1762,15 @@
                  actually has. This was two nested hexagons, the one piece of
                  honeycomb still visible on the page. -->
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.4 8.2h7.2V4.4h10v9.2h-4.6v6.2H8.6v-5.4H3.4z"/><path d="M10.6 8.2v5.8h5.4"/></svg>
-            <p><b>Yer seviyesinde puanlama.</b> Rush Points her aktivitede adım sayısından değil, gerçekten kapladığın topraktan verilir.</p>
+            <p><b>Puan topraktan gelir.</b> Rush Puanı her aktivitede adım sayısından değil, gerçekten kapladığın topraktan hesaplanır.</p>
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"/><path d="M2.8 12h18.4"/><path d="M12 2.8c2.4 2.6 3.7 5.8 3.7 9.2s-1.3 6.6-3.7 9.2c-2.4-2.6-3.7-5.8-3.7-9.2S9.6 5.4 12 2.8z"/></svg>
-            <p><b>Çekişmeli toprak.</b> Her ele geçirmenin bir hâkimiyet kaydı vardır. Senin rotanda koşan biri o kaydı baskı altına alır.</p>
+            <p><b>Toprak el değiştirir.</b> Ele geçirdiğin her yerin bir hâkimiyet kaydı var. Senin rotanda koşan biri o kaydı zorlamaya başlar.</p>
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 17.5 9.2 12l3.4 3.4L20 7.4"/><path d="M20 12.4V7.4h-5"/></svg>
-            <p><b>Birikir.</b> Bölge koşular arasında taşınır; bir mahalle aylar içinde inşa edilen bir şeydir.</p>
+            <p><b>Birikir.</b> Bölgen koşudan koşuya taşınır; bir mahalleyi aylar içinde kurarsın.</p>
           </div>
         </div>
       </div>
@@ -1786,20 +1807,20 @@
   <section class="sec" id="coach" aria-labelledby="coach-title">
     <div class="wrap frow flip">
       <div>
-        <p class="eyebrow" data-reveal>Koşu içi koç Boldi</p>
-        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="coach-title">Kulağında bir koç, podcast değil.</h2>
+        <p class="eyebrow" data-reveal>Boldi, koşu içi koç</p>
+        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="coach-title">Kulağında koç var, podcast değil.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
-          Boldi koşuyu olurken izler — tempon, önündeki toprak, ne kadarın kaldığı — ve
-          söylemeye değdiğinde bir şey söyler. Geri kalan zamanda susar.
+          Boldi koşuyu canlı izler — tempon, önündeki toprak, ne kadar yolun kaldığı — ve
+          söylenecek bir şey varsa söyler. Onun dışında sesini çıkarmaz.
         </p>
         <div class="fpoints" data-reveal style="--d:160ms">
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 12.4c0 4.1-3.8 7.4-8.5 7.4a10 10 0 0 1-2.6-.34L4.6 21l1.2-3.4A7 7 0 0 1 3.5 12.4C3.5 8.3 7.3 5 12 5s8.5 3.3 8.5 7.4z"/></svg>
-            <p><b>Efora göre zamanlı.</b> Uyarılar sabit bir sayaçla değil, split'lerde ve karar anlarında gelir.</p>
+            <p><b>Efora göre konuşur.</b> Uyarılar sabit bir sayaçla değil, split'lerde ve karar anlarında gelir.</p>
           </div>
           <div class="fpoint">
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.5"/><path d="M8.6 6.4 12 3l3.4 3.4"/><circle cx="12" cy="17.6" r="3.4"/></svg>
-            <p><b>Haritanın farkında.</b> Önündeki rotada hangi toprağın hâlâ sahipsiz olduğunu bilir.</p>
+            <p><b>Haritayı biliyor.</b> Önündeki rotada hangi toprak hâlâ sahipsiz, biliyor.</p>
           </div>
         </div>
       </div>
@@ -1861,7 +1882,7 @@
                 <span class="boldi-avatar" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2.5 5 13.5h5.5L10 21.5l8.5-11H13z"/></svg>
                 </span>
-                <p class="bubble">Önündeki döngüde sahipsiz iki blok var. Bu tempoyu koru, ikisi de senin.</p>
+                <p class="bubble">İleride sahipsiz iki blok var. Tempoyu koru, ikisi de senin.</p>
               </div>
             </div>
 
@@ -1886,11 +1907,11 @@
   <section class="sec" aria-labelledby="live-title">
     <div class="wrap frow">
       <div>
-        <p class="eyebrow" data-reveal>Live Activity ve widget</p>
-        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="live-title">Bir koşunun büyük kısmı uygulama kapalıyken geçer.</h2>
+        <p class="eyebrow" data-reveal>Canlı Etkinlik ve widget</p>
+        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="live-title">Koşunun büyük kısmı uygulama kapalıyken geçer.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:46ch">
-          Süre, mesafe ve tempo Kilit Ekranı'nda ve Dynamic Island'da kalır, üstelik etkileşimli —
-          kilidi açmadan duraklat ve devam et. Başlatmak Ana Ekran'dan tek dokunuş.
+          Süre, mesafe ve tempo Kilit Ekranı'nda ve Dynamic Island'da durur, üstelik dokunulabilir —
+          telefonu açmadan duraklat, kaldığın yerden devam et. Başlatmak Ana Ekran'dan tek dokunuş.
         </p>
       </div>
       <div class="frow-media" data-reveal style="--d:120ms">
@@ -1905,7 +1926,7 @@
           <div class="liveact">
             <div class="liveact-top">
               <img decoding="async" src="/assets/routerush-appicon.png" alt="" width="20" height="20" style="border-radius:5px">
-              <b>Sabah koşusu</b>
+              <b>Sabah Koşusu</b>
               <span>LIVE</span>
             </div>
             <div class="metric-row">
@@ -1923,7 +1944,7 @@
               <img decoding="async" src="/assets/routerush-logo-64.png" alt="" width="26" height="26">
               <div><b>Hızlı Başlat</b><br><i>Koşu · Sürüş</i></div>
             </div>
-            <p class="small" style="max-width:170px">Ana Ekran widget'ı. Tek dokunuş doğrudan koşu takibini açar.</p>
+            <p class="small" style="max-width:170px">Ana Ekran widget'ı. Tek dokunuşla koşu kaydı başlar.</p>
           </div>
         </div>
       </div>
@@ -1941,13 +1962,13 @@
         <p class="eyebrow" data-reveal>Ligler</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="leagues-title">Otuz koşucu.<br>Bir hafta.<br>Beşi yükselir.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:42ch">
-          Her hafta kendi kademendeki otuz kişilik bir lige yerleştirilirsin. Üstteki beş kişi yükselir,
-          alttaki beş kişi düşer, pazartesi herkes yeniden başlar. Bronze, Silver ve Gold;
-          her biri üç divizyonlu.
+          Her hafta kendi seviyendeki otuz kişilik bir lige girersin. İlk beş yükselir,
+          son beş düşer, pazartesi herkes sıfırdan başlar. Bronz, Gümüş ve Altın;
+          her birinin üç divizyonu var.
         </p>
         <p class="small" data-reveal style="--d:150ms; margin-top:18px; max-width:42ch">
-          Kademeye yeni mi geldin? İlk haftanı Acemi Kalkanı korur; kötü geçen bir hafta seni
-          doğrudan geri gönderemez.
+          Seviyeye yeni mi geldin? İlk haftanı Acemi Kalkanı korur; kötü geçen bir hafta
+          seni hemen aşağı düşüremez.
         </p>
       </div>
 
@@ -2072,7 +2093,7 @@
             </span>
             <span class="tierbadge">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="9" r="5.4"/><path d="M8.4 13.6 7 21.5l5-2.6 5 2.6-1.4-7.9"/></svg>
-              Silver II
+              Gümüş II
             </span>
           </div>
           <p class="zone-label up"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V6"/><path d="M6.5 11.5 12 6l5.5 5.5"/></svg> Yükselme bölgesi · ilk 5</p>
@@ -2172,7 +2193,7 @@
                 <b>Bilinmiyor</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">85.000<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen toprak</span></span>
+            <span class="rpwrap"><span class="rp">85.000<span class="u"> km²</span></span><span class="rpcap">Toprak ele geçirildi</span></span>
           </div>
           <div class="row ctry top3">
             <span class="flagbg" style="background-image:url(/assets/flags/ca.png)" aria-hidden="true"></span>
@@ -2185,7 +2206,7 @@
                 <b>Bilinmiyor</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">55.000<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen toprak</span></span>
+            <span class="rpwrap"><span class="rp">55.000<span class="u"> km²</span></span><span class="rpcap">Toprak ele geçirildi</span></span>
           </div>
           <div class="row ctry top3">
             <span class="flagbg" style="background-image:url(/assets/flags/au.png)" aria-hidden="true"></span>
@@ -2198,7 +2219,7 @@
                 <b>Bilinmiyor</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">50.000<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen toprak</span></span>
+            <span class="rpwrap"><span class="rp">50.000<span class="u"> km²</span></span><span class="rpcap">Toprak ele geçirildi</span></span>
           </div>
           <div class="row ctry">
             <span class="flagbg" style="background-image:url(/assets/flags/tr.png)" aria-hidden="true"></span>
@@ -2211,7 +2232,7 @@
                 <b>Bilinmiyor</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">35.000<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen toprak</span></span>
+            <span class="rpwrap"><span class="rp">35.000<span class="u"> km²</span></span><span class="rpcap">Toprak ele geçirildi</span></span>
           </div>
           <div class="row ctry">
             <span class="flagbg" style="background-image:url(/assets/flags/gb.png)" aria-hidden="true"></span>
@@ -2224,7 +2245,7 @@
                 <b>Bilinmiyor</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">32.000<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen toprak</span></span>
+            <span class="rpwrap"><span class="rp">32.000<span class="u"> km²</span></span><span class="rpcap">Toprak ele geçirildi</span></span>
           </div>
           <div class="row ctry">
             <span class="flagbg" style="background-image:url(/assets/flags/de.png)" aria-hidden="true"></span>
@@ -2237,7 +2258,7 @@
                 <b>Bilinmiyor</b>
               </span>
             </span>
-            <span class="rpwrap"><span class="rp">27.000<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen toprak</span></span>
+            <span class="rpwrap"><span class="rp">27.000<span class="u"> km²</span></span><span class="rpcap">Toprak ele geçirildi</span></span>
           </div>
         </div>
       </div>
@@ -2254,8 +2275,8 @@
   <section class="sec" id="tour" aria-labelledby="tour-title">
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:44px">
-        <h2 class="h2" id="tour-title" data-reveal>Uygulamanın içi.</h2>
-        <p class="lede" data-reveal style="--d:80ms">iPhone'da, yayınlanan sürüm çalışırken çekildi.</p>
+        <h2 class="h2" id="tour-title" data-reveal>Uygulamanın içinden.</h2>
+        <p class="lede" data-reveal style="--d:80ms">iPhone'da, yayındaki sürümle çekildi.</p>
       </div>
 
       <div class="tour">
@@ -2266,7 +2287,7 @@
                    alt="RouteRush run summary: route on the map with distance, time, pace, elevation and cadence">
             </div>
           </div>
-          <figcaption class="small"><b>Üzerinde koştuğun küre</b>Ana ekran düz bir döşeme yüzeyi değil, gerçek bir 3D küre. Topraklarını kapladıkça dolar.</figcaption>
+          <figcaption class="small"><b>Koştuğun küre</b>Ana ekran düz bir harita değil, gerçek bir 3D küre. Sen kapladıkça toprağın dolar.</figcaption>
         </figure>
 
         <figure data-reveal style="--d:90ms">
@@ -2276,7 +2297,7 @@
                    alt="RouteRush Plans screen featuring Boldi the coach and structured training plans">
             </div>
           </div>
-          <figcaption class="small"><b>Boldi ve takip edilecek bir plan</b>İlk koşudan 5K'ya kadar yapılandırılmış planlar, koç da onlara bağlı.</figcaption>
+          <figcaption class="small"><b>Boldi ve elinde bir plan</b>İlk koşundan 5K'ya kadar hazır planlar; koç da işin içinde.</figcaption>
         </figure>
 
         <figure data-reveal style="--d:180ms">
@@ -2289,7 +2310,7 @@
               </div>
             </div>
           </div>
-          <figcaption class="small"><b>Nerede durduğun</b>Ligin, canlı olarak, yükselme çizgisi göz önünde.</figcaption>
+          <figcaption class="small"><b>Sıralamada neredesin</b>Ligin canlı; yükselme çizgisi hep göz önünde.</figcaption>
         </figure>
       </div>
     </div>
@@ -2303,21 +2324,21 @@
   <section class="sec" id="more" aria-labelledby="more-title">
     <div class="wrap">
       <div class="sec-head" style="margin-bottom:38px">
-        <h2 class="h2" id="more-title" data-reveal>Kutudan çıkan geri kalan her şey.</h2>
-        <p class="lede" data-reveal style="--d:80ms">Yol haritası maddesi yok. Bunlar bugün uygulamanın içinde.</p>
+        <h2 class="h2" id="more-title" data-reveal>Kutudan çıkan diğer her şey.</h2>
+        <p class="lede" data-reveal style="--d:80ms">Yol haritası vaadi yok. Hepsi bugün uygulamada.</p>
       </div>
 
       <div class="bento">
         <article class="tile t-wide" data-reveal>
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 20v-1.6A3.4 3.4 0 0 1 9.4 15h1.8"/><circle cx="9" cy="8.4" r="3"/><path d="M14.5 20v-1.6A3.4 3.4 0 0 1 17.9 15"/><circle cx="16.6" cy="8.4" r="3"/><path d="M11 20h9"/></svg>
           <h3 class="h3">Kulüpler ve okunmaya değer bir akış</h3>
-          <p>Bir kulübe katıl, koşunu paylaş, başkasınınkine yorum yap. Sosyal akış aktiviteler etrafında kurulu; fotoğrafın arkasındaki haritada her zaman bir şey vardır.</p>
+          <p>Bir kulübe katıl, koşunu paylaş, başkasınınkine yorum yap. Akış aktiviteler üzerine kurulu; fotoğrafın arkasında her zaman bir harita var.</p>
         </article>
 
         <article class="tile t-half" data-reveal style="--d:70ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.4 8.6c0 4.6-8.4 10.4-8.4 10.4S3.6 13.2 3.6 8.6a4.4 4.4 0 0 1 8.4-1.8 4.4 4.4 0 0 1 8.4 1.8z"/></svg>
           <h3 class="h3">Bire bir yarışmalar</h3>
-          <p>Birini seç, bir metrik seç, süreyi belirle. VS kartı kapanana kadar ikinizi de takip eder.</p>
+          <p>Birini seç, metriği seç, süreyi belirle. VS kartı süre dolana kadar ikinizi de takip eder.</p>
           <div class="vs" aria-hidden="true">
             <div class="side"><b>18.4</b><i>Sen · km</i></div>
             <div class="mid">VS</div>
@@ -2328,19 +2349,19 @@
         <article class="tile t-third" data-reveal style="--d:120ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 12.5h4l2-4.5 3 9 2.5-4.5h5.5"/></svg>
           <h3 class="h3">HealthKit, iki yönlü</h3>
-          <p>Adım, kilo ve nabız içeri okunur. Antrenmanlar geri yazılır.</p>
+          <p>Adım, kilo ve nabız okunur; antrenmanlar geri yazılır.</p>
         </article>
 
         <article class="tile t-third" data-reveal style="--d:170ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7.5 12 3.6l7.5 3.9v5c0 4.3-3.1 7.4-7.5 8.9-4.4-1.5-7.5-4.6-7.5-8.9z"/><path d="m9 12 2.2 2.2L15.4 10"/></svg>
-          <h3 class="h3">Onaylı rozeti</h3>
-          <p>PREMIUM hesaplar akışta, kulüplerde ve lider tablolarında bir onay işareti taşır.</p>
+          <h3 class="h3">Onay rozeti</h3>
+          <p>Premium hesaplar akışta, kulüplerde ve lider tablolarında onay tikiyle görünür.</p>
         </article>
 
         <article class="tile t-third" data-reveal style="--d:220ms">
           <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19.5h.01"/><path d="M4.5 9a10.6 10.6 0 0 1 15 0"/><path d="M7.8 12.6a6 6 0 0 1 8.4 0"/><path d="m3 3 18 18"/></svg>
           <h3 class="h3">Çevrimdışı sıra</h3>
-          <p>Takip sinyalsizliğe dayanır. Aktiviteler cihazda sıraya girer, ağ döndüğünde eşitlenir.</p>
+          <p>Sinyal gitse de kayıt durmaz. Aktiviteler cihazda sıraya girer, ağ gelince eşitlenir.</p>
         </article>
       </div>
     </div>
@@ -2382,10 +2403,10 @@
              style="border-radius:18px; border:1px solid var(--hair)">
         <p class="wordmark">RouteRush</p>
       </div>
-      <h2 class="display" id="dl-title" data-reveal style="--d:60ms">Git, biraz toprak al.</h2>
+      <h2 class="display" id="dl-title" data-reveal style="--d:60ms">Hadi, çık ve fethet.</h2>
       <p class="lede" data-reveal style="--d:110ms">
-        RouteRush'a başlamak ücretsiz. iPhone, iOS&nbsp;17 veya üzeri. İlk koşun ilk toprağını
-        yaklaşık yirmi saniyede ele geçirir.
+        RouteRush'a başlamak ücretsiz. iPhone, iOS&nbsp;17 ve üzeri. İlk koşunda ilk toprağını
+        yaklaşık yirmi saniye içinde alırsın.
       </p>
       <div class="final-cta" data-reveal style="--d:160ms">
         <a class="btn btn-primary" href="#download">
@@ -2406,14 +2427,14 @@
           <span>RouteRush</span>
         </a>
         <p class="small" style="margin-top:14px; max-width:34ch">
-          RouteRush, koşuyu ve sürüşü bölge fethine dönüştüren bir iOS uygulaması — koşuda bir döngü kapat, içinde kalan sokaklar senin bölgen olsun.
+          RouteRush, koşuyu ve bisikleti bölge fethine çeviren bir iOS uygulaması — koşarken turu kapat, içinde kalan sokaklar senin bölgen olur.
         </p>
       </div>
       <nav aria-label="Ürün">
         <h4>Ürün</h4>
         <ul>
           <li><a href="#territory">Bölge</a></li>
-          <li><a href="#coach">Boldi koç</a></li>
+          <li><a href="#coach">Koç Boldi</a></li>
           <li><a href="#leagues">Ligler</a></li>
           <li><a href="#more">Özellikler</a></li>
         </ul>
