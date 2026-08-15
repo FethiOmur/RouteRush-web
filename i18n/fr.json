@@ -113,8 +113,8 @@
     "Captured on iPhone, running the shipping build.": "Captures faites sur iPhone, sur la version publiée.",
     "The run, in full": "La course, en entier",
     "The line you actually ran, with distance, pace, elevation and cadence.": "Le tracé que tu as vraiment couru, avec la distance, l'allure, le dénivelé et la cadence.",
-    "Boldi and a plan to follow": "Boldi et un plan à suivre",
-    "Structured plans from first run to 5K, with the coach attached to them.": "Des plans structurés, de la première course au 5 km, coach compris.",
+    "Read it your way": "Lis-la à ta façon",
+    "Switch the map between heat, territory and the routes you have run.": "Bascule la carte entre chaleur, territoire et les parcours que tu as courus.",
     "Where you stand": "Où tu en es",
     "Your league, live, with the promotion line in sight.": "Ta ligue, en direct, avec la ligne de promotion en vue.",
     "Everything else that ships in the box.": "Tout le reste est livré avec.",
@@ -184,7 +184,8 @@
     "8.1": "8,1",
     "18.4": "18,4",
     "16.1": "16,1",
-    "2.5": "2,5"
+    "2.5": "2,5",
+    "RouteRush Atlas over Turin at night: conquered ground traced along the Po and through Vanchiglia, 2.76 km² claimed": "Atlas RouteRush sur Turin la nuit : le terrain conquis le long du Pô et à travers Vanchiglia, 2,76 km²"
   },
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "FAQ RouteRush — Comment fonctionne la conquête de territoire",

@@ -113,8 +113,8 @@
     "Captured on iPhone, running the shipping build.": "iPhone'da, yayındaki sürümle çekildi.",
     "The run, in full": "Koşunun tamamı",
     "The line you actually ran, with distance, pace, elevation and cadence.": "Gerçekten koştuğun çizgi; mesafe, tempo, yükseklik ve adım sıklığıyla.",
-    "Boldi and a plan to follow": "Boldi ve elinde bir plan",
-    "Structured plans from first run to 5K, with the coach attached to them.": "İlk koşundan 5K'ya kadar hazır planlar; koç da işin içinde.",
+    "Read it your way": "Haritayı kendi yönteminle oku",
+    "Switch the map between heat, territory and the routes you have run.": "Haritayı ısı, bölge ve koştuğun rotalar arasında değiştir.",
     "Where you stand": "Sıralamada neredesin",
     "Your league, live, with the promotion line in sight.": "Ligin canlı; yükselme çizgisi hep göz önünde.",
     "Everything else that ships in the box.": "Kutudan çıkan diğer her şey.",
@@ -185,7 +185,8 @@
     "8.1": "8,1",
     "18.4": "18,4",
     "16.1": "16,1",
-    "2.5": "2,5"
+    "2.5": "2,5",
+    "RouteRush Atlas over Turin at night: conquered ground traced along the Po and through Vanchiglia, 2.76 km² claimed": "Gece Torino üzerinde RouteRush Atlas: Po boyunca ve Vanchiglia içinden geçen fethedilmiş toprak, 2,76 km²"
   },
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "RouteRush SSS — Bölge Kapmalı Koşu Nasıl Çalışır?",
