@@ -35,7 +35,7 @@
     "RouteRush tells you what you took.": "RouteRush zeigt dir, was du erobert hast.",
     "The same run, scored differently. Distance and pace are the receipt. The map is the score —\n          a permanent record of the streets you have actually covered, block by block, against everyone\n          else covering theirs.": "Derselbe Lauf, anders gewertet. Distanz und Pace sind nur Statistik. Gewertet wird auf der Karte —\n          ein dauerhaftes Verzeichnis der Straßen, die du wirklich gelaufen bist, Block für Block,\n          während alle anderen dasselbe mit ihren Straßen machen.",
     "Street resolution": "Straßengenau",
-    "Contested borders sharpen to three-metre cells, so one side of a street is not the other.": "Umkämpfte Grenzen werden auf drei Meter genau gezogen — die beiden Seiten einer Straße gehören nicht demselben.",
+    "Your line is kept to two-and-a-half-metre fidelity, at ride speed as at running pace.": "Deine Spur bleibt auf zweieinhalb Meter genau — beim Radfahren wie beim Laufen.",
     "Real globe": "Echter Globus",
     "Your territory rendered on a true sphere, not a flat tile sheet.": "Dein Gebiet liegt auf einer echten Kugel, nicht auf einer flachen Karte.",
     "Bars of signal required": "Empfangsbalken nötig",
@@ -184,7 +184,8 @@
     "9.4": "9,4",
     "8.1": "8,1",
     "18.4": "18,4",
-    "16.1": "16,1"
+    "16.1": "16,1",
+    "2.5": "2,5"
   },
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "RouteRush FAQ — so erobert man Gebiete beim Laufen",
@@ -197,7 +198,7 @@
     "What is RouteRush?": "Was ist RouteRush?",
     "RouteRush is an iOS app that turns running and cycling into territorial conquest. Close a loop on a run and the ground inside it becomes your territory, drawn in the shape of the streets you ran on a 3D map of your city. Territory earns Rush Points, Rush Points decide your rank in weekly leagues of thirty, and every claim can be contested by someone running the same streets. RouteRush is free to start, requires iOS 17 or later, and ships in English, German, Spanish, French, Italian and Turkish.": "RouteRush ist eine iOS-App, die Laufen und Radfahren zur Gebietseroberung macht. Lauf eine Runde, und der Boden darin wird dein Gebiet — auf der 3D-Karte deiner Stadt, in der Form der Straßen, die du gelaufen bist. Gebiet bringt Rush-Punkte, Rush-Punkte bestimmen deinen Platz in den Wochenligen mit je dreißig Läufern, und jede Eroberung kann dir jemand streitig machen, der dieselben Straßen läuft. Der Einstieg ist kostenlos, es braucht iOS 17 oder neuer, und die App gibt es auf Englisch, Deutsch, Spanisch, Französisch, Italienisch und Türkisch.",
     "How does claiming territory work?": "Wie erobert man Gebiete?",
-    "Record a run or ride with GPS. When your route closes a loop, everything inside it becomes yours — not a circle around your position, but the actual shape of the streets you covered. Scoring happens on a hexagonal grid, and where two runners contest the same ground the border refines to cells about three metres across — fine enough that one side of a street is not the other. Territory carries between runs, so a neighbourhood is something you build over months.": "Zeichne einen Lauf oder eine Fahrt mit GPS auf. Sobald sich deine Strecke zu einer Runde schließt, gehört alles darin dir — kein Kreis um deinen Standort, sondern die tatsächliche Form der Straßen, die du gelaufen bist. Gewertet wird auf einem Sechseckraster, und wo zwei Läufer um denselben Boden kämpfen, wird die Grenze auf Zellen von rund drei Metern verfeinert — fein genug, dass die beiden Seiten einer Straße getrennt zählen. Dein Gebiet bleibt von Lauf zu Lauf bestehen — ein ganzes Viertel baust du über Monate auf.",
+    "Record a run or ride with GPS. When your route closes a loop, everything inside it becomes yours — not a circle around your position, but the actual shape of the streets you covered. Where two runners contest the same ground, the newer loop is cut out of the older claim as exact map geometry — the border follows the shape that was actually run, not a grid. Territory carries between runs, so a neighbourhood is something you build over months.": "Zeichne einen Lauf oder eine Fahrt mit GPS auf. Sobald sich deine Strecke zu einer Runde schließt, gehört alles darin dir — kein Kreis um deinen Standort, sondern die tatsächliche Form der Straßen, die du gelaufen bist. Wo zwei Läufer um denselben Boden kämpfen, wird die neuere Runde exakt aus dem älteren Anspruch herausgeschnitten — die Grenze folgt der tatsächlich gelaufenen Form, keinem Raster. Dein Gebiet bleibt von Lauf zu Lauf bestehen — ein ganzes Viertel baust du über Monate auf.",
     "What are Rush Points?": "Was sind Rush-Punkte?",
     "Rush Points are RouteRush's score. They are awarded per activity from the ground you actually covered — not from step counts or minutes moved. Rush Points decide your position in your weekly league.": "Rush-Punkte sind die Wertung von RouteRush. Es gibt sie pro Aktivität für den Boden, den du wirklich abgedeckt hast — nicht für Schrittzahlen oder Bewegungsminuten. Und sie bestimmen deinen Platz in der Wochenliga.",
     "How do leagues work?": "Wie funktionieren die Ligen?",

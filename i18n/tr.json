@@ -35,7 +35,7 @@
     "RouteRush tells you what you took.": "RouteRush nereyi aldığını söyler.",
     "The same run, scored differently. Distance and pace are the receipt. The map is the score —\n          a permanent record of the streets you have actually covered, block by block, against everyone\n          else covering theirs.": "Aynı koşu, başka bir puanlama. Mesafe ve tempo sadece kayıt; asıl skor haritada —\n          gerçekten geçtiğin sokakların blok blok kalıcı dökümü. Karşında da kendi\n          sokaklarını geçen herkes var.",
     "Street resolution": "Sokak çözünürlüğü",
-    "Contested borders sharpen to three-metre cells, so one side of a street is not the other.": "Çekişmeli sınırlar üç metrelik hücrelere iner — bir sokağın iki yakası ayrı sayılır.",
+    "Your line is kept to two-and-a-half-metre fidelity, at ride speed as at running pace.": "Çizgin iki buçuk metrelik hassasiyetle korunur — sürüşte de koşuda da aynı.",
     "Real globe": "Gerçek küre",
     "Your territory rendered on a true sphere, not a flat tile sheet.": "Bölgen düz bir harita üzerinde değil, gerçek bir küre üzerinde çizilir.",
     "Bars of signal required": "Gereken sinyal çubuğu",
@@ -184,7 +184,8 @@
     "9.4": "9,4",
     "8.1": "8,1",
     "18.4": "18,4",
-    "16.1": "16,1"
+    "16.1": "16,1",
+    "2.5": "2,5"
   },
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "RouteRush SSS — Bölge Kapmalı Koşu Nasıl Çalışır?",
@@ -197,7 +198,7 @@
     "What is RouteRush?": "RouteRush nedir?",
     "RouteRush is an iOS app that turns running and cycling into territorial conquest. Close a loop on a run and the ground inside it becomes your territory, drawn in the shape of the streets you ran on a 3D map of your city. Territory earns Rush Points, Rush Points decide your rank in weekly leagues of thirty, and every claim can be contested by someone running the same streets. RouteRush is free to start, requires iOS 17 or later, and ships in English, German, Spanish, French, Italian and Turkish.": "RouteRush, koşuyu ve bisikleti bölge fethine çeviren bir iOS uygulaması. Koşarken turu kapattığında içinde kalan toprak senin bölgen olur; şehrinin 3D haritasına, koştuğun sokakların şeklinde çizilir. Bölge sana Rush Puanı kazandırır, Rush Puanı otuz kişilik haftalık ligdeki sıranı belirler ve ele geçirdiğin her yer, aynı sokaklarda koşan biri yüzünden elinden gidebilir. RouteRush'a başlamak ücretsiz, iOS 17 ve üzeri gerekiyor; uygulama İngilizce, Almanca, İspanyolca, Fransızca, İtalyanca ve Türkçe.",
     "How does claiming territory work?": "Bölge nasıl kapılır?",
-    "Record a run or ride with GPS. When your route closes a loop, everything inside it becomes yours — not a circle around your position, but the actual shape of the streets you covered. Scoring happens on a hexagonal grid, and where two runners contest the same ground the border refines to cells about three metres across — fine enough that one side of a street is not the other. Territory carries between runs, so a neighbourhood is something you build over months.": "GPS ile bir koşu ya da sürüş kaydet. Rotan bir turu kapattığı anda içinde kalan her yer senin olur — konumunun etrafına çizilmiş bir daire değil, geçtiğin sokakların gerçek şekli. Puanlama altıgen bir ızgarada yapılır; aynı toprakta iki kişi çekiştiğinde sınır üç metre civarındaki hücrelere iner, yani bir sokağın iki yakası ayrı sayılır. Bölgen koşudan koşuya taşınır; bir mahalleyi aylar içinde kurarsın.",
+    "Record a run or ride with GPS. When your route closes a loop, everything inside it becomes yours — not a circle around your position, but the actual shape of the streets you covered. Where two runners contest the same ground, the newer loop is cut out of the older claim as exact map geometry — the border follows the shape that was actually run, not a grid. Territory carries between runs, so a neighbourhood is something you build over months.": "GPS ile bir koşu ya da sürüş kaydet. Rotan bir turu kapattığı anda içinde kalan her yer senin olur — konumunun etrafına çizilmiş bir daire değil, geçtiğin sokakların gerçek şekli. Aynı toprakta iki kişi çekiştiğinde, yeni döngü eskisinin içinden tam olarak kesilip alınır — sınır ızgaraya değil, gerçekten koşulan şekle uyar. Bölgen koşudan koşuya taşınır; bir mahalleyi aylar içinde kurarsın.",
     "What are Rush Points?": "Rush Puanı nedir?",
     "Rush Points are RouteRush's score. They are awarded per activity from the ground you actually covered — not from step counts or minutes moved. Rush Points decide your position in your weekly league.": "Rush Puanı, RouteRush'ın skorudur. Her aktivitede adım sayısından ya da hareket dakikasından değil, gerçekten kapladığın topraktan hesaplanır. Haftalık ligdeki sıranı da bu puan belirler.",
     "How do leagues work?": "Ligler nasıl çalışır?",
