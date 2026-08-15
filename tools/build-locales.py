@@ -61,6 +61,21 @@ SEGMENT_RE = re.compile(
 ATTR_RE = re.compile(
     r'\b(alt|title|aria-label|placeholder|content)="([^"]*)"')
 
+# The only JSON-LD fields that hold copy. Everything else in that block is
+# structure — vocabulary schema.org defines, not language a visitor reads.
+# Treating the whole block as prose shipped `"@type": "FAQPage"` to Turkish as
+# `"SSSPage"`, because "FAQ" is a key there and "SSS" is its translation. There
+# is no such type, so Google saw no FAQ markup on the Turkish page at all. It
+# was live from the six-locale launch until it was found; nothing looked wrong,
+# because the visible copy was perfect and the rich result simply never
+# appeared. Audited when this narrowed: across both pages and five locales,
+# every legitimate JSON-LD translation was already a whole-value match of one
+# of these three fields (1 in index.html, 20 in faq.html), and the only
+# substring match in the entire corpus was the corruption above.
+LD_CONTENT_FIELDS = ("description", "name", "text", "headline")
+LD_FIELD_RE = re.compile(
+    r'"(' + "|".join(LD_CONTENT_FIELDS) + r')":\s*"((?:[^"\\]|\\.)*)"')
+
 
 def _segments(src):
     """Yield (text, translatable) pairs covering the whole document."""
@@ -74,7 +89,7 @@ def _segments(src):
                 or low.startswith("<style"):
             yield seg, False                        # code or comment: untouched
         elif low.startswith("<script"):
-            yield seg, True                         # JSON-LD: it is copy
+            yield seg, "ldjson"                     # JSON-LD: copy fields only
         else:
             yield seg, "attrs"                      # a tag: whitelisted attrs only
         pos = m.end()
@@ -82,23 +97,98 @@ def _segments(src):
         yield src[pos:], True
 
 
-def _apply_to_segment(seg, kind, sub):
+def _apply_to_segment(seg, kind, sub, table):
+    """Text nodes get phrase substitution; attributes get whole-value lookup.
+
+    An attribute is not prose, it is a single label, and substituting phrases
+    inside one produces half-English output nobody can see: `aria-label="Pause
+    control"` picked up the word-level key "Pause" and shipped `"Duraklat
+    control"` to five locales for weeks, invisible in every screenshot because
+    only a screen reader ever reads it. So an attribute is translated only when
+    its entire value is a key — the same all-or-nothing rule the head fields
+    already live under. Audited before the change: across index.html and
+    faq.html this affected exactly three values in tr (two in de and fr), all
+    of them damage, and no attribute anywhere relied on substring replacement
+    to produce something wanted.
+    """
     if kind is False:
         return seg
     if kind is True:
         return sub(seg)
-    return ATTR_RE.sub(lambda m: f'{m.group(1)}="{sub(m.group(2))}"', seg)
+    if kind == "ldjson":
+        return LD_FIELD_RE.sub(
+            lambda m: f'"{m.group(1)}": "{table.get(m.group(2), m.group(2))}"', seg)
+    return ATTR_RE.sub(
+        lambda m: f'{m.group(1)}="{table.get(m.group(2), m.group(2))}"', seg)
+
+
+def _scope(src):
+    """(prose, whole-value slots) — the two ways a translation can land.
+
+    They are kept apart because they match by different rules: prose by
+    substring, an attribute or a JSON-LD content field only as a whole value.
+    Flattening them into one blob is what let a key that exists solely inside a
+    longer attribute look present while never actually being applied.
+    """
+    prose, exact = [], []
+    for seg, kind in _segments(src):
+        if kind is True:
+            prose.append(seg)
+        elif kind == "attrs":
+            exact.extend(m.group(2) for m in ATTR_RE.finditer(seg))
+        elif kind == "ldjson":
+            exact.extend(m.group(2) for m in LD_FIELD_RE.finditer(seg))
+    return "\n".join(prose), exact
 
 
 def translatable_text(src):
     """Everything a translation is allowed to touch, concatenated."""
-    out = []
-    for seg, kind in _segments(src):
-        if kind is True:
-            out.append(seg)
-        elif kind == "attrs":
-            out.extend(m.group(2) for m in ATTR_RE.finditer(seg))
-    return "\n".join(out)
+    prose, exact = _scope(src)
+    return "\n".join([prose] + exact)
+
+
+def assert_ldjson_structure_survived(src, out, lang, page):
+    """Structured data is vocabulary, not language: only copy may differ.
+
+    Walks both documents' JSON-LD and requires an identical shape — same nodes,
+    same keys, same values everywhere except the whitelisted content fields.
+    This is the check that would have caught `FAQPage` becoming `SSSPage` on
+    day one, and it is cheap enough to run on every build. A schema error is
+    invisible by construction: the page looks right, the markup parses as JSON,
+    and only the rich result quietly never appears.
+    """
+    def blocks(html):
+        return [json.loads(re.sub(r'^<script[^>]*>|</script>$', '', s, flags=re.S))
+                for s in re.findall(
+                    r'<script type="application/ld\+json">.*?</script>', html, re.S)]
+
+    def walk(node, path=""):
+        if isinstance(node, dict):
+            for k, v in node.items():
+                yield from walk(v, f"{path}.{k}")
+        elif isinstance(node, list):
+            for i, v in enumerate(node):
+                yield from walk(v, f"{path}[{i}]")
+        else:
+            yield path, node
+
+    a, b = blocks(src), blocks(out)
+    if len(a) != len(b):
+        fail(f"{lang}/{page}: JSON-LD block count changed, {len(a)} -> {len(b)}")
+    for src_block, out_block in zip(a, b):
+        sm, om = dict(walk(src_block)), dict(walk(out_block))
+        if sm.keys() != om.keys():
+            gone = sorted(set(sm) ^ set(om))[:5]
+            fail(f"{lang}/{page}: JSON-LD shape changed at {gone}")
+        for path, value in sm.items():
+            field = path.rsplit(".", 1)[-1].split("[")[0]
+            if field in LD_CONTENT_FIELDS:
+                continue
+            if om[path] != value:
+                fail(f"{lang}/{page}: JSON-LD structure was translated at "
+                     f"{path}: {value!r} -> {om[path]!r}. Only "
+                     f"{LD_CONTENT_FIELDS} carry copy; everything else is "
+                     f"schema.org vocabulary and must survive verbatim.")
 
 
 def require_head_copy(src, strings, lang, page):
@@ -140,12 +230,16 @@ def apply_strings(src, strings, lang, page):
                  f"found {src.count(en)}:\n  {en[:100]!r}")
         src = src.replace(en, strings[en], 1)
 
-    scope = translatable_text(src)
+    prose, attr_values = _scope(src)
     missing, table, repeated = [], {}, []
     for en, localized in strings.items():
         if en.startswith("//") or en.startswith("<"):
             continue
-        n = scope.count(en)
+        # Counted the way it is applied: anywhere in prose, but in an attribute
+        # only as the whole value. A key that exists solely as a fragment of a
+        # longer attribute would otherwise be reported present and never be
+        # applied — a silent no-op, the failure mode this file keeps closing.
+        n = prose.count(en) + attr_values.count(en)
         if n == 0:
             missing.append(en)
             continue
@@ -185,7 +279,7 @@ def apply_strings(src, strings, lang, page):
     def sub(text):
         return pattern.sub(lambda m: table[m.group(0)], text)
 
-    return "".join(_apply_to_segment(seg, kind, sub)
+    return "".join(_apply_to_segment(seg, kind, sub, table)
                    for seg, kind in _segments(src))
 
 
@@ -271,6 +365,10 @@ def build(lang, page, check):
         fail(f"i18n/{lang}.json has no entry for {page}")
 
     html = apply_strings(src, strings, lang, page)
+    # Checked here rather than after rewrite_head, because that function edits
+    # @id and inLanguage on purpose and asserts its own edits one by one. This
+    # is the translation step's own invariant: it may change copy, nothing else.
+    assert_ldjson_structure_survived(src, html, lang, page)
     html = rewrite_head(html, lang, page)
     html = rewrite_links(html, lang)
 

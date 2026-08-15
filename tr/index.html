@@ -1630,10 +1630,10 @@
 
 <header class="nav" id="nav">
   <div class="wrap">
-    <a class="brand" href="#top" aria-label="RouteRush home">
+    <a class="brand" href="#top" aria-label="RouteRush ana sayfa">
       <img decoding="async" src="/assets/routerush-logo-64.png" alt="RouteRush" width="30" height="30">
     </a>
-    <nav class="nav-links" aria-label="Primary">
+    <nav class="nav-links" aria-label="Ana menü">
       <a href="#territory">Bölge</a>
       <a href="#coach">Koç</a>
       <a href="#leagues">Ligler</a>
@@ -1727,8 +1727,8 @@
       </div>
       <dl class="specs" data-reveal style="--d:160ms">
         <div class="spec">
-          <dt>25<span style="font-size:.5em; letter-spacing:0"> m</span></dt>
-          <dd><b>Sokak çözünürlüğü</b>Bir sokağın bir yakasını öbür yakasından ayıracak kadar ince.</dd>
+          <dt>3<span style="font-size:.5em; letter-spacing:0"> m</span></dt>
+          <dd><b>Sokak çözünürlüğü</b>Çekişmeli sınırlar üç metrelik hücrelere iner — bir sokağın iki yakası ayrı sayılır.</dd>
         </div>
         <div class="spec">
           <dt>3D</dt>
@@ -1780,7 +1780,7 @@
           <div class="screen">
             <!-- SWAP: point src at the real globe/territory capture -->
             <img class="shot" loading="lazy" decoding="async" src="/assets/screens/dev-mapmodes.webp"
-                 alt="RouteRush Map Modes over London: Heatmap, Bölge and Routes cards above the 3D city">
+                 alt="Londra üzerinde RouteRush Harita Modları: 3D şehrin üstünde Isı Haritası, Bölge ve Rotalar kartları">
             <!-- The screenshot is the phone's entire screen. A hand-built
                  mock UI used to sit under it — status bar, a drawn globe with
                  claims, a metrics card, a tab bar, ~75 lines — but the shot is
@@ -1829,7 +1829,7 @@
         <div class="phone">
           <div class="screen">
             <!-- SWAP: point src at the real in-run / tracking capture -->
-            <img class="shot" loading="lazy" decoding="async" src="/assets/screens/dev-league.webp" alt="RouteRush Plans screen: Boldi the coach offering training plans">
+            <img class="shot" loading="lazy" decoding="async" src="/assets/screens/dev-league.webp" alt="RouteRush Planlar ekranı: koç Boldi antrenman planları öneriyor">
             <div class="island" aria-hidden="true"></div>
             <div class="statusbar"><span>9:41</span><span class="sb-icons">
               <svg width="15" height="11" viewBox="0 0 15 11" aria-hidden="true"><rect x="0" y="7" width="2.6" height="4" rx=".7" fill="#fff"/><rect x="4" y="5" width="2.6" height="6" rx=".7" fill="#fff"/><rect x="8" y="2.5" width="2.6" height="8.5" rx=".7" fill="#fff"/><rect x="12" y="0" width="2.6" height="11" rx=".7" fill="#fff" opacity=".4"/></svg>
@@ -1935,8 +1935,8 @@
               <div class="metric"><i>Blok</i><b>+41</b></div>
             </div>
             <div style="display:flex; gap:8px">
-              <span class="btn btn-primary" style="height:32px; font-size:12.5px; flex:1; padding:0 12px" role="img" aria-label="Duraklat control">Duraklat</span>
-              <span class="btn btn-ghost" style="height:32px; font-size:12.5px; flex:1; padding:0 12px" role="img" aria-label="Bitir control">Bitir</span>
+              <span class="btn btn-primary" style="height:32px; font-size:12.5px; flex:1; padding:0 12px" role="img" aria-label="Duraklat düğmesi">Duraklat</span>
+              <span class="btn btn-ghost" style="height:32px; font-size:12.5px; flex:1; padding:0 12px" role="img" aria-label="Bitir düğmesi">Bitir</span>
             </div>
           </div>
           <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; justify-content:center">
@@ -1980,7 +1980,7 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
           </span>
         </div>
-        <div class="lb-tabs" role="tablist" aria-label="Leaderboard scope">
+        <div class="lb-tabs" role="tablist" aria-label="Lider tablosu kapsamı">
           <button type="button" role="tab" id="lbt-territory" aria-controls="lbp-territory" aria-selected="false">Bölge</button>
           <button type="button" role="tab" id="lbt-clubs"     aria-controls="lbp-clubs"     aria-selected="false">Kulüpler</button>
           <button type="button" role="tab" id="lbt-league"    aria-controls="lbp-league"    aria-selected="true">Lig</button>
@@ -2005,7 +2005,7 @@
           <div class="row top3">
             <span class="av" aria-hidden="true">JD</span><span class="rank">2</span>
             <span class="who">
-              <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Verified"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Onaylı"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               <span class="sub"><span class="at">@jduarte</span> · Mesafede önde</span>
             </span>
             <span class="rpwrap"><span class="rp">11.1<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen alan</span></span>
@@ -2111,7 +2111,7 @@
             <span class="av" aria-hidden="true">JD</span>
             <span class="rank">2</span>
             <span class="who">
-              <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Verified"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Onaylı"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
               <span class="sub">79.6 km<span class="dot">•</span>980m ↑</span>
             </span>
             <span class="rpwrap"><span class="rp">4 512</span><span class="rpcap">RP</span></span>
@@ -2141,7 +2141,7 @@
             <span class="av" aria-hidden="true">LN</span>
             <span class="rank">13</span>
             <span class="who">
-              <span class="line1"><span class="name">L. Novak</span><svg class="shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-label="Newbie shield"><path d="M12 3l7 3v5.5c0 4-3 7.5-7 9.5-4-2-7-5.5-7-9.5V6z"/></svg></span>
+              <span class="line1"><span class="name">L. Novak</span><svg class="shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-label="Acemi Kalkanı"><path d="M12 3l7 3v5.5c0 4-3 7.5-7 9.5-4-2-7-5.5-7-9.5V6z"/></svg></span>
               <span class="sub">46.2 km<span class="dot">•</span>520m ↑</span>
             </span>
             <span class="rpwrap"><span class="rp">2 830</span><span class="rpcap">RP</span></span>
@@ -2284,7 +2284,7 @@
           <div class="phone">
             <div class="screen">
               <img class="shot" loading="lazy" decoding="async" src="/assets/screens/dev-summary.webp"
-                   alt="RouteRush run summary: route on the map with distance, time, pace, elevation and cadence">
+                   alt="RouteRush koşu özeti: haritada rota; mesafe, süre, tempo, yükseklik ve adım sıklığı">
             </div>
           </div>
           <figcaption class="small"><b>Koştuğun küre</b>Ana ekran düz bir harita değil, gerçek bir 3D küre. Sen kapladıkça toprağın dolar.</figcaption>
@@ -2294,7 +2294,7 @@
           <div class="phone">
             <div class="screen">
               <img class="shot" loading="lazy" decoding="async" src="/assets/screens/en-02-plans-boldi.webp"
-                   alt="RouteRush Plans screen featuring Boldi the coach and structured training plans">
+                   alt="RouteRush Planlar ekranı: koç Boldi ve hazır antrenman planları">
             </div>
           </div>
           <figcaption class="small"><b>Boldi ve elinde bir plan</b>İlk koşundan 5K'ya kadar hazır planlar; koç da işin içinde.</figcaption>
@@ -2303,7 +2303,7 @@
         <figure data-reveal style="--d:180ms">
           <div class="phone">
             <div class="screen">
-              <img class="shot" loading="lazy" decoding="async" src="/assets/screens/dev-challenges.webp" alt="RouteRush club challenges with a head-to-head card and open challenges">
+              <img class="shot" loading="lazy" decoding="async" src="/assets/screens/dev-challenges.webp" alt="RouteRush kulüp yarışmaları: bire bir kartı ve açık yarışmalar">
               <div class="pending" aria-hidden="true">
                 <svg viewBox="0 0 24 24"><path d="M6 20V11M12 20V5M18 20v-6"/></svg>
                 Lig sıralaması
@@ -2382,7 +2382,7 @@
        sourced, same asset the app ships in onboarding.
        ============================================================ -->
   <section class="photo-band" aria-labelledby="why-title">
-    <img src="/assets/dusk-run.webp" alt="A runner at dusk, silhouetted against a city skyline"
+    <img src="/assets/dusk-run.webp" alt="Alacakaranlıkta, şehir silüetine karşı bir koşucu"
          loading="lazy" decoding="async">
     <div class="wrap" data-reveal>
       <p class="eyebrow">Neden önemli</p>
@@ -2423,7 +2423,7 @@
   <div class="wrap">
     <div class="foot">
       <div>
-        <a class="brand" href="#top" aria-label="RouteRush home">
+        <a class="brand" href="#top" aria-label="RouteRush ana sayfa">
           <span>RouteRush</span>
         </a>
         <p class="small" style="margin-top:14px; max-width:34ch">
@@ -2439,7 +2439,7 @@
           <li><a href="#more">Özellikler</a></li>
         </ul>
       </nav>
-      <nav aria-label="Legal and support">
+      <nav aria-label="Yasal ve destek">
         <h4>Kurumsal</h4>
         <ul>
           <!-- These two URLs are registered with App Store Connect. They live in
@@ -2452,7 +2452,7 @@
           <li><a href="/press.html">Basın kiti</a></li>
         </ul>
       </nav>
-      <nav aria-label="Social">
+      <nav aria-label="Sosyal medya">
         <h4>Takip et</h4>
         <!-- These are the two handles that carry the brand name on their
              profiles, and the same two listed in the Organization sameAs above.
@@ -2474,7 +2474,7 @@
          <select>, so the set is crawlable and each locale is discoverable from
          every other. The build script marks the current locale with
          aria-current and drops its href. -->
-    <nav class="foot-lang" aria-label="Language">
+    <nav class="foot-lang" aria-label="Dil">
       <ul>
         <li><a href="/" hreflang="en">English</a></li>
         <li><a href="/tr/" hreflang="tr" aria-current="page">Türkçe</a></li>
@@ -2517,7 +2517,7 @@
 <div class="lang-hint" id="lang-hint" role="region" aria-live="polite">
   <span id="lang-hint-msg"></span>
   <a id="lang-hint-go" href="/"></a>
-  <button type="button" id="lang-hint-x" aria-label="Dismiss">&times;</button>
+  <button type="button" id="lang-hint-x" aria-label="Kapat">&times;</button>
 </div>
 <script>
 (function () {
