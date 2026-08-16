@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- The wordmark R is a brush glyph, so it is used as a mask rather than a
+       traced path: a solid rect is painted through the PNG's alpha channel.
+       That is what lets the colour follow the browser's tab strip — a plain
+       transparent PNG of a near-white mark disappears in light mode. -->
+  <defs>
+    <mask id="m" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512"
+          style="mask-type:alpha">
+      <image href="favicon.png" x="0" y="0" width="512" height="512"/>
+    </mask>
+    <style>
+      .ink { fill: #111; }
+      @media (prefers-color-scheme: dark) { .ink { fill: #fff; } }
+    </style>
+  </defs>
+  <rect class="ink" x="0" y="0" width="512" height="512" mask="url(#m)"/>
+</svg>
