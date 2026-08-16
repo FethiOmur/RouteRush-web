@@ -74,7 +74,7 @@ export default {
 <meta name="twitter:title" content="${title}">
 <meta name="twitter:description" content="${blurb}">
 <meta name="twitter:image" content="${SITE}/assets/og.jpg">
-<link rel="icon" href="${SITE}/assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="${SITE}/assets/favicon.svg?v=2" type="image/svg+xml">
 <link rel="icon" href="${SITE}/assets/favicon.png" sizes="512x512" type="image/png">
 <link rel="apple-touch-icon" sizes="180x180" href="${SITE}/assets/apple-touch-icon.png">
 <style>
