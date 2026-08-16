@@ -1,0 +1,26 @@
+# Deployment config for the share-link Worker.
+#
+# The routes are the load-bearing part. They are deliberately two narrow
+# prefixes rather than a wildcard: a Worker route of routerushapp.com/* would
+# put every page view of a static site through a Worker, burn the free plan's
+# daily request budget on traffic that GitHub Pages already serves, and add a
+# hop to the fastest paths on the site for no gain. Everything outside /post/
+# and /u/ never reaches the Worker at all.
+#
+# Deploy with:  npx wrangler deploy
+name = "share-links"
+main = "workers/share-links.js"
+compatibility_date = "2026-08-16"
+
+# Keep the workers.dev URL off: the Worker is only ever meant to answer on the
+# product domain, and share-links.routerushapp.workers.dev responding as well
+# would be a second, unbranded address serving the same pages.
+workers_dev = false
+
+[[routes]]
+pattern = "routerushapp.com/post/*"
+zone_name = "routerushapp.com"
+
+[[routes]]
+pattern = "routerushapp.com/u/*"
+zone_name = "routerushapp.com"
