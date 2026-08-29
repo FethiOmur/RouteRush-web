@@ -672,17 +672,63 @@
   /* ============================================================
      device mockups (hand-authored, no screenshots)
      ============================================================ */
+  /* The device is a real frame image, not a CSS bezel: an iPhone 17 Pro
+     rendered with rails, side buttons and a Dynamic Island, its screen area
+     punched out to transparent. The screenshot sits UNDER it and shows through
+     the hole, so the frame's island lands exactly on the captured one.
+
+     Source: the Monkr project (github.com/blaineam/Monkr), MIT — the licence
+     travels with the asset in assets/device/LICENSE-monkr.txt because MIT asks
+     for the notice to accompany copies. These are NOT Apple's official device
+     images: Apple's bezels are behind a click-through licence, ship straight-on
+     only, and Apple's marketing guidance is cold on tilting them.
+
+     max-width is 338px rather than the old 296px because the frame image
+     carries transparent margin around the device — the body is 87.53% of the
+     image width, so 338 x .8753 = 296, the exact width the CSS bezel had. The
+     shadow is drop-shadow, not box-shadow, so it follows the device silhouette
+     including the rounded corners instead of a rectangle. */
   .phone {
-    width: 100%; max-width: 296px; aspect-ratio: 393 / 852;
-    border-radius: 46px; padding: 9px;
-    background: linear-gradient(168deg, rgba(255,255,255,.20), rgba(255,255,255,.05) 34%, rgba(255,255,255,.015) 70%);
-    box-shadow: 0 44px 90px -32px rgba(0,0,0,.95), 0 0 0 .5px rgba(255,255,255,.10);
+    position: relative;
+    width: 100%; max-width: 338px; aspect-ratio: 1508 / 3278;
     flex: none;
+    filter: drop-shadow(0 38px 70px rgba(0,0,0,.88));
   }
+  .phone::after {
+    content: ""; position: absolute; inset: 0; z-index: 8; pointer-events: none;
+    background: url(assets/device/iphone17pro-deep-blue.webp) center / contain no-repeat;
+  }
+
+  /* The two section devices are turned a few degrees TOWARD the column of text
+     they belong to — the phone on the right leans its left edge forward, the
+     flipped row mirrors it. Rotating them the other way makes the device look
+     like it is turning its back on the copy.
+
+     Only the section pair gets this. The three tour phones stay square on:
+     they are a row of specimens read side by side, and tilting a row of three
+     the same way reads as a mistake rather than a choice.
+
+     Nothing here animates, so prefers-reduced-motion has no claim on it; the
+     transform is a fixed camera angle, not motion. */
+  .phone            { transform: translate3d(0, var(--plx-y, 0px), 0); }
+  .frow .phone      { transform: translate3d(0, var(--plx-y, 0px), 0) perspective(2600px) rotateY(-9deg) rotateX(3deg) rotate(-2deg); }
+  .frow.flip .phone { transform: translate3d(0, var(--plx-y, 0px), 0) perspective(2600px) rotateY( 9deg) rotateX(3deg) rotate( 2deg); }
+
+  /* Below the breakpoint the device sits under the text, centred, with no
+     column to lean towards — and a tilted phone in a narrow column loses more
+     width to the rotation than it can spare. */
+  @media (max-width: 900px) {
+    .frow .phone, .frow.flip .phone { transform: translate3d(0, var(--plx-y, 0px), 0); }
+  }
+  /* Pinned to the frame's screen cut-out, measured from the asset:
+     151/1508 left, 327.5/3278 top, 1206x2623 of 1508x3278. The radius is
+     elliptical because the box is not square — it only has to beat the bezel's
+     inner curve by a hair, the opaque frame hides the rest. */
   .screen {
-    position: relative; height: 100%; border-radius: 38px; overflow: hidden;
-    background: #000; border: 1px solid rgba(255,255,255,.07);
-    display: flex; flex-direction: column;
+    position: absolute;
+    left: 10.0133%; top: 9.9908%; width: 79.9735%; height: 80.0183%;
+    overflow: hidden; background: #000;
+    border-radius: 6.6% / 3.05%;
   }
 
   /* ------------------------------------------------------------------
@@ -1133,6 +1179,8 @@
   .photo-band img {
     position: absolute; inset: 0; width: 100%; height: 100%;
     object-fit: cover; object-position: center 30%;
+    /* Parallax arrives as --plx-y, same contract as .phone. */
+    transform: translate3d(0, var(--plx-y, 0px), 0);
   }
   /* Gradient, not a box — the text floats on the photo's own shadow. Top fade
      seats the band against the black section above; the bottom runs to full
@@ -3407,7 +3455,10 @@
       ty = Math.round(ty * 2) / 2;                 /* half-pixel grid, no shimmer */
       if (ty !== it.ty) {
         it.ty = ty;
-        it.el.style.transform = 'translate3d(0,' + ty + 'px,0)';
+        /* A custom property, not style.transform: the section devices carry a
+           fixed camera tilt in CSS, and an inline transform would erase it.
+           CSS composes the two — parallax first, then the tilt. */
+        it.el.style.setProperty('--plx-y', ty + 'px');
       }
     }
   }
@@ -3433,7 +3484,7 @@
     document.documentElement.classList.remove('has-plx');
     removeEventListener('scroll', onScroll);
     removeEventListener('resize', onResize);
-    plx.forEach(function (it) { it.el.style.transform = ''; it.ty = 0; });
+    plx.forEach(function (it) { it.el.style.removeProperty('--plx-y'); it.ty = 0; });
     /* counters that already ran keep their final values — they are correct */
   }
   if (!mq.matches) enable();
