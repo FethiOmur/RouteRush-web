@@ -259,7 +259,6 @@
   .btn-ghost,
   .gcard,
   .tabbar,
-  .board,
   .tile,
   .liveact {
     position: relative;
@@ -279,7 +278,6 @@
   .btn-ghost::before,
   .gcard::before,
   .tabbar::before,
-  .board::before,
   .tile::before,
   .liveact::before {
     content: ""; position: absolute; inset: 0; border-radius: inherit;
@@ -295,7 +293,6 @@
   .btn-ghost::after,
   .gcard::after,
   .tabbar::after,
-  .board::after,
   .tile::after,
   .liveact::after {
     content: ""; position: absolute; inset: 0; border-radius: inherit;
@@ -315,7 +312,6 @@
   .nav .wrap > *,
   .gcard > *,
   .tabbar > *,
-  .board > *,
   .tile > *,
   .liveact > * { position: relative; z-index: 3; }
 
@@ -328,7 +324,7 @@
      Everything with something genuinely behind it keeps the blur: .nav .wrap
      (content scrolls under it continuously), .gcard and .tabbar (over the phone
      screen art), .btn-ghost (over the final CTA's glow). */
-  .board, .tile, .liveact {
+  .tile, .liveact {
     -webkit-backdrop-filter: none;
             backdrop-filter: none;
   }
@@ -828,254 +824,6 @@
     filter: blur(30px);
   }
 
-  /* ============================================================
-     league / leaderboard
-     ============================================================ */
-  .league { display: grid; gap: clamp(30px, 5vw, 70px); grid-template-columns: minmax(0,.86fr) minmax(0,1.14fr); align-items: center; }
-  @media (max-width: 940px) { .league { grid-template-columns: 1fr; } }
-  /* Leaderboards sheet — ported from LeaderboardSheet.swift + LeagueLeaderboardTab.
-     The app presents this as a SHEET: drag handle, ultraLight "Leaderboards"
-     title with a glyph close button, then a 4-tab capsule (Territory / Clubs /
-     League / Country) with the active tab as a white pill. The section title
-     is 28px ultraLight — "League", never "Cohort"; the word cohort appears
-     nowhere in the app's UI. */
-  .board {
-    border-radius: 28px 28px 24px 24px; overflow: hidden;
-    padding-bottom: 8px;
-  }
-  .sheet-grab {
-    width: 36px; height: 4px; border-radius: 2px;
-    background: rgba(255,255,255,.3); margin: 12px auto 20px;
-  }
-  .sheet-head {
-    display: flex; align-items: center; gap: 12px;
-    padding: 0 24px 16px;
-  }
-  .sheet-title {
-    font-size: 34px; font-weight: 200; letter-spacing: -.02em; color: #fff;
-    margin-right: auto; line-height: 1;
-  }
-  .sheet-x {
-    width: 34px; height: 34px; border-radius: 50%; flex: none;
-    display: grid; place-items: center;
-    background: rgba(255,255,255,.10); color: rgba(255,255,255,.85);
-  }
-  .sheet-x svg { width: 14px; height: 14px; }
-  /* 4-tab capsule: dark translucent track, active tab a white pill */
-  .lb-tabs {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px;
-    margin: 0 20px 14px; padding: 5px; border-radius: 999px;
-    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.07);
-  }
-  .lb-tabs button {
-    appearance: none; border: 0; cursor: pointer; font: inherit;
-    text-align: center; padding: 9px 4px; border-radius: 999px;
-    font-size: 14px; font-weight: 500; color: rgba(255,255,255,.72);
-    background: transparent;
-    transition: background-color .28s var(--spring), color .28s ease;
-  }
-  .lb-tabs button:hover { color: #fff; }
-  .lb-tabs button[aria-selected="true"] { background: #fff; color: #000; font-weight: 680; }
-  /* Same hit-area treatment as the nav: the segmented control is 39px tall
-     because that is what the app's own control measures, and matching it was
-     the point. The finger gets 44px from a transparent overlay that stays
-     inside the strip's 5px padding, so nothing shifts. */
-  @media (pointer: coarse) {
-    .lb-tabs button { position: relative; }
-    .lb-tabs button::after {
-      content: ""; position: absolute; left: 0; right: 0;
-      top: 50%; height: 44px; transform: translateY(-50%);
-    }
-  }
-  /* Panel transitions. `hidden` alone is an instant swap, so panels animate on
-     their own: the outgoing one fades and settles back a hair, the incoming one
-     rises into place with its rows staggered behind it. `hidden` is still the
-     source of truth for assistive tech — the animation rides on a class. */
-  .lb-panel { transition: opacity .34s ease, transform .34s var(--spring); }
-  .lb-panel[hidden] { display: none; }
-  .lb-panel.is-leaving {
-    opacity: 0; transform: translateY(6px) scale(.994);
-    pointer-events: none;
-  }
-  .lb-panel.is-entering { opacity: 0; transform: translateY(-8px) scale(.994); }
-  .lb-panel.is-entering .row, .lb-panel.is-entering .lb-sec,
-  .lb-panel.is-entering .zone-label, .lb-panel.is-entering .lb-check {
-    opacity: 0; transform: translateY(7px);
-  }
-  /* Rows settle in sequence — 34ms apart, so a six-row panel resolves in
-     ~200ms: felt as one motion, not six. */
-  .lb-panel .row, .lb-panel .lb-sec, .lb-panel .zone-label, .lb-panel .lb-check {
-    transition: opacity .42s ease, transform .42s var(--spring);
-    transition-delay: calc(var(--i, 0) * 34ms);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .lb-panel, .lb-panel .row, .lb-panel .lb-sec,
-    .lb-panel .zone-label, .lb-panel .lb-check { transition: none; }
-    .lb-panel.is-leaving, .lb-panel.is-entering { opacity: 1; transform: none; }
-  }
-  /* Individual / club / country rows carry a unit inside the big numeral and a
-     caption under it, matching IndividualRowView / ClubRowView / CountryRowView. */
-  .row .rp .u { font-size: 13px; font-weight: 400; opacity: .8; margin-left: 2px; }
-  .row .at { font-size: 12px; color: rgba(255,255,255,.55); }
-  .row .flag { font-size: 20px; line-height: 1; margin-right: 2px; }
-  /* Country row — ported from CountryAreaRowView.swift. The flag is a
-     full-bleed background image (the app's own flagcdn source, bundled here so
-     the page stays offline) under a fadedMask: opaque to 30% of its width, then
-     ramping to transparent. Rank rides on top of it as a #N capsule. */
-  .row.ctry { grid-template-columns: 96px 1fr auto; padding-left: 0; min-height: 78px; }
-  .row.ctry .flagbg {
-    position: absolute; left: 0; top: 0; bottom: 0; width: 200px; z-index: 0;
-    background-size: cover; background-position: center;
-    -webkit-mask: linear-gradient(90deg, #000 0%, #000 30%, transparent 100%);
-            mask: linear-gradient(90deg, #000 0%, #000 30%, transparent 100%);
-  }
-  /* The row's copy sits on top of the flag, and a dark flag (Türkiye's red,
-     Germany's black band) swallowed the small "Most territory:" label. A scrim
-     under the text keeps every row legible without washing the flag out. */
-  .row.ctry .flagbg::after {
-    content: ""; position: absolute; inset: 0;
-    background: linear-gradient(90deg, rgba(0,0,0,.62) 0%, rgba(0,0,0,.42) 55%, transparent 100%);
-  }
-  .row.ctry .rank {
-    justify-self: start; align-self: start; margin: 10px 0 0 10px;
-    padding: 4px 8px; border-radius: 999px;
-    font-size: 13px; font-weight: 700; color: #fff;
-    background: rgba(0,0,0,.5);
-    box-shadow: inset 0 0 0 1px rgba(255,255,255,.2);
-  }
-  .row.ctry .name { font-size: 20px; font-weight: 700; }
-  /* "Most territory:" is its own caption line, then the contributor chip. */
-  .row.ctry .who { gap: 2px; }
-  .row.ctry .mt { font-size: 10px; color: rgba(255,255,255,.6); }
-  .row.ctry .contrib { display: flex; align-items: center; gap: 4px; }
-  .row.ctry .contrib svg { width: 16px; height: 16px; color: rgba(255,255,255,.5); flex: none; }
-  .row.ctry .contrib b { font-size: 12px; font-weight: 500; color: #fff; }
-  /* Area value: 28px ultraLight with the unit inline, caption beneath. */
-  .row.ctry .rp { font-size: 28px; font-weight: 200; }
-  .row.ctry .rp .u { font-size: 16px; font-weight: 200; opacity: .7; }
-  /* Narrow phones. The country row is the widest thing in the sheet: a 96px
-     flag/rank column plus a 28px area figure with its unit and caption leaves
-     the name about 46px, so "United States" rendered as "Uni…" and "Most
-     territory:" broke across three lines. Nothing here is decoration that can
-     just be dropped — the flag, the area and the contributor are all in the
-     app's own row — so every column gives back a little instead: the rank
-     gutter narrows, the figure steps down, and the name gets the room it needs
-     to actually be a name. */
-  @media (max-width: 440px) {
-    .row.ctry { grid-template-columns: 58px 1fr auto; gap: 8px; padding-right: 12px; }
-    .row.ctry .rank { margin-left: 8px; padding: 3px 7px; font-size: 12px; }
-    .row.ctry .name { font-size: 16.5px; }
-    .row.ctry .rp { font-size: 21px; }
-    .row.ctry .rp .u { font-size: 12px; }
-    .row.ctry .rpcap { font-size: 9px; }
-    .row.ctry .contrib b { font-size: 11px; }
-    .row.ctry .contrib svg { width: 14px; height: 14px; }
-  }
-  /* Sort control + small-countries toggle, both above the list. */
-  .lb-sort {
-    flex: none; display: flex; align-items: center; gap: 5px;
-    padding: 8px 12px; border-radius: 999px;
-    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.09);
-    font-size: 12px; font-weight: 500; color: rgba(255,255,255,.8);
-  }
-  .lb-sort svg { width: 9px; height: 9px; }
-  .lb-check {
-    display: flex; align-items: center; gap: 9px;
-    margin: 0 20px 10px; font-size: 13px; color: rgba(255,255,255,.86);
-  }
-  .lb-check .tick {
-    width: 20px; height: 20px; border-radius: 50%; flex: none;
-    display: grid; place-items: center; background: var(--run-accent); color: #000;
-  }
-  .lb-check .tick svg { width: 11px; height: 11px; stroke: #000; stroke-width: 3; }
-
-  /* Section header: 28px ultraLight + caption, tier badge on the right */
-  .lb-sec { display: flex; align-items: flex-start; gap: 12px; padding: 4px 22px 14px; }
-  .lb-sec .t { font-size: 28px; font-weight: 200; letter-spacing: -.01em; color: #fff; line-height: 1.05; }
-  .lb-sec .c { font-size: 12px; color: rgba(255,255,255,.6); margin-top: 6px; }
-  .lb-sec .grow { margin-right: auto; }
-  .tierbadge {
-    flex: none; display: flex; align-items: center; gap: 7px;
-    padding: 7px 12px; border-radius: 999px;
-    background: linear-gradient(135deg, rgba(232,234,237,.16), rgba(142,154,171,.10));
-    border: 1px solid rgba(232,234,237,.28);
-    font-size: 12px; font-weight: 620; color: #E8EAED; letter-spacing: .01em;
-  }
-  .tierbadge svg { width: 14px; height: 14px; }
-
-  /* Cohort row — ported from CohortLeaderboardRow.swift.
-     Structure: rank badge · faded avatar bleed · name (+ verified/shield) ·
-     distance & elevation · right-aligned ultraLight RP over an "RP" caption.
-     Rows are separate rounded cards, not table lines. */
-  .row {
-    position: relative; isolation: isolate; overflow: hidden;
-    display: grid; grid-template-columns: 44px 1fr auto; gap: 12px; align-items: center;
-    min-height: 68px; padding: 10px 16px 10px 4px;
-    margin: 6px 12px; border-radius: 16px;
-    background: rgba(255,255,255,.04);           /* normalRankBackgroundOpacity */
-    border: 1px solid rgba(255,255,255,.05);     /* default subtle border */
-  }
-  .row.top3 { background: rgba(255,255,255,.08); }  /* topRankBackgroundOpacity */
-  /* Zone treatment: a 1.5px gradient stroke fading top→bottom, plus the glow.
-     Drawn as a masked border so it cannot tint the row's interior. */
-  .row.up, .row.down { border-color: transparent; }
-  .row.up::after, .row.down::after {
-    content: ""; position: absolute; inset: 0; border-radius: inherit;
-    padding: 1.5px; pointer-events: none; z-index: 2;
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    mask-composite: exclude;
-  }
-  .row.up::after   { background: linear-gradient(var(--zone-up),   var(--zone-up)   40%, transparent); }
-  .row.down::after { background: linear-gradient(var(--zone-down), var(--zone-down) 40%, transparent); }
-  .row.up   { box-shadow: 0 0 8px rgba(16,185,129,.25); }
-  .row.down { box-shadow: 0 0 8px rgba(239,68,68,.25); }
-
-  /* Avatar bleeds in from the left under a fade mask — the app's `.fadedMask()`
-     background image, not a small circular chip. */
-  .row .av {
-    position: absolute; left: 0; top: 0; bottom: 0; width: 150px; z-index: 0;
-    display: grid; align-items: center; justify-items: start;
-    /* the initials sit in the bleed, clear of the rank column, so they read as
-       a ghosted avatar rather than a smudge under the rank */
-    padding-left: 52px;
-    font-size: 26px; font-weight: 200; letter-spacing: .02em;
-    color: rgba(255,255,255,.13);
-    background: linear-gradient(90deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
-    -webkit-mask: linear-gradient(90deg, #000 0%, rgba(0,0,0,.4) 58%, transparent 100%);
-            mask: linear-gradient(90deg, #000 0%, rgba(0,0,0,.4) 58%, transparent 100%);
-  }
-  .row > *:not(.av) { position: relative; z-index: 1; }
-  .row .rank {
-    justify-self: center; font-size: 13px; font-weight: 620;
-    color: rgba(255,255,255,.55); font-variant-numeric: tabular-nums;
-  }
-  .row.top3 .rank, .row.me .rank { color: #fff; }
-  .row .who { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-  .row .who .line1 { display: flex; align-items: center; gap: 5px; min-width: 0; }
-  .row .name {
-    font-size: 17px; font-weight: 700; letter-spacing: -.02em; color: #fff;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-  .row .sub { font-size: 12px; color: rgba(255,255,255,.7); display: flex; gap: 7px; align-items: center; }
-  .row .sub .dot { color: rgba(255,255,255,.4); }
-  .row .shield { color: var(--run); width: 13px; height: 13px; flex: none; }
-  /* RP: ultraLight numeral over a small caption — statsFontSize 24, .ultraLight */
-  .row .rpwrap { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; padding-right: 4px; }
-  .row .rp { font-size: 24px; font-weight: 200; letter-spacing: -.02em; color: #fff; font-variant-numeric: tabular-nums; line-height: 1; }
-  .row .rpcap { font-size: 10px; color: rgba(255,255,255,.5); letter-spacing: .04em; }
-  .gap-row { padding: 4px 18px 6px; color: var(--text-4); font-size: 11px; letter-spacing: .2em; text-align: center; }
-  /* Zone labels sit in the sheet's row gutter with the arrow inline, tinted by
-     the same semantic pair as the row strokes. */
-  .zone-label {
-    display: flex; align-items: center; gap: 6px;
-    margin: 12px 18px 4px; padding: 0; border: 0;
-    font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase;
-  }
-  .zone-label svg { width: 12px; height: 12px; flex: none; stroke: currentColor; }
-  .zone-label.up   { color: rgba(16,185,129,.9); }
-  .zone-label.down { color: rgba(239,68,68,.85); }
-  .verified-tick { width: 13px; height: 13px; flex: none; }
 
   /* ---------- product tour: frames sized for real device captures ---------- */
   .tour { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 3vw, 44px); }
@@ -1332,13 +1080,13 @@
      material block — keep the two in sync. */
   @media (prefers-reduced-transparency: reduce) {
     :root { --glass-tint: var(--surface); --glass-tint-strong: #222839; }
-    .lg, .nav .wrap, .btn-ghost, .gcard, .tabbar, .board, .tile, .liveact {
+    .lg, .nav .wrap, .btn-ghost, .gcard, .tabbar, .tile, .liveact {
       backdrop-filter: none !important; -webkit-backdrop-filter: none !important;
     }
     .lg::before,      .nav .wrap::before, .btn-ghost::before, .gcard::before,
-    .tabbar::before,  .board::before,     .tile::before,      .liveact::before,
+    .tabbar::before,  .tile::before,      .liveact::before,
     .lg::after,       .nav .wrap::after,  .btn-ghost::after,  .gcard::after,
-    .tabbar::after,   .board::after,      .tile::after,       .liveact::after { display: none; }
+    .tabbar::after,   .tile::after,       .liveact::after { display: none; }
     .nav .wrap, .nav.is-scrolled .wrap { background: #0a0d14; }
   }
   @media (prefers-contrast: more) {
@@ -1351,7 +1099,7 @@
     .hero-h1 em { color: #fff; }
     /* the sheen would lift the tint back off pure black */
     .lg::before,     .nav .wrap::before, .btn-ghost::before, .gcard::before,
-    .tabbar::before, .board::before,     .tile::before,      .liveact::before { display: none; }
+    .tabbar::before, .tile::before,      .liveact::before { display: none; }
   }
 
   /* ============================================================
@@ -1411,21 +1159,6 @@
       inset 0 1px 0 0 rgba(255,255,255,.10),
       inset 0 0 0 .5px rgba(255,255,255,.05),
       0 26px 60px -28px rgba(0,0,0,.9);
-  }
-  /* The sheet is the largest glass surface on the page, so it gets the same
-     quiet treatment as the tiles — refraction carries it, not a bright rim. */
-  .board.lg-refract { background: rgba(24, 28, 40, .34); }
-  .board.lg-refract::before { display: none; }
-  .board.lg-refract::after {
-    background: linear-gradient(140deg,
-      rgba(255,255,255,.18), rgba(255,255,255,.03) 38%,
-      rgba(255,255,255,0) 66%, rgba(255,255,255,.07));
-  }
-  .board.lg-refract {
-    box-shadow:
-      inset 0 1px 0 0 rgba(255,255,255,.12),
-      inset 0 0 0 .5px rgba(255,255,255,.06),
-      0 40px 90px -36px rgba(0,0,0,.95);
   }
 
 
@@ -1621,7 +1354,8 @@
         "https://routerushapp.com/assets/screens/territory-nyc-runners.webp",
         "https://routerushapp.com/assets/screens/mapmodes-nyc.webp",
         "https://routerushapp.com/assets/screens/dev-summary.webp",
-        "https://routerushapp.com/assets/screens/league-standing.webp"
+        "https://routerushapp.com/assets/screens/league-standing.webp",
+        "https://routerushapp.com/assets/screens/leaderboards-league.webp"
       ],
       "author": { "@id": "https://routerushapp.com/#founder" },
       "publisher": { "@id": "https://routerushapp.com/#org" },
@@ -1960,7 +1694,7 @@
        LEAGUES
        ============================================================ -->
   <section class="sec" id="leagues" aria-labelledby="leagues-title">
-    <div class="wrap league">
+    <div class="wrap frow flip">
       <div>
         <p class="eyebrow" data-reveal>Ligler</p>
         <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="leagues-title">Otuz koşucu.<br>Bir hafta.<br>Beşi yükselir.</h2>
@@ -1975,293 +1709,11 @@
         </p>
       </div>
 
-      <div class="board" data-reveal style="--d:120ms" id="board">
-        <div class="sheet-grab" aria-hidden="true"></div>
-        <div class="sheet-head">
-          <h3 class="sheet-title">Lider Tabloları</h3>
-          <span class="sheet-x" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg>
-          </span>
-        </div>
-        <div class="lb-tabs" role="tablist" aria-label="Lider tablosu kapsamı">
-          <button type="button" role="tab" id="lbt-territory" aria-controls="lbp-territory" aria-selected="false">Bölge</button>
-          <button type="button" role="tab" id="lbt-clubs"     aria-controls="lbp-clubs"     aria-selected="false">Kulüpler</button>
-          <button type="button" role="tab" id="lbt-league"    aria-controls="lbp-league"    aria-selected="true">Lig</button>
-          <button type="button" role="tab" id="lbt-country"   aria-controls="lbp-country"   aria-selected="false">Ülke</button>
-        </div>
-
-        <div class="lb-panel" id="lbp-territory" role="tabpanel" aria-labelledby="lbt-territory" hidden>
-          <div class="lb-sec">
-            <span class="grow">
-              <span class="t">Torino</span>
-              <span class="c" style="display:block">Bu haftanın en iyi koşucuları</span>
-            </span>
-          </div>
-          <div class="row top3">
-            <span class="av" aria-hidden="true">MK</span><span class="rank">1</span>
-            <span class="who">
-              <span class="line1"><span class="name">M. Kaya</span></span>
-              <span class="sub"><span class="at">@mkaya</span> · Mesafede önde</span>
-            </span>
-            <span class="rpwrap"><span class="rp">12,4<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen alan</span></span>
-          </div>
-          <div class="row top3">
-            <span class="av" aria-hidden="true">JD</span><span class="rank">2</span>
-            <span class="who">
-              <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Onaylı"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              <span class="sub"><span class="at">@jduarte</span> · Mesafede önde</span>
-            </span>
-            <span class="rpwrap"><span class="rp">11,1<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen alan</span></span>
-          </div>
-          <div class="row top3">
-            <span class="av" aria-hidden="true">AR</span><span class="rank">3</span>
-            <span class="who">
-              <span class="line1"><span class="name">A. Rossi</span></span>
-              <span class="sub"><span class="at">@arossi</span> · Mesafede önde</span>
-            </span>
-            <span class="rpwrap"><span class="rp">9,8<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen alan</span></span>
-          </div>
-          <div class="row">
-            <span class="av" aria-hidden="true">LN</span><span class="rank">4</span>
-            <span class="who">
-              <span class="line1"><span class="name">L. Novak</span></span>
-              <span class="sub"><span class="at">@lnovak</span> · Mesafede önde</span>
-            </span>
-            <span class="rpwrap"><span class="rp">8,2<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen alan</span></span>
-          </div>
-          <div class="row">
-            <span class="av" aria-hidden="true">PB</span><span class="rank">5</span>
-            <span class="who">
-              <span class="line1"><span class="name">P. Bauer</span></span>
-              <span class="sub"><span class="at">@pbauer</span> · Mesafede önde</span>
-            </span>
-            <span class="rpwrap"><span class="rp">7,6<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen alan</span></span>
-          </div>
-        </div>
-
-        <div class="lb-panel" id="lbp-clubs" role="tabpanel" aria-labelledby="lbt-clubs" hidden>
-          <div class="lb-sec">
-            <span class="grow">
-              <span class="t">Torino Kulüpleri</span>
-              <span class="c" style="display:block">En çok bölge ele geçiren kulüpler</span>
-            </span>
-          </div>
-          <div class="row top3">
-            <span class="av" aria-hidden="true">TR</span><span class="rank">1</span>
-            <span class="who">
-              <span class="line1"><span class="name">Torino Runners</span></span>
-              <span class="sub">45 üye</span>
-            </span>
-            <span class="rpwrap"><span class="rp">18,5<span class="u"> km²</span></span><span class="rpcap">km² ele geçirildi</span></span>
-          </div>
-          <div class="row top3">
-            <span class="av" aria-hidden="true">PO</span><span class="rank">2</span>
-            <span class="who">
-              <span class="line1"><span class="name">Po River Tempo</span></span>
-              <span class="sub">28 üye</span>
-            </span>
-            <span class="rpwrap"><span class="rp">14,2<span class="u"> km²</span></span><span class="rpcap">km² ele geçirildi</span></span>
-          </div>
-          <div class="row top3">
-            <span class="av" aria-hidden="true">MO</span><span class="rank">3</span>
-            <span class="who">
-              <span class="line1"><span class="name">Mole Milers</span></span>
-              <span class="sub">31 üye</span>
-            </span>
-            <span class="rpwrap"><span class="rp">12,9<span class="u"> km²</span></span><span class="rpcap">km² ele geçirildi</span></span>
-          </div>
-          <div class="row">
-            <span class="av" aria-hidden="true">SS</span><span class="rank">4</span>
-            <span class="who">
-              <span class="line1"><span class="name">San Salvario SC</span></span>
-              <span class="sub">19 üye</span>
-            </span>
-            <span class="rpwrap"><span class="rp">9,4<span class="u"> km²</span></span><span class="rpcap">km² ele geçirildi</span></span>
-          </div>
-          <div class="row">
-            <span class="av" aria-hidden="true">VA</span><span class="rank">5</span>
-            <span class="who">
-              <span class="line1"><span class="name">Valentino AC</span></span>
-              <span class="sub">23 üye</span>
-            </span>
-            <span class="rpwrap"><span class="rp">8,1<span class="u"> km²</span></span><span class="rpcap">km² ele geçirildi</span></span>
-          </div>
-        </div>
-
-        <div class="lb-panel" id="lbp-league" role="tabpanel" aria-labelledby="lbt-league">
-          <div class="lb-sec">
-            <span class="grow">
-              <span class="t">Lig</span>
-              <span class="c" style="display:block">30 oyuncu • 3g 22s içinde sıfırlanır</span>
-            </span>
-            <span class="tierbadge">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="9" r="5.4"/><path d="M8.4 13.6 7 21.5l5-2.6 5 2.6-1.4-7.9"/></svg>
-              Gümüş II
-            </span>
-          </div>
-          <p class="zone-label up"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V6"/><path d="M6.5 11.5 12 6l5.5 5.5"/></svg> Yükselme bölgesi · ilk 5</p>
-
-          <div class="row up top3">
-            <span class="av" aria-hidden="true">MK</span>
-            <span class="rank">1</span>
-            <span class="who">
-              <span class="line1"><span class="name">M. Kaya</span></span>
-              <span class="sub">84,2 km<span class="dot">•</span>1 240m ↑</span>
-            </span>
-            <span class="rpwrap"><span class="rp">4 820</span><span class="rpcap">RP</span></span>
-          </div>
-          <div class="row up top3">
-            <span class="av" aria-hidden="true">JD</span>
-            <span class="rank">2</span>
-            <span class="who">
-              <span class="line1"><span class="name">J. Duarte</span><svg class="verified-tick" viewBox="0 0 24 24" aria-label="Onaylı"><path d="M12 1.8l2.6 2 3.3-.3 1 3.2 2.7 1.9-1.4 3 .5 3.3-3.2.9-2 2.6-3.1-1.1-3.1 1.1-2-2.6-3.2-.9.5-3.3-1.4-3 2.7-1.9 1-3.2 3.3.3z" fill="#00C8FF"/><path d="m8.6 12.2 2.4 2.4 4.6-4.8" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-              <span class="sub">79,6 km<span class="dot">•</span>980m ↑</span>
-            </span>
-            <span class="rpwrap"><span class="rp">4 512</span><span class="rpcap">RP</span></span>
-          </div>
-          <div class="row up top3">
-            <span class="av" aria-hidden="true">AR</span>
-            <span class="rank">3</span>
-            <span class="who">
-              <span class="line1"><span class="name">A. Rossi</span></span>
-              <span class="sub">71,1 km<span class="dot">•</span>1 415m ↑</span>
-            </span>
-            <span class="rpwrap"><span class="rp">4 140</span><span class="rpcap">RP</span></span>
-          </div>
-
-          <p class="gap-row">· · ·</p>
-
-          <div class="row me">
-            <span class="av" aria-hidden="true">YO</span>
-            <span class="rank">12</span>
-            <span class="who">
-              <span class="line1"><span class="name">Sen</span></span>
-              <span class="sub">48,9 km<span class="dot">•</span>615m ↑</span>
-            </span>
-            <span class="rpwrap"><span class="rp">2 986</span><span class="rpcap">RP</span></span>
-          </div>
-          <div class="row">
-            <span class="av" aria-hidden="true">LN</span>
-            <span class="rank">13</span>
-            <span class="who">
-              <span class="line1"><span class="name">L. Novak</span><svg class="shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-label="Acemi Kalkanı"><path d="M12 3l7 3v5.5c0 4-3 7.5-7 9.5-4-2-7-5.5-7-9.5V6z"/></svg></span>
-              <span class="sub">46,2 km<span class="dot">•</span>520m ↑</span>
-            </span>
-            <span class="rpwrap"><span class="rp">2 830</span><span class="rpcap">RP</span></span>
-          </div>
-
-          <p class="gap-row">· · ·</p>
-
-          <div class="row down">
-            <span class="av" aria-hidden="true">PB</span>
-            <span class="rank">29</span>
-            <span class="who">
-              <span class="line1"><span class="name">P. Bauer</span></span>
-              <span class="sub">19,4 km<span class="dot">•</span>210m ↑</span>
-            </span>
-            <span class="rpwrap"><span class="rp">1 140</span><span class="rpcap">RP</span></span>
-          </div>
-          <div class="row down">
-            <span class="av" aria-hidden="true">SC</span>
-            <span class="rank">30</span>
-            <span class="who">
-              <span class="line1"><span class="name">S. Chen</span></span>
-              <span class="sub">15,1 km<span class="dot">•</span>145m ↑</span>
-            </span>
-            <span class="rpwrap"><span class="rp">905</span><span class="rpcap">RP</span></span>
-          </div>
-
-          <p class="zone-label down"><svg class="ico ico-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v13"/><path d="M17.5 12.5 12 18l-5.5-5.5"/></svg> Düşme bölgesi · son 5</p>
-        </div>
-
-        <div class="lb-panel" id="lbp-country" role="tabpanel" aria-labelledby="lbt-country" hidden>
-          <div class="lb-sec">
-            <span class="grow"><span class="t">Ülke Lider Tablosu</span></span>
-            <span class="lb-sort">Alan
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M5 8l7 7 7-7"/></svg>
-            </span>
-          </div>
-          <p class="lb-check">
-            <span class="tick" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5.5 5.5L20 7"/></svg></span>
-            Küçük ülkeleri dahil et
-          </p>
-          <div class="row ctry top3">
-            <span class="flagbg" style="background-image:url(/assets/flags/us.png)" aria-hidden="true"></span>
-            <span class="rank">#1</span>
-            <span class="who">
-              <span class="line1"><span class="name">Amerika Birleşik Devletleri</span></span>
-              <span class="mt">En çok bölge:</span>
-              <span class="contrib">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
-                <b>@rmiller</b>
-              </span>
-            </span>
-            <span class="rpwrap"><span class="rp">85 000<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen alan</span></span>
-          </div>
-          <div class="row ctry top3">
-            <span class="flagbg" style="background-image:url(/assets/flags/ca.png)" aria-hidden="true"></span>
-            <span class="rank">#2</span>
-            <span class="who">
-              <span class="line1"><span class="name">Kanada</span></span>
-              <span class="mt">En çok bölge:</span>
-              <span class="contrib">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
-                <b>@tlaflamme</b>
-              </span>
-            </span>
-            <span class="rpwrap"><span class="rp">55 000<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen alan</span></span>
-          </div>
-          <div class="row ctry top3">
-            <span class="flagbg" style="background-image:url(/assets/flags/au.png)" aria-hidden="true"></span>
-            <span class="rank">#3</span>
-            <span class="who">
-              <span class="line1"><span class="name">Avustralya</span></span>
-              <span class="mt">En çok bölge:</span>
-              <span class="contrib">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
-                <b>@jbennett</b>
-              </span>
-            </span>
-            <span class="rpwrap"><span class="rp">50 000<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen alan</span></span>
-          </div>
-          <div class="row ctry">
-            <span class="flagbg" style="background-image:url(/assets/flags/tr.png)" aria-hidden="true"></span>
-            <span class="rank">#4</span>
-            <span class="who">
-              <span class="line1"><span class="name">Türkiye</span></span>
-              <span class="mt">En çok bölge:</span>
-              <span class="contrib">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
-                <b>@eyilmaz</b>
-              </span>
-            </span>
-            <span class="rpwrap"><span class="rp">35 000<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen alan</span></span>
-          </div>
-          <div class="row ctry">
-            <span class="flagbg" style="background-image:url(/assets/flags/gb.png)" aria-hidden="true"></span>
-            <span class="rank">#5</span>
-            <span class="who">
-              <span class="line1"><span class="name">Birleşik Krallık</span></span>
-              <span class="mt">En çok bölge:</span>
-              <span class="contrib">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
-                <b>@choward</b>
-              </span>
-            </span>
-            <span class="rpwrap"><span class="rp">32 000<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen alan</span></span>
-          </div>
-          <div class="row ctry">
-            <span class="flagbg" style="background-image:url(/assets/flags/de.png)" aria-hidden="true"></span>
-            <span class="rank">#6</span>
-            <span class="who">
-              <span class="line1"><span class="name">Almanya</span></span>
-              <span class="mt">En çok bölge:</span>
-              <span class="contrib">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6zm0 13c-2.5 0-4.7-1.2-6-3.1.9-1.7 3.3-2.6 6-2.6s5.1.9 6 2.6c-1.3 1.9-3.5 3.1-6 3.1z"/></svg>
-                <b>@lschmidt</b>
-              </span>
-            </span>
-            <span class="rpwrap"><span class="rp">27 000<span class="u"> km²</span></span><span class="rpcap">Ele geçirilen alan</span></span>
+      <div class="frow-media" data-reveal style="--d:120ms">
+        <div class="phone">
+          <div class="screen">
+            <img class="shot" loading="lazy" decoding="async" src="/assets/screens/leaderboards-league.webp"
+                 alt="Lig sekmesinde RouteRush Lider Tabloları: Gümüş II, otuz oyuncu, yükselme bölgesindeki ilk beş ve haftalık sıfırlanmaya kalan süre">
           </div>
         </div>
       </div>
@@ -3082,128 +2534,6 @@
   document.querySelectorAll('.tile').forEach(function (el, i) {
     attach(el, 'lgLensTile' + i, 14);
   });
-  attach(document.querySelector('#board'), 'lgLensBoard', 18);
-})();
-</script>
-<script>
-/* Leaderboard scope tabs. Four real panels, one visible at a time — the same
-   four scopes the app's LeaderboardSheet presents. Full tablist semantics:
-   arrow keys move between tabs, Home/End jump to the ends, and only the active
-   tab is in the tab order (roving tabindex), which is what a screen reader
-   expects from a tab strip. Panel swaps re-measure the sheet, and the
-   refraction map rebuilds itself off its own ResizeObserver. */
-(function () {
-  var strip = document.querySelector('.lb-tabs[role="tablist"]');
-  if (!strip) return;
-  var tabs = [].slice.call(strip.querySelectorAll('[role="tab"]'));
-  if (!tabs.length) return;
-
-  function panelOf(tab) { return document.getElementById(tab.getAttribute('aria-controls')); }
-
-  var REDUCED = matchMedia('(prefers-reduced-motion: reduce)');
-  var busy = false;
-
-  /* Index the staggered children once so the CSS delay chain has something to
-     read; doing it here keeps the markup free of per-row inline styles. */
-  function indexRows(panel) {
-    var kids = panel.querySelectorAll('.lb-sec, .lb-check, .zone-label, .row');
-    for (var i = 0; i < kids.length; i++) kids[i].style.setProperty('--i', i);
-  }
-  tabs.forEach(function (t) { var p = panelOf(t); if (p) indexRows(p); });
-
-  /* The four scopes hold different numbers of rows — Territory is 611px tall,
-     Country 929px — and because a hidden panel is `display: none`, swapping
-     them made the sheet jump by up to 318px and shoved the rest of the page
-     with it. Keeping every panel in the layout would fix the jump but leave
-     the short scopes with 300px of dead space, so instead the sheet glides:
-     measure, mutate, measure, then animate between the two. `.board` already
-     clips its overflow, so the rows slide out of a closing box cleanly. */
-  var board = document.getElementById('board');
-  function glideHeight(mutate) {
-    if (!board || REDUCED.matches) { mutate(); return; }
-    var from = board.offsetHeight;
-    mutate();
-    var to = board.offsetHeight;
-    if (from === to) return;
-    board.style.height = from + 'px';
-    void board.offsetHeight;                     /* commit the start value */
-    board.style.transition = 'height .44s var(--spring)';
-    board.style.height = to + 'px';
-    /* Guard on target and property. The rows inside the incoming panel start
-       their own staggered opacity/transform transitions in this same frame,
-       and those events BUBBLE to .board — an unguarded handler tore the inline
-       height off before the glide had drawn a single frame, which is exactly
-       how this first shipped and why it looked like the transition was being
-       ignored rather than cancelled. */
-    var clear = function (e) {
-      if (e && (e.target !== board || e.propertyName !== 'height')) return;
-      board.style.transition = ''; board.style.height = '';
-      board.removeEventListener('transitionend', clear);
-    };
-    board.addEventListener('transitionend', clear);
-    setTimeout(clear, 620);                      /* guard, same as the fade */
-  }
-
-  function reveal(panel) {
-    panel.hidden = false;
-    panel.classList.add('is-entering');
-    /* two frames: one for `hidden` removal to take layout, one for the class to
-       be the browser's starting point — otherwise the transition never runs */
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        panel.classList.remove('is-entering');
-        busy = false;
-      });
-    });
-  }
-
-  function select(tab, focus) {
-    var current = tabs.filter(function (t) { return t.getAttribute('aria-selected') === 'true'; })[0];
-    if (current === tab || busy) { if (focus) tab.focus(); return; }
-    busy = true;
-
-    tabs.forEach(function (t) {
-      var on = t === tab;
-      t.setAttribute('aria-selected', on ? 'true' : 'false');
-      t.tabIndex = on ? 0 : -1;
-    });
-    if (focus) tab.focus();
-
-    var incoming = panelOf(tab);
-    var outgoing = current ? panelOf(current) : null;
-
-    if (REDUCED.matches || !outgoing) {
-      tabs.forEach(function (t) { var p = panelOf(t); if (p) p.hidden = t !== tab; });
-      busy = false;
-      return;
-    }
-
-    outgoing.classList.add('is-leaving');
-    var done = false;
-    var finish = function () {
-      if (done) return; done = true;
-      outgoing.classList.remove('is-leaving');
-      glideHeight(function () {
-        outgoing.hidden = true;
-        reveal(incoming);
-      });
-    };
-    outgoing.addEventListener('transitionend', finish, { once: true });
-    setTimeout(finish, 380);   /* guard: transitionend can be skipped if the tab hides */
-  }
-
-  tabs.forEach(function (tab, i) {
-    tab.tabIndex = tab.getAttribute('aria-selected') === 'true' ? 0 : -1;
-    tab.addEventListener('click', function () { select(tab, false); });
-    tab.addEventListener('keydown', function (e) {
-      var next = null;
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next = tabs[(i + 1) % tabs.length];
-      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') next = tabs[(i - 1 + tabs.length) % tabs.length];
-      else if (e.key === 'Home') next = tabs[0];
-      else if (e.key === 'End') next = tabs[tabs.length - 1];
-      if (next) { e.preventDefault(); select(next, true); }
-    });
-  });
 })();
 </script>
 <script>
@@ -3346,13 +2676,11 @@
    ----------------------------------------------------------------
    Two effects, both deliberately small, both native:
 
-   • COUNT-UP. Every big numeral in the leaderboard and the VS card
-     animates to its value when it first enters view — because that
-     is what the app itself does: LeaderboardSheet renders RP through
-     AnimatedNumber, so a static number on the site would actually be
-     the less faithful rendering. Each numeral counts once, the first
-     time its panel is on screen — hidden leaderboard scopes count
-     when first switched to, then hold their value.
+   • COUNT-UP. The two numerals on the club VS card animate to their
+     value when the card first enters view — because that is what the
+     app itself does: it renders its figures through AnimatedNumber,
+     so a static number on the site would actually be the less
+     faithful rendering. Each numeral counts once and then holds.
 
    • PARALLAX. The device frames and the photograph drift a few
      pixels against the scroll. Pure function of scrollY — same
@@ -3370,21 +2698,16 @@
 
   /* ---------- count-up ---------- */
   var counters = [];
-  document.querySelectorAll('.lb-panel .row .rp, .vs .side b').forEach(function (el) {
+  document.querySelectorAll('.vs .side b').forEach(function (el) {
     var node = el.firstChild;
     if (!node || node.nodeType !== 3) return;
     /* These figures are copy, so they are localized: the English page writes
-       "12.4" and every translation writes "12,4". The count-up therefore reads
+       "18.4" and every translation writes "18,4". The count-up therefore reads
        the decimal mark out of the text rather than assuming one — otherwise it
        would animate a translated number straight back into English form, and
        an earlier build of this matched only "." so a comma stopped the
-       animation dead without a word.
-
-       Thousands need no guessing any more: the source groups them with a space
-       ("85 000", the same grouping the RP values already used), which is right
-       in all six locales. The old heuristic here read three digits after a dot
-       as grouping, to cope with "85.000" — that form is gone from the source
-       and guessing it back would misread a genuine three-decimal number. */
+       animation dead without a word. Space-grouped thousands are still parsed
+       and re-emitted, though nothing on the page reaches four digits today. */
     var m = node.textContent.match(/^\s*(\d[\d\s]*(?:[.,]\d+)?)\s*$/);
     if (!m) return;
     var raw = m[1];
