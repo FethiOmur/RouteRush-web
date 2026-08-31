@@ -146,7 +146,7 @@
     "//a11y": "Screen-reader copy: aria-labels and image alt text. These are attribute values, so the build matches them whole-value only — a partial match here is invisible in every screenshot and once shipped 'Pause control' as half-translated output. Vocabulary follows the app: Karten-Modi, Heatmap, Gebiet, Routen, Pläne, Verifiziert (profile.verified.badge), Newbie-Schutz (club.zone.cta.shielded), Höhenmeter (run.summary.label.elevationGain), Kadenz (explore.stat.cadence), Schließen (herald.dismiss.accessibilityLabel). 'RouteRush' alone stays untranslated on purpose — it is the wordmark.",
     "RouteRush home": "RouteRush Startseite",
     "Primary": "Hauptnavigation",
-    "RouteRush Map Modes over Westminster: Heatmap, Territory, Routes and Atlas above the 3D city": "RouteRush Karten-Modi über Westminster: Heatmap, Gebiet, Routen und Atlas über der 3D-Stadt",
+    "RouteRush Map Modes over New York: Heatmap, Territory, Routes and Atlas above the 3D city": "RouteRush Karten-Modi über New York: Heatmap, Gebiet, Routen und Atlas über der 3D-Stadt",
     "Pause control": "Pause-Taste",
     "Finish control": "Beenden-Taste",
     "Leaderboard scope": "Bereich der Bestenliste",
