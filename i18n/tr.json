@@ -146,7 +146,7 @@
     "//a11y": "Screen-reader copy: aria-labels and image alt text. These are attribute values, so the build matches them whole-value only — a partial match here is invisible in every screenshot and shipped 'Duraklat control' to five locales once. Vocabulary follows the app: Harita Modları, Isı Haritası, Rotalar, Planlar, Onaylı (profile.verified.badge), Acemi Kalkanı, Yükseklik, Adım Sıklığı, Kapat (herald.dismiss.accessibilityLabel). 'RouteRush' alone stays untranslated on purpose — it is the wordmark.",
     "RouteRush home": "RouteRush ana sayfa",
     "Primary": "Ana menü",
-    "RouteRush Map Modes over Westminster: Heatmap, Territory, Routes and Atlas above the 3D city": "Westminster üzerinde RouteRush Harita Modları: 3D şehrin üstünde Isı Haritası, Bölge, Rotalar ve Atlas",
+    "RouteRush Map Modes over New York: Heatmap, Territory, Routes and Atlas above the 3D city": "New York üzerinde RouteRush Harita Modları: 3D şehrin üstünde Isı Haritası, Bölge, Rotalar ve Atlas",
     "Pause control": "Duraklat düğmesi",
     "Finish control": "Bitir düğmesi",
     "Leaderboard scope": "Lider tablosu kapsamı",

@@ -146,7 +146,7 @@
     "//a11y": "Screen-reader copy: aria-labels and image alt text. These are attribute values, so the build matches them whole-value only — a partial match here is invisible in every screenshot and once shipped 'Duraklat control' to five locales. Vocabulary follows the app: Modalità mappa, Mappa di calore, Percorsi, Piani, Verificato (profile.verified.badge), Scudo Novizio, Dislivello, Cadenza, Chiudi (herald.dismiss.accessibilityLabel). 'RouteRush' alone stays untranslated on purpose — it is the wordmark.",
     "RouteRush home": "RouteRush, pagina iniziale",
     "Primary": "Menu principale",
-    "RouteRush Map Modes over Westminster: Heatmap, Territory, Routes and Atlas above the 3D city": "Modalità mappa di RouteRush su Westminster: Mappa di calore, Territorio, Percorsi e Atlas sopra la città in 3D",
+    "RouteRush Map Modes over New York: Heatmap, Territory, Routes and Atlas above the 3D city": "Modalità mappa di RouteRush su New York: Mappa di calore, Territorio, Percorsi e Atlas sopra la città in 3D",
     "Pause control": "Pulsante Pausa",
     "Finish control": "Pulsante Termina",
     "Leaderboard scope": "Ambito della classifica",
