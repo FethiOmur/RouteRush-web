@@ -807,6 +807,37 @@
   .fpoint p { color: var(--text-2); font-size: 14.5px; line-height: 1.5; }
   .fpoint b { color: #fff; font-weight: 570; }
 
+  /* Boldi's tiers. This section describes what Boldi does during a run, and
+     without this block a reader takes all of it for granted: in-run voice is
+     Ultra-only (RunOverlayView+Coach.coachActive requires coachEntitledThisRun
+     — "an entitled run: Ultra, or a Pro taste run"). The names and the split
+     are read off the app's own paywall, ProValuePanel.swift, so the site and
+     the purchase sheet cannot drift apart.
+
+     No prices here on purpose: they are set per storefront in App Store
+     Connect, so any number written into six static pages is wrong somewhere
+     and stale eventually. The store page is the one place a price is always
+     right, and every CTA on this page now leads there. */
+  .tiers {
+    margin-top: 26px; padding-top: 21px; border-top: 1px solid var(--hair-soft);
+    display: grid; gap: 12px;
+  }
+  .tiers dl { margin: 0; display: grid; gap: 12px; }
+  .tier { display: grid; grid-template-columns: 4.6rem 1fr; gap: 14px; align-items: baseline; }
+  .tier dt {
+    font-size: 11.5px; font-weight: 620; letter-spacing: .09em;
+    text-transform: uppercase; color: #fff; line-height: 1.5;
+  }
+  .tier dd { margin: 0; color: var(--text-3); font-size: 14px; line-height: 1.5; }
+  /* --text-3, not --text-4: measured 2.89:1 against the page at .34, under
+     WCAG AA for body text. This is a real claim about what you get, not a
+     decorative aside, so it reads at the same weight as the section's other
+     secondary lines (.small) and stays quieter by size alone. */
+  .tiers-foot { color: var(--text-3); font-size: 13px; line-height: 1.5; margin-top: 2px; }
+  @media (max-width: 460px) {
+    .tier { grid-template-columns: 1fr; gap: 2px; }
+  }
+
   /* Glow behind the device — cyan is allowed as glow.
      THE 1px HORIZONTAL SCROLL LIVED HERE. This was `inset: 18% -6% 12%`, a 6%
      bleed on each side. At 390px the .wrap content box is 350px, so 6% = 21px:
@@ -1618,6 +1649,24 @@
             <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v10.5"/><path d="M8.6 6.4 12 3l3.4 3.4"/><circle cx="12" cy="17.6" r="3.4"/></svg>
             <p><b>Kennt die Karte.</b> Er weiß, welches Gebiet auf der Strecke vor dir noch frei ist.</p>
           </div>
+        </div>
+
+        <div class="tiers" data-reveal style="--d:210ms">
+          <dl>
+            <div class="tier">
+              <dt>Gratis</dt>
+              <dd>Tracking, Gebiet, Ligen, Clubs und der Feed.</dd>
+            </div>
+            <div class="tier">
+              <dt>Pro</dt>
+              <dd>Text-Chat mit Boldi, wann du willst, und ein Lauf im Monat, durch den er dich begleitet.</dd>
+            </div>
+            <div class="tier">
+              <dt>Ultra</dt>
+              <dd>Alles aus Pro — und Boldi begleitet dich durch jeden Lauf.</dd>
+            </div>
+          </dl>
+          <p class="tiers-foot">Beide Stufen bringen ein Verifiziert-Abzeichen und unbegrenzte Benutzernamen-Änderungen.</p>
         </div>
       </div>
 
