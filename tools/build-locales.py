@@ -338,6 +338,9 @@ def rewrite_links(html, lang):
     # faq.html is translated, so stay inside the locale; press.html is not.
     html = html.replace('href="faq.html"', f'href="/{lang}/faq.html"')
     html = html.replace('href="press.html"', 'href="/press.html"')
+    # App Store CTAs: each locale reports as its own App Analytics campaign,
+    # so installs can be read per market (see the note above the nav CTA).
+    html = html.replace('ct=web-en&amp;', f'ct=web-{lang}&amp;')
     # Home links point at the locale's own front page — but only these specific
     # ones. A blanket href="/" rewrite would also hit the language switcher's
     # English entry and strand every visitor inside one locale.

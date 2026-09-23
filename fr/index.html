@@ -1467,7 +1467,15 @@
       <a href="#leagues">Ligues</a>
       <a href="#more">Fonctions</a>
     </nav>
-    <a class="btn btn-primary btn-sm" href="https://apps.apple.com/app/id6783352912">Obtenir l'appli</a>
+    <!-- App Store links carry App Analytics campaign params: pt is the provider
+         token (App Store Connect → Analytics → Campaigns), ct names the source.
+         One ct per LANGUAGE, not per button: Apple shows a campaign only once
+         it has installs from 5 separate accounts, so splitting three buttons ×
+         six locales into 18 campaigns would hide almost everything at current
+         volume. build-locales.py rewrites web-en to web-<lang>. The JSON-LD
+         installUrl/sameAs keep the bare canonical URL — that is the app's
+         identity, not a traffic source. -->
+    <a class="btn btn-primary btn-sm" href="https://apps.apple.com/app/apple-store/id6783352912?pt=128304040&amp;ct=web-fr&amp;mt=8">Obtenir l'appli</a>
   </div>
 </header>
 
@@ -1512,7 +1520,7 @@
         </div>
 
         <div class="hero-cta">
-          <a class="btn btn-primary" href="https://apps.apple.com/app/id6783352912">
+          <a class="btn btn-primary" href="https://apps.apple.com/app/apple-store/id6783352912?pt=128304040&amp;ct=web-fr&amp;mt=8">
             <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.47 2.24-1.23 3.04-.82.87-2.16 1.54-3.28 1.45-.14-1.1.42-2.27 1.16-3.02.83-.86 2.27-1.49 3.35-1.47zM20.9 17.2c-.55 1.27-.82 1.84-1.53 2.96-.99 1.56-2.39 3.5-4.12 3.52-1.54.01-1.93-1-4.02-.99-2.09.01-2.52 1.01-4.06.99-1.73-.02-3.06-1.77-4.05-3.33-2.77-4.36-3.06-9.48-1.35-12.2 1.21-1.93 3.13-3.06 4.93-3.06 1.84 0 2.99 1.01 4.51 1.01 1.47 0 2.37-1.01 4.49-1.01 1.61 0 3.31.88 4.53 2.39-3.98 2.18-3.33 7.86.67 9.72z"/></svg>
             Télécharger dans l'App Store
           </a>
@@ -1919,7 +1927,7 @@
         au bout d'une vingtaine de secondes.
       </p>
       <div class="final-cta" data-reveal style="--d:160ms">
-        <a class="btn btn-primary" href="https://apps.apple.com/app/id6783352912">
+        <a class="btn btn-primary" href="https://apps.apple.com/app/apple-store/id6783352912?pt=128304040&amp;ct=web-fr&amp;mt=8">
           <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><path d="M16.365 1.43c0 1.14-.47 2.24-1.23 3.04-.82.87-2.16 1.54-3.28 1.45-.14-1.1.42-2.27 1.16-3.02.83-.86 2.27-1.49 3.35-1.47zM20.9 17.2c-.55 1.27-.82 1.84-1.53 2.96-.99 1.56-2.39 3.5-4.12 3.52-1.54.01-1.93-1-4.02-.99-2.09.01-2.52 1.01-4.06.99-1.73-.02-3.06-1.77-4.05-3.33-2.77-4.36-3.06-9.48-1.35-12.2 1.21-1.93 3.13-3.06 4.93-3.06 1.84 0 2.99 1.01 4.51 1.01 1.47 0 2.37-1.01 4.49-1.01 1.61 0 3.31.88 4.53 2.39-3.98 2.18-3.33 7.86.67 9.72z"/></svg>
           Télécharger dans l'App Store
         </a>
