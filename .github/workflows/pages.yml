@@ -29,3 +29,23 @@ jobs:
           path: '.'
       - id: deployment
         uses: actions/deploy-pages@v4
+
+  # Tell IndexNow (Bing, Yandex, Naver, Seznam) which pages this push changed,
+  # once the new build is live. A failed ping never fails the deploy.
+  indexnow:
+    needs: deploy
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Submit changed pages
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "${{ github.event_name }}" != "push" ] || [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            python3 tools/indexnow-ping.py --all
+          else
+            git diff --name-only "$BEFORE" "$GITHUB_SHA" | xargs python3 tools/indexnow-ping.py
+          fi
