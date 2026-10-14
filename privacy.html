@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta name="description" content="What RouteRush records, how it is used, what Apple Health and the voice coach touch, how long it is kept, and how to delete it.">
+<meta name="description" content="What RouteRush records, how it is used, what the AI coach and voice coaching send and to whom, what Apple Health touches, how long it is kept, and how to delete it.">
 <!-- SVG first so the mark can follow the tab strip's colour scheme; the
      transparent PNG is the fallback for browsers without SVG favicons.
      apple-touch-icon stays opaque on purpose: iOS renders a transparent
@@ -15,12 +15,15 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <link rel="canonical" href="https://routerushapp.com/privacy.html">
 <!-- English only, and deliberately so: a translated contract raises the question
-     of which language governs. The app and the store listing point here. -->
+     of which language governs. The app and the store listing point here.
+     The in-app AI consent screens describe recipients as "the AI service
+     providers that power Boldi" and defer the names to the section below:
+     keep that list complete, and change it together with the app. -->
 <meta property="og:type" content="website">
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="RouteRush">
 <meta property="og:title" content="RouteRush — Privacy Policy">
-<meta property="og:description" content="What RouteRush records, how it is used, what Apple Health and the voice coach touch, how long it is kept, and how to delete it.">
+<meta property="og:description" content="What RouteRush records, how it is used, what the AI coach and voice coaching send and to whom, what Apple Health touches, how long it is kept, and how to delete it.">
 <meta property="og:url" content="https://routerushapp.com/privacy.html">
 <meta name="theme-color" content="#000000">
 <title>RouteRush — Privacy Policy</title>
@@ -52,9 +55,15 @@
   .updated { font-size: 12px; color: var(--text-4); margin-top: 10px; }
   h1 { font-size: 15px; font-weight: 500; color: var(--text-3); margin-top: 10px; }
   h2 { font-size: 19px; font-weight: 620; margin: 46px 0 12px; letter-spacing: -.01em; }
+  h3 { font-size: 16px; font-weight: 600; margin: 26px 0 8px; }
   p  { color: var(--text-2); }
+  p + p, p + ul, ul + p { margin-top: 12px; }
+  li { color: var(--text-2); }
   a  { color: #fff; }
   a:hover { color: var(--accent); }
+  /* "What changed" — a hairline box, accent only on the thin left rule. */
+  .changes { margin-top: 28px; padding: 16px 18px; border: 1px solid var(--hair); border-left: 2px solid var(--accent); border-radius: 10px; }
+  .changes p { font-size: 15px; }
   .cta { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--hair); }
   .cta a { font-weight: 560; }
   footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair); font-size: 13px; color: var(--text-4); display: flex; gap: 18px; flex-wrap: wrap; }
@@ -66,36 +75,43 @@
   <p class="eyebrow">LEGAL</p>
   <div class="wordmark"><a href="/">RouteRush</a></div>
   <h1>Privacy Policy</h1>
-  <p class="updated">Last updated 11 July 2026</p>
+  <p class="updated">Last updated 14 October 2026</p>
 
-<p>RouteRush ("RouteRush", "we", "us") is a fitness app that records your runs and other
-  activities, maps your routes, and provides an optional AI running coach and social features.
-  This policy explains what we collect, why, and your choices. By using RouteRush you agree to
-  this policy.</p>
+  <div class="changes">
+    <p><strong>What changed on 14 October 2026.</strong> Boldi, the AI coach, can now chat with
+    you, talk with you by voice inside and outside a run (including a wake word during runs),
+    build a training plan with you, and write run debriefs. This update names the AI service
+    providers that receive your data (<a href="#ai-coach">The AI coach</a>), explains what each
+    feature sends, how long things are kept and how to withdraw your consent, and adds sections
+    on international transfers and the legal bases we rely on.</p>
+  </div>
+
+  <p style="margin-top:28px">RouteRush ("RouteRush", "we", "us") is a fitness app that records your
+  runs and rides, maps your routes, and offers an optional AI coach and social features. This
+  policy explains what we collect, why, who receives it, and your choices.</p>
 
   <h2>Information we collect</h2>
   <ul>
-    <li><strong>Account information</strong> — when you sign up we store your email address (or
-    Apple sign-in identifier), display name, and an optional profile photo, to create and secure
-    your account.</li>
+    <li><strong>Account information</strong> — when you sign in with Apple or Google we store
+    your email address (or sign-in identifier), display name, an optional profile photo and, if
+    you add it, your home city, to create and secure your account.</li>
     <li><strong>Location data</strong> — to record a run we collect precise GPS location while a
     workout is active, including the route path, distance, pace, and elevation. We do not track
     your location in the background when you are not recording an activity.</li>
     <li><strong>Health &amp; fitness data</strong> — with your permission we read workout and
-    fitness metrics from Apple HealthKit (such as workouts, distance, active energy, and heart
-    rate) to display and summarise your activity, and we may write completed workouts back to
-    HealthKit.</li>
-    <li><strong>Activity content</strong> — runs you save, titles, notes, achievements, and
-    anything you choose to share with clubs or other users.</li>
-    <li><strong>AI coach conversations</strong> — if you use the AI coach, the messages you send
-    are processed to generate a response.</li>
-    <li><strong>Voice data (optional)</strong> — if you turn on live voice coaching, your
-    microphone audio is streamed in real time during that run so the coach can hear you and
-    reply, and transcripts of the conversation are generated to power it. Voice coaching is off
-    by default and only activates after you give explicit consent in the app and grant iOS
-    microphone permission. RouteRush does not store your voice recordings on its servers.</li>
-    <li><strong>Usage &amp; device data</strong> — basic app analytics and diagnostics (feature
-    usage, crashes, device model, OS version) to keep the app working and improve it.</li>
+    fitness metrics from Apple Health (such as workouts, distance, active energy, heart rate,
+    sleep and recovery measures) to display and summarise your activity, and we may write
+    completed workouts back to Apple Health.</li>
+    <li><strong>Activity content</strong> — runs you save, titles, notes, achievements, how hard
+    a run felt if you tell us, your training plan, and anything you choose to share with clubs or
+    other users.</li>
+    <li><strong>AI coach conversations</strong> — the messages and files you send to Boldi, his
+    replies, and any feedback you give on them. See <a href="#ai-coach">The AI coach</a>.</li>
+    <li><strong>Voice (optional)</strong> — if you turn on voice coaching, what you say to Boldi.
+    See <a href="#voice">Voice coaching &amp; microphone</a>.</li>
+    <li><strong>Usage &amp; device data</strong> — app usage events, diagnostics and crash
+    reports (feature usage, errors, device model, OS version), stored on our own servers, to
+    keep the app working and improve it.</li>
     <li><strong>Subscriptions</strong> — purchases are handled by Apple. We receive your
     subscription status from Apple but never see your card or payment details.</li>
   </ul>
@@ -104,83 +120,186 @@
   <ul>
     <li>To record, map, and summarise your activities.</li>
     <li>To provide social features (clubs, leaderboards, following) you opt into.</li>
-    <li>To generate AI coaching responses when you use that feature.</li>
+    <li>To provide the AI coach and voice coaching when you choose to use them.</li>
     <li>To operate, secure, troubleshoot, and improve the app.</li>
-    <li>To manage your subscription and entitlements.</li>
+    <li>To manage your subscription and entitlements, and to send notifications you allow.</li>
+  </ul>
+  <p>We do not sell your personal data, and we do not use it for advertising.</p>
+
+  <h2 id="ai-coach">The AI coach (Boldi)</h2>
+  <p>Boldi is an AI coach, not a person and not a doctor. His advice is not medical advice.
+  Nothing is sent to an AI service provider until you allow it on the consent screen in the
+  app.</p>
+
+  <h3>What is sent</h3>
+  <ul>
+    <li><strong>Chat</strong> — your messages and anything you attach, the display name and home
+    city on your profile, and your RouteRush training history (runs and rides, distances, paces,
+    how hard runs felt, your plan, streak, league and territory).</li>
+    <li><strong>Voice coaching</strong> — what you say to Boldi, your live run stats, your
+    RouteRush training history and the optional items you switched on for voice.</li>
+    <li><strong>Building a plan with Boldi</strong> — your answers, typed or spoken (for example
+    your goal, race date, the days you can train, and any injury or break you mention), as part of
+    the conversation.</li>
+    <li><strong>Run debriefs and weekly summaries</strong> — if you turn them on, the numbers from
+    that run or week.</li>
+    <li><strong>Optional items</strong> — only if you switch each one on in
+    <em>Settings › Boldi Coach › What Boldi can use</em>: recovery summaries from Apple Health
+    (your recent resting heart rate, heart rate variability and sleep compared with your usual
+    range, and your cardio fitness trend — never your raw Health data); your body profile (age,
+    sex, height and weight); and where you run (the name of the area, the weather there, your
+    climbs so far and whether you have run there before — never your exact position or your
+    routes). The app may offer further optional items over time; each is off until you switch it
+    on, and its screen says what it sends and whether anything is saved.</li>
+  </ul>
+  <p>To answer some questions, such as weather or race information, Boldi may search the web. A
+  search carries your question (and, if you allowed "where you run", the area's name), never your
+  health data.</p>
+
+  <h3>Who receives it</h3>
+  <p>These AI service providers power Boldi. Depending on the feature and on availability, any of
+  them may receive the data described above, and only that data:</p>
+  <ul>
+    <li><strong>Anthropic PBC</strong> (United States)</li>
+    <li><strong>OpenAI</strong> (OpenAI, L.L.C., United States, or OpenAI Ireland Limited)</li>
+    <li><strong>Google</strong> (Google LLC, United States, or Google Ireland Limited)</li>
+    <li><strong>OpenRouter, Inc.</strong> (United States) — a routing service that passes
+    requests on to the AI model providers listed here</li>
+  </ul>
+  <p>They act as our service providers (processors or sub-processors) under their API and data
+  processing terms, and use the data only to produce Boldi's replies. Under those terms, and the
+  settings we use, they do not use this data to train their models. They may keep it for a
+  limited period for abuse and safety monitoring, as their terms allow. For real-time voice your
+  phone connects to the provider directly, so the provider also receives technical connection
+  data such as your IP address.</p>
+  <p>If we add a provider that is not on this list, we will update this policy and ask for your
+  consent again in the app before sending it anything.</p>
+
+  <h3>What RouteRush keeps</h3>
+  <ul>
+    <li>Your chats with Boldi (messages, attachments and feedback) are saved to your account so
+    you can come back to them. You can delete any chat from Boldi's chat history; deleting a chat
+    removes its messages from our servers.</li>
+    <li>If you talk with Boldi by voice outside a run, the text of what you and Boldi said is
+    saved in that chat, like typed messages.</li>
+    <li>A record of each consent choice you make (what you allowed, when, and which version of
+    the wording you saw), so we can show what you agreed to.</li>
+  </ul>
+
+  <h3>Your choices</h3>
+  <ul>
+    <li>Turn chat, voice coaching, debriefs or any optional item off at any time in
+    <em>Settings › Boldi Coach</em>. Nothing more is sent from that moment on.</li>
+    <li>Withdrawing consent does not affect processing that happened before you withdrew it.</li>
+  </ul>
+
+  <h2 id="voice">Voice coaching &amp; microphone</h2>
+  <p>Voice coaching lets you talk with Boldi during a run, in the chat, or while building a plan.
+  It is <strong>off by default</strong> and works only after your explicit consent in the app and
+  the iOS microphone permission.</p>
+  <ul>
+    <li><strong>Wake word.</strong> During a run with voice coaching on, you can wake Boldi by
+    saying his name. Listening for the wake word happens on your phone, and iOS asks for speech
+    recognition permission for it.</li>
+    <li>Depending on the voice mode in use, your audio is sent to the AI service providers
+    either only while you are talking with Boldi, or continuously while voice coaching is on
+    during that run. When voice coaching is off, nothing is sent.</li>
+    <li>RouteRush does <strong>not</strong> store your voice recordings. Voice data is never used
+    for advertising or sold.</li>
+    <li>Your run stats, and whether Boldi is on, can appear in a Live Activity on your Lock
+    Screen. It is drawn by your phone.</li>
+    <li>You can stop voice coaching at any time from the run screen, withdraw consent in
+    <em>Settings › Boldi Coach</em>, or revoke microphone and speech recognition access in iOS
+    Settings › Privacy &amp; Security.</li>
   </ul>
 
   <h2>Apple HealthKit</h2>
-  <p>Data obtained from HealthKit is used solely to provide in-app features (showing and
-  summarising your activity). We do <strong>not</strong> use HealthKit data for advertising or
-  marketing, and we do <strong>not</strong> sell it or share it with third parties for those
-  purposes. You can revoke Health access at any time in iOS Settings &rsaquo; Privacy &amp;
-  Security &rsaquo; Health.</p>
-
-  <h2>Live voice coaching &amp; microphone</h2>
-  <p>Live voice coaching is an optional feature that lets you talk with the AI coach by voice
-  during a run. When (and only when) you have enabled it for a run, your microphone audio is
-  streamed in real time to <strong>Google LLC</strong> (the Gemini API) to understand your speech
-  and generate a spoken reply, together with basic live run stats (such as distance, pace, and
-  estimated calories) so the coach can answer questions about your run. This processing happens
-  under Google's Gemini API terms, with Google acting as our service provider.</p>
-  <ul>
-    <li>Voice coaching is <strong>off by default</strong> and never listens outside a run you
-    started with it enabled — there is no wake word and no always-on listening.</li>
-    <li>It activates only after your explicit in-app consent and the iOS microphone
-    permission.</li>
-    <li>RouteRush does <strong>not</strong> store your voice recordings on its servers, and voice
-    data is never used for advertising or sold.</li>
-    <li>You can turn voice coaching off at any time with the in-run toggle, withdraw consent in
-    the app's settings, or revoke microphone access in iOS Settings &rsaquo; Privacy &amp;
-    Security &rsaquo; Microphone.</li>
-  </ul>
+  <p>Data obtained from Apple Health is used only to provide RouteRush's features: showing and
+  summarising your activity and, if you allow it, letting the AI coach use the summaries
+  described above. We do <strong>not</strong> use Health data for advertising or marketing, and
+  we do <strong>not</strong> sell it or share it with third parties for those purposes. You can
+  revoke Health access at any time in iOS Settings &rsaquo; Privacy &amp; Security &rsaquo;
+  Health.</p>
 
   <h2>How information is shared</h2>
-  <p>We do not sell your personal data. We share data only with service providers that help us
-  run the app, and only as needed:</p>
+  <p>We share data only with service providers that help us run the app, and only as needed:</p>
   <ul>
-    <li><strong>Supabase</strong> — hosts our database and authentication (your account,
-    activities, and social data).</li>
-    <li><strong>Apple</strong> — sign-in, HealthKit, and in-app subscription processing.</li>
+    <li><strong>Supabase</strong> — hosts our database, file storage and authentication, on
+    servers in the EU.</li>
+    <li><strong>Apple</strong> — sign-in, Apple Health, in-app subscriptions, push notifications,
+    and the weather and place names the app looks up for the area you are in.</li>
+    <li><strong>Google</strong> — sign-in, if you choose Google sign-in.</li>
     <li><strong>Mapbox</strong> — renders maps and route overlays.</li>
-    <li><strong>AI providers</strong> — when you use the AI coach, your messages are sent to a
-    third-party large-language-model provider to produce a reply; when you use live voice
-    coaching, your microphone audio and live run stats are processed by Google LLC (Gemini
-    API) as described above.</li>
-    <li><strong>Analytics/diagnostics</strong> — aggregated usage and crash data to improve the
-    app.</li>
+    <li><strong>AI service providers</strong> — Anthropic, OpenAI, Google and OpenRouter, for the
+    AI coach, as described <a href="#ai-coach">above</a>.</li>
   </ul>
-  <p>We may also disclose data if required by law or to protect our rights and users.</p>
+  <p>Other users see what you choose to share (for example your profile, public runs, club posts
+  and leaderboard positions). We may also disclose data if required by law or to protect our
+  rights and users.</p>
+
+  <h2>International transfers</h2>
+  <p>We store your account data in the EU. Some of the providers above, including the AI service
+  providers and Mapbox, are based in the United States and may process data in the United States
+  and other countries where they operate. Where personal data leaves the EU/EEA, we rely on the
+  safeguards in those providers' data processing terms, such as the European Commission's
+  Standard Contractual Clauses.</p>
 
   <h2>Data retention</h2>
-  <p>We keep your account and activity data for as long as your account is active. When you delete
-  your account, we delete your associated personal data, except where we must retain limited
-  records to comply with legal obligations.</p>
+  <ul>
+    <li>Your account, activities, chats and settings are kept while your account is active, until
+    you delete them.</li>
+    <li>Diagnostic logs are deleted after 30 days. AI coach usage events are deleted after 180
+    days. Other usage and crash records are kept only as long as needed to keep the app working
+    and improve it.</li>
+    <li>AI service providers keep data only for the limited period their terms allow (see
+    above).</li>
+    <li>When you delete your account in the app, we delete your account and the data linked to
+    it, including your activities, chats with Boldi, consent records and social data. Photos and
+    files you uploaded, and some usage, crash and purchase records, are not yet removed
+    automatically; email us and we will delete them. We may keep limited records where the law
+    requires it.</li>
+  </ul>
+
+  <h2>Legal bases</h2>
+  <p>If you are in the EU, EEA, UK or a country with similar laws, we process your data to
+  provide the service you asked for (our contract with you); with your consent for Apple Health
+  data, the AI coach, voice coaching and each optional item (for health-related data, your
+  explicit consent); and on our legitimate interests in keeping the app secure, fixing errors and
+  improving it.</p>
 
   <h2>Your rights &amp; choices</h2>
   <ul>
     <li>Access and update your profile in the app.</li>
-    <li>Delete your account from the app, which removes your associated data.</li>
-    <li>Control Location and Health permissions in iOS Settings.</li>
-    <li>Depending on where you live, you may have rights to access, correct, or erase your data —
-    contact us to exercise them.</li>
+    <li>Delete any chat with Boldi, and turn the coach, voice and each optional item off, in the
+    app.</li>
+    <li>Delete your account from the app.</li>
+    <li>Control Location, Health, microphone and speech recognition permissions in iOS
+    Settings.</li>
+    <li>Depending on where you live, you may have rights to access, correct, erase, restrict or
+    object to processing of your data, and to receive a copy of it — contact us to exercise them.
+    You can also complain to the data protection authority where you live.</li>
   </ul>
 
   <h2>Security</h2>
   <p>We use industry-standard measures (encryption in transit, authenticated access) to protect
-  your data. No method of transmission or storage is completely secure, but we work to protect
-  your information.</p>
+  your data. No method of
+  transmission or storage is completely secure, but we work to protect your information.</p>
 
   <h2>Children's privacy</h2>
   <p>RouteRush is not directed to children under 13, and we do not knowingly collect data from
-  them. If you believe a child has provided us data, contact us and we will remove it.</p>
+  them. If you believe a child has provided us data, contact us and we will remove it. Building a
+  training plan with Boldi requires you to confirm you are 18 or over. If you are below the age
+  at which you can consent on your own where you live (up to 16 in some EU countries), ask a
+  parent or guardian before you turn on the AI coach.</p>
 
   <h2>Changes</h2>
   <p>We may update this policy. Material changes will be reflected by updating the date above and,
-  where appropriate, an in-app notice.</p>
+  where appropriate, an in-app notice. Any change to what the AI coach sends, or to whom, is asked
+  for again in the app before it applies to you.</p>
 
   <h2>Contact</h2>
-  <p>Questions? Email <a href="mailto:support@routerushapp.com">support@routerushapp.com</a>.</p>
+  <p>Questions, or requests about your data? Email
+  <a href="mailto:support@routerushapp.com">support@routerushapp.com</a>.</p>
 
   <footer>
     <span>© 2026 RouteRush</span>
