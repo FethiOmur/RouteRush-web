@@ -7,6 +7,11 @@
 # hop to the fastest paths on the site for no gain. Everything outside /post/,
 # /u/ and /club/ never reaches the Worker at all.
 #
+# Club pages read the public clubs row for their link preview. SUPABASE_URL is
+# a plain var; the publishable key is set once as a secret, never committed:
+#   npx wrangler secret put SUPABASE_ANON_KEY
+# Without them the page still works and shows the generic copy.
+#
 # Deploy with:  npx wrangler deploy
 name = "share-links"
 main = "workers/share-links.js"
@@ -16,6 +21,9 @@ compatibility_date = "2026-08-16"
 # product domain, and share-links.routerushapp.workers.dev responding as well
 # would be a second, unbranded address serving the same pages.
 workers_dev = false
+
+[vars]
+SUPABASE_URL = "https://uqccbfykyjhxrsbfdorp.supabase.co"
 
 [[routes]]
 pattern = "routerushapp.com/post/*"
@@ -27,4 +35,9 @@ zone_name = "routerushapp.com"
 
 [[routes]]
 pattern = "routerushapp.com/club/*"
+zone_name = "routerushapp.com"
+
+# Universal-links association file for the iOS app (/club/* opens the app).
+[[routes]]
+pattern = "routerushapp.com/.well-known/apple-app-site-association"
 zone_name = "routerushapp.com"
