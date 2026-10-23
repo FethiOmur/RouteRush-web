@@ -11,6 +11,8 @@
  * tags, and pass everything else through untouched.
  *
  * WHAT IT DELIBERATELY DOES NOT DO
+ * (Club pages are the one exception: /club/<id> reads the club's public row —
+ * name, member count, city, cover — for the link preview. See lookupClub.)
  * It never reads the post. Shared posts are viewable in the app only (owner
  * decision), so this Worker holds no database credentials, makes no outbound
  * call, and leaks nothing about who shared what — the id in the URL is all it
@@ -61,6 +63,16 @@ const CLUB_COPY = {
     open: "Ouvrir dans RouteRush", get: "Télécharger RouteRush",
   },
 };
+// Link-preview copy for a club the Worker could look up. {name} is the club
+// name, {n} the member count, {city} the city (omitted when the club has none).
+const CLUB_PREVIEW = {
+  en: { title: "Join {name} on RouteRush", members: ["{n} member", "{n} members"] },
+  tr: { title: "{name} kulübüne RouteRush'ta katıl", members: ["{n} üye", "{n} üye"] },
+  it: { title: "Unisciti a {name} su RouteRush", members: ["{n} membro", "{n} membri"] },
+  de: { title: "Tritt {name} auf RouteRush bei", members: ["{n} Mitglied", "{n} Mitglieder"] },
+  es: { title: "Únete a {name} en RouteRush", members: ["{n} miembro", "{n} miembros"] },
+  fr: { title: "Rejoins {name} sur RouteRush", members: ["{n} membre", "{n} membres"] },
+};
 const LANG_NAMES = { en: "English", tr: "Türkçe", it: "Italiano", de: "Deutsch", es: "Español", fr: "Français" };
 
 function pickLang(request, url) {
@@ -80,10 +92,61 @@ function pickLang(request, url) {
   return hit ? hit.lang : "en";
 }
 
-function clubResponse(request, url, clubId, eventId) {
+function esc(text) {
+  return String(text).replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[ch]);
+}
+
+// Looks the club up through Supabase's public REST endpoint with the project's
+// publishable (anon) key — the same read the app's club discovery does, and the
+// clubs table is world-readable by design (name, member count and city are
+// public; only the roster is members-only). Only these five columns are
+// requested. Any failure (no config, timeout, non-200, no row) returns null and
+// the page falls back to the generic copy, so a Supabase outage can never turn a
+// share link into an error page.
+async function lookupClub(env, clubId) {
+  if (!env || !env.SUPABASE_URL || !env.SUPABASE_ANON_KEY) return null;
+  try {
+    const api = `${env.SUPABASE_URL}/rest/v1/clubs?id=eq.${clubId}&select=name,member_count,city,cover_url,is_private&limit=1`;
+    const res = await fetch(api, {
+      headers: { apikey: env.SUPABASE_ANON_KEY, accept: "application/json" },
+      signal: AbortSignal.timeout(2500),
+      cf: { cacheTtl: 300, cacheEverything: true },
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    const row = Array.isArray(rows) ? rows[0] : null;
+    if (!row || typeof row.name !== "string" || !row.name.trim()) return null;
+    // The cover is only ever echoed into og:image, and only when it lives in
+    // this project's public storage bucket path — never an arbitrary URL.
+    // Private clubs keep the branded image: their cover is not for strangers.
+    const storagePrefix = `${env.SUPABASE_URL}/storage/v1/object/public/`;
+    const cover = typeof row.cover_url === "string" && row.cover_url.startsWith(storagePrefix) && row.is_private === false ? row.cover_url : null;
+    return {
+      name: row.name.trim().slice(0, 80),
+      members: Number.isFinite(row.member_count) ? row.member_count : null,
+      city: typeof row.city === "string" && row.city.trim() ? row.city.trim().slice(0, 60) : null,
+      cover,
+    };
+  } catch {
+    return null;
+  }
+}
+
+function clubResponse(request, url, clubId, eventId, club) {
   const lang = pickLang(request, url);
   const c = CLUB_COPY[lang];
-  const [title, blurb] = eventId ? c.event : c.club;
+  let [title, blurb] = eventId ? c.event : c.club;
+  let ogImage = `${SITE}/assets/og.jpg`;
+  let hasCover = false;
+  if (club && !eventId) {
+    const p = CLUB_PREVIEW[lang];
+    title = esc(p.title.replace("{name}", () => club.name));
+    const parts = [];
+    if (club.members !== null) parts.push((club.members === 1 ? p.members[0] : p.members[1]).replace("{n}", club.members));
+    if (club.city) parts.push(esc(club.city));
+    blurb = parts.length ? parts.join(" · ") : blurb;
+    if (club.cover) { ogImage = esc(club.cover); hasCover = true; }
+  }
   // Both ids are validated UUIDs, so the deep link is built from known-safe text.
   const deepLink = eventId
     ? `routerush://club/${clubId}/event/${eventId}`
@@ -106,13 +169,13 @@ function clubResponse(request, url, clubId, eventId) {
 <meta property="og:title" content="${title}">
 <meta property="og:description" content="${blurb}">
 <meta property="og:url" content="${canonical}">
-<meta property="og:image" content="${SITE}/assets/og.jpg">
+<meta property="og:image" content="${ogImage}">${hasCover ? "" : `
 <meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:image:height" content="630">`}
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${title}">
 <meta name="twitter:description" content="${blurb}">
-<meta name="twitter:image" content="${SITE}/assets/og.jpg">
+<meta name="twitter:image" content="${ogImage}">
 <link rel="icon" href="${SITE}/assets/favicon.svg?v=2" type="image/svg+xml">
 <link rel="icon" href="${SITE}/assets/favicon.png" sizes="512x512" type="image/png">
 <link rel="apple-touch-icon" sizes="180x180" href="${SITE}/assets/apple-touch-icon.png">
@@ -163,19 +226,40 @@ function clubResponse(request, url, clubId, eventId) {
 }
 const APP_STORE_URL = "https://apps.apple.com/app/id6783352912";
 const SITE = "https://routerushapp.com";
+const AASA = {
+  applinks: {
+    details: [
+      { appIDs: ["3M483H3X58.FethiOmur.RouteRushApp"], components: [{ "/": "/club/*", comment: "Club and club event share links open the app" }] },
+    ],
+  },
+};
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
     const path = url.pathname;
+
+    // Universal links. Served here rather than from the Pages origin so the
+    // Content-Type is a guaranteed application/json (an extensionless static
+    // file is served as octet-stream), with no redirect and no Jekyll in the
+    // way. Only /club/* opens the app; /post/ and /u/ stay web-only for now.
+    if (path === "/.well-known/apple-app-site-association") {
+      return new Response(JSON.stringify(AASA), {
+        status: 200,
+        headers: { "content-type": "application/json", "cache-control": "public, max-age=3600", "x-content-type-options": "nosniff" },
+      });
+    }
 
     if (path.startsWith("/club/")) {
       // /club/<uuid> or /club/<uuid>/event/<uuid>; a trailing slash is allowed.
       const seg = path.split("/").filter(Boolean); // ["club", id, "event"?, id?]
       const okClub = seg.length >= 2 && UUID.test(seg[1]);
-      if (okClub && seg.length === 2) return clubResponse(request, url, seg[1].toLowerCase(), null);
+      if (okClub && seg.length === 2) {
+        const id = seg[1].toLowerCase();
+        return clubResponse(request, url, id, null, await lookupClub(env, id));
+      }
       if (okClub && seg.length === 4 && seg[2] === "event" && UUID.test(seg[3])) {
-        return clubResponse(request, url, seg[1].toLowerCase(), seg[3].toLowerCase());
+        return clubResponse(request, url, seg[1].toLowerCase(), seg[3].toLowerCase(), null);
       }
       return fetch(request);
     }
