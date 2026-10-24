@@ -31,7 +31,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 I18N = ROOT / "i18n"
 ORIGIN = "https://routerushapp.com"
 
-PAGES = ["index.html", "faq.html"]
+PAGES = ["index.html", "faq.html", "credits.html"]
 LOCALES = ["tr", "it", "de", "es", "fr"]
 # og:locale wants a full tag; hreflang and <html lang> want the short one.
 OG_LOCALE = {"en": "en_US", "tr": "tr_TR", "it": "it_IT",
@@ -338,6 +338,8 @@ def rewrite_links(html, lang):
     # faq.html is translated, so stay inside the locale; press.html is not.
     html = html.replace('href="faq.html"', f'href="/{lang}/faq.html"')
     html = html.replace('href="press.html"', 'href="/press.html"')
+    # credits.html is translated around a licence notice that stays English.
+    html = html.replace('href="credits.html"', f'href="/{lang}/credits.html"')
     # App Store CTAs: each locale reports as its own App Analytics campaign,
     # so installs can be read per market (see the note above the nav CTA).
     html = html.replace('ct=web-en&amp;', f'ct=web-{lang}&amp;')
