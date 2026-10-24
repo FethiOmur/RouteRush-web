@@ -140,7 +140,8 @@
     "18.4": "18,4",
     "16.1": "16,1",
     "2.5": "2,5",
-    "RouteRush territory map over New York at night: hundreds of claimed areas in rival colours, with runners pinned across Manhattan and Brooklyn — gold rings mark Ultra subscribers, cyan rings Pro": "Gece New York üzerinde RouteRush bölge haritası: rakip renklerinde yüzlerce fethedilmiş alan ve Manhattan'dan Brooklyn'e yayılmış koşucular — altın halka Ultra, turkuaz halka Pro abonesini gösterir"
+    "RouteRush territory map over New York at night: hundreds of claimed areas in rival colours, with runners pinned across Manhattan and Brooklyn — gold rings mark Ultra subscribers, cyan rings Pro": "Gece New York üzerinde RouteRush bölge haritası: rakip renklerinde yüzlerce fethedilmiş alan ve Manhattan'dan Brooklyn'e yayılmış koşucular — altın halka Ultra, turkuaz halka Pro abonesini gösterir",
+    "Credits": "Atıflar"
   },
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "RouteRush SSS — Bölge Kapmalı Koşu Nasıl Çalışır?",
@@ -177,6 +178,26 @@
     "Home": "Ana sayfa",
     "Press kit": "Basın kiti",
     "Privacy": "Gizlilik",
-    "Terms": "Koşullar"
+    "Terms": "Koşullar",
+    "Credits": "Atıflar"
+  },
+  "credits.html": {
+    "RouteRush — Sources &amp; Credits": "RouteRush — Kaynaklar ve Atıflar",
+    "The map data and course sources behind RouteRush's marathon replays, with the credit each one requires.": "RouteRush maraton tekrarlarının arkasındaki harita verileri ve parkur kaynakları, her birinin istediği atıfla birlikte.",
+    "LEGAL": "YASAL",
+    "Sources &amp; Credits": "Kaynaklar ve Atıflar",
+    "RouteRush builds on open map data and, where available, official course files. This page lists each source and the credit it asks for.": "RouteRush açık harita verilerinden ve mümkün olduğunda resmi parkur dosyalarından yararlanır. Bu sayfa her kaynağı ve istediği atfı listeler.",
+    "Map data in marathon replays": "Maraton tekrarlarındaki harita verileri",
+    "The course maps in marathon replays are drawn from OpenStreetMap data.": "Maraton tekrarlarındaki parkur haritaları OpenStreetMap verilerinden çizilir.",
+    "Official course sources": "Resmi parkur kaynakları",
+    "Official GPX and course files we use for specific races are listed here, one per line, with the organizer's name and a link to the source.": "Belirli yarışlar için kullandığımız resmi GPX ve parkur dosyaları burada, satır başına bir kaynak olacak şekilde, organizatörün adı ve kaynağa bağlantıyla birlikte listelenir.",
+    "None yet.": "Henüz yok.",
+    "© 2026 RouteRush": "© 2026 RouteRush",
+    "Home": "Ana sayfa",
+    "FAQ": "SSS",
+    "Press kit": "Basın kiti",
+    "Privacy": "Gizlilik",
+    "Terms": "Koşullar",
+    "Credits": "Atıflar"
   }
 }

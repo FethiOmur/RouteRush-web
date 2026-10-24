@@ -139,7 +139,8 @@
     "18.4": "18,4",
     "16.1": "16,1",
     "2.5": "2,5",
-    "RouteRush territory map over New York at night: hundreds of claimed areas in rival colours, with runners pinned across Manhattan and Brooklyn — gold rings mark Ultra subscribers, cyan rings Pro": "Carte des territoires RouteRush au-dessus de New York la nuit : des centaines de zones conquises aux couleurs des rivaux et des coureurs répartis sur Manhattan et Brooklyn — un anneau doré signale un abonné Ultra, un anneau cyan un abonné Pro"
+    "RouteRush territory map over New York at night: hundreds of claimed areas in rival colours, with runners pinned across Manhattan and Brooklyn — gold rings mark Ultra subscribers, cyan rings Pro": "Carte des territoires RouteRush au-dessus de New York la nuit : des centaines de zones conquises aux couleurs des rivaux et des coureurs répartis sur Manhattan et Brooklyn — un anneau doré signale un abonné Ultra, un anneau cyan un abonné Pro",
+    "Credits": "Crédits"
   },
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "FAQ RouteRush — Comment fonctionne la conquête de territoire",
@@ -176,6 +177,26 @@
     "Home": "Accueil",
     "Press kit": "Kit presse",
     "Privacy": "Confidentialité",
-    "Terms": "Conditions"
+    "Terms": "Conditions",
+    "Credits": "Crédits"
+  },
+  "credits.html": {
+    "RouteRush — Sources &amp; Credits": "RouteRush — Sources et crédits",
+    "The map data and course sources behind RouteRush's marathon replays, with the credit each one requires.": "Les données cartographiques et les sources de parcours derrière les replays de marathon de RouteRush, avec le crédit exigé par chacune.",
+    "LEGAL": "MENTIONS LÉGALES",
+    "Sources &amp; Credits": "Sources et crédits",
+    "RouteRush builds on open map data and, where available, official course files. This page lists each source and the credit it asks for.": "RouteRush s'appuie sur des données cartographiques ouvertes et, lorsqu'ils existent, sur des fichiers de parcours officiels. Cette page liste chaque source et le crédit qu'elle demande.",
+    "Map data in marathon replays": "Données cartographiques des replays de marathon",
+    "The course maps in marathon replays are drawn from OpenStreetMap data.": "Les cartes de parcours des replays de marathon sont dessinées à partir des données d'OpenStreetMap.",
+    "Official course sources": "Sources officielles de parcours",
+    "Official GPX and course files we use for specific races are listed here, one per line, with the organizer's name and a link to the source.": "Les fichiers GPX et de parcours officiels que nous utilisons pour des courses précises sont listés ici, un par ligne, avec le nom de l'organisateur et un lien vers la source.",
+    "None yet.": "Aucune pour l'instant.",
+    "© 2026 RouteRush": "© 2026 RouteRush",
+    "Home": "Accueil",
+    "FAQ": "FAQ",
+    "Press kit": "Kit presse",
+    "Privacy": "Confidentialité",
+    "Terms": "Conditions",
+    "Credits": "Crédits"
   }
 }
