@@ -1,0 +1,20 @@
+# Paths in the repo root that must not be published by the routerush-site
+# Worker (wrangler.site.jsonc publishes the repo root as static assets).
+.git
+.github
+.claude
+.gitignore
+.nojekyll
+.assetsignore
+.wrangler
+node_modules
+CLAUDE.md
+README.md
+CNAME
+wrangler.toml
+wrangler.site.jsonc
+i18n
+tools
+workers
+_agent-scratch
+_shot.html

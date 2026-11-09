@@ -1,0 +1,30 @@
+// Deployment config for the static site itself (routerushapp.com).
+//
+// Static assets are matched first and served free without a daily cap; the
+// small script in workers/site.js only runs when no file matches the path
+// (directory URLs like "/" and "/tr/", and misses), so it uses a sliver of the
+// free plan's 100k requests/day.
+// Workers Builds deploys it on every push to main with
+//   npx wrangler deploy --config wrangler.site.jsonc
+//
+// html_handling "none" keeps URLs exactly as the files are named. The default
+// (and Cloudflare Pages, which cannot turn it off) 307/308-redirects
+// /faq.html to /faq, but the sitemap, canonicals and hreflang all use .html.
+//
+// The share-links Worker (wrangler.toml) runs on narrower routes in front of
+// this one: a Worker on a Custom Domain acts as the origin, so /post/*, /u/*,
+// /club/* and the AASA file still reach share-links first.
+//
+// Files that are not part of the site are listed in .assetsignore.
+{
+  "name": "routerush-site",
+  "main": "workers/site.js",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "html_handling": "none"
+  },
+  "workers_dev": true,
+  "preview_urls": false
+}
