@@ -1,0 +1,31 @@
+# Tells IndexNow (Bing, Yandex, Naver, Seznam) which pages a push to main
+# changed. Hosting is the routerush-site Cloudflare Worker (wrangler.site.jsonc),
+# which Workers Builds deploys from the same push; this job only waits for that
+# deploy to land before pinging. A failed ping never matters to the site.
+name: IndexNow ping
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  indexnow:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Workers Builds usually finishes in well under a minute.
+      - name: Wait for the Cloudflare deploy
+        run: sleep 120
+      - name: Submit changed pages
+        env:
+          BEFORE: ${{ github.event.before }}
+        run: |
+          if [ "${{ github.event_name }}" != "push" ] || [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            python3 tools/indexnow-ping.py --all
+          else
+            git diff --name-only "$BEFORE" "$GITHUB_SHA" | xargs python3 tools/indexnow-ping.py
+          fi

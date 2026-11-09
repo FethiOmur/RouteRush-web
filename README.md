@@ -70,6 +70,31 @@ node _agent-scratch/perf/golden.mjs after
 python3 _agent-scratch/perf/diff.py before after
 ```
 
+## Hosting
+
+The site is served by the **`routerush-site` Cloudflare Worker** (static
+assets), configured in `wrangler.site.jsonc`. Workers Builds deploys it on
+every push to `main` with `npx wrangler deploy --config wrangler.site.jsonc`;
+there is no GitHub Pages site any more (moved 2026-11-09: GitHub's certificate
+renewal kept failing behind the Cloudflare proxy, which took the site down with
+a 526).
+
+- `html_handling: "none"` keeps every URL exactly as its file is named, so
+  `/faq.html` stays `/faq.html` (sitemap, canonicals and hreflang depend on it).
+- `workers/site.js` only runs when no file matches: it serves `dir/index.html`
+  for directory URLs, redirects `/tr` to `/tr/`, and returns `404.html` with a
+  404. It also answers Range requests for `*.mp4` with 206, because static
+  assets ignore Range and Safari will not play video without it.
+- `.assetsignore` keeps repo-only files (`tools/`, `i18n/`, `workers/`, docs,
+  configs) off the site. Add new non-site files there.
+- `www` is redirected to the apex by a Cloudflare Redirect Rule, not by code.
+- `wrangler.toml` is a different Worker: `share-links`, on the narrower routes
+  `/post/*`, `/u/*`, `/club/*` and the AASA file. It runs in front of the site
+  Worker and falls through to it.
+
+Test the hosting behaviour locally with
+`npx wrangler dev --config wrangler.site.jsonc`.
+
 ## Running locally
 
 Open `index.html` directly, or serve it if you want to exercise it the way a

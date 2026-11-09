@@ -2,7 +2,8 @@
  * Share-link landing pages for routerushapp.com/post/*, /u/* and /club/*.
  *
  * WHY THIS EXISTS
- * The site is static on GitHub Pages, which cannot serve a path it has no file
+ * The site was static on GitHub Pages (now the routerush-site Worker, see
+ * wrangler.site.jsonc), which could not serve a path it had no file
  * for: /post/<uuid> returned a hard 404, so every link the app shared was a
  * dead link. GitHub Pages' 404.html trick would render something, but the HTTP
  * status stays 404 and link unfurlers (iMessage, WhatsApp, X) treat that as
