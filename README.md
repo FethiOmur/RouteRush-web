@@ -4,11 +4,12 @@ Marketing site for [RouteRush](https://routerushapp.com), a gamified run and rid
 tracking app for iOS. Runs and rides claim H3 hex cells on a 3D globe, earn
 Rush Points, and move you through cohort leagues.
 
-This repository holds the marketing site only. The legal pages — privacy policy
-and terms of service — live separately in
-[`RouteRush-legal`](https://github.com/FethiOmur/RouteRush-legal), because their
-URLs are registered with App Store Connect and must not be disturbed by changes
-here.
+The privacy policy and terms of service are `privacy.html` and `terms.html`
+here; `https://routerushapp.com/privacy.html` is the URL App Store Connect
+lists, and the app links `/privacy` and `/terms` (301 to the `.html` files).
+The older copies in
+[`RouteRush-legal`](https://github.com/FethiOmur/RouteRush-legal) (GitHub
+Pages) only redirect here, so links from old app builds keep working.
 
 ## Structure
 
@@ -85,8 +86,8 @@ a 526).
 - `html_handling: "none"` keeps every URL exactly as its file is named, so
   `/faq.html` stays `/faq.html` (sitemap, canonicals and hreflang depend on it).
 - `workers/site.js` only runs when no file matches: it serves `dir/index.html`
-  for directory URLs, redirects `/tr` to `/tr/`, and returns `404.html` with a
-  404. It also answers Range requests for `*.mp4` with 206, because static
+  for directory URLs, redirects `/tr` to `/tr/`, `/faq` to `/faq.html` and
+  `/index` to `/`, and returns `404.html` with a 404. It also answers Range requests for `*.mp4` with 206, because static
   assets ignore Range and Safari will not play video without it.
 - `_headers` sets caching: `/assets/*` one day (stale-while-revalidate a
   week), `/assets/vendor/*` a year immutable, HTML the default `max-age=0`.

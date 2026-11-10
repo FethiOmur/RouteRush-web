@@ -6,7 +6,7 @@
 // the URL behaviour GitHub Pages had:
 //   /dir/  -> /dir/index.html
 //   /dir   -> 301 /dir/   when /dir/index.html exists
-//   /page  -> /page.html  when that file exists
+//   /page  -> 301 /page.html  when that file exists (/index -> 301 /)
 // Everything else gets the site's 404.html with a 404 status.
 //
 // Video is the one exception to "files never reach this code": static assets
@@ -41,8 +41,13 @@ export default {
       if (await tryAsset(path + "/index.html")) {
         return Response.redirect(sameOrigin(path + "/", url.search), 301);
       }
-      const res = await tryAsset(path + ".html");
-      if (res) return res;
+      // One URL per page: the extensionless form redirects to the .html
+      // file the sitemap and canonicals name, and "/index" to its directory.
+      const name = path.split("/").pop();
+      if (name === "index") return Response.redirect(sameOrigin(path.slice(0, -5), url.search), 301);
+      if (name !== "404" && (await tryAsset(path + ".html"))) {
+        return Response.redirect(sameOrigin(path + ".html", url.search), 301);
+      }
     }
 
     const notFound = await env.ASSETS.fetch(sameOrigin("/404.html"), request);

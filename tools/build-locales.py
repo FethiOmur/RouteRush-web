@@ -332,7 +332,7 @@ def rewrite_head(html, lang, page):
     return html
 
 
-def rewrite_links(html, lang):
+def rewrite_links(html, lang, page):
     """Fix every path for a page that now lives one directory deeper, and point
     the language switcher's current entry at itself."""
     # Assets are root-absolute so no per-depth arithmetic is needed.
@@ -358,6 +358,11 @@ def rewrite_links(html, lang):
                         ' href="/" hreflang="en"', 1)
     html = html.replace(f' href="/{lang}/" hreflang="{lang}"',
                         f' href="/{lang}/" hreflang="{lang}" aria-current="page"', 1)
+    # The FAQ and credits language rows link to the same page in each locale.
+    html = html.replace(f' href="/{page}" hreflang="en" aria-current="page"',
+                        f' href="/{page}" hreflang="en"', 1)
+    html = html.replace(f' href="/{lang}/{page}" hreflang="{lang}"',
+                        f' href="/{lang}/{page}" hreflang="{lang}" aria-current="page"', 1)
     return html
 
 
@@ -376,7 +381,7 @@ def build(lang, page, check):
     # is the translation step's own invariant: it may change copy, nothing else.
     assert_ldjson_structure_survived(src, html, lang, page)
     html = rewrite_head(html, lang, page)
-    html = rewrite_links(html, lang)
+    html = rewrite_links(html, lang, page)
 
     out = ROOT / lang / page
     if check:

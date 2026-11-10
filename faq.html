@@ -76,6 +76,9 @@
   .cta a { font-weight: 560; }
   footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair); font-size: 13px; color: var(--text-4); display: flex; gap: 18px; flex-wrap: wrap; }
   footer a { color: var(--text-3); text-decoration: none; }
+  .lang-row { margin-top: 14px; font-size: 13px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .lang-row a { color: var(--text-3); text-decoration: none; }
+  .lang-row a[aria-current] { color: var(--text-2); pointer-events: none; }
 </style>
 <script type="application/ld+json">
 {
@@ -195,6 +198,14 @@
     <a href="/terms.html">Terms</a>
     <a href="credits.html">Credits</a>
   </footer>
+  <nav class="lang-row" aria-label="Language">
+    <a href="/faq.html" hreflang="en" aria-current="page">English</a>
+    <a href="/tr/faq.html" hreflang="tr">Türkçe</a>
+    <a href="/it/faq.html" hreflang="it">Italiano</a>
+    <a href="/de/faq.html" hreflang="de">Deutsch</a>
+    <a href="/es/faq.html" hreflang="es">Español</a>
+    <a href="/fr/faq.html" hreflang="fr">Français</a>
+  </nav>
 </div>
 </body>
 </html>
