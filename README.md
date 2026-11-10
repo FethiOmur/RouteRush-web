@@ -21,7 +21,7 @@ assets/hero/          two posters only: the hero is a LIVE Mapbox GL map now.
                       hero under reduced motion / save-data / no WebGL /
                       software GL / ?nomap=1 (the golden harness runs this
                       mode)
-assets/vendor/        mapbox-gl 3.18.0, vendored — the page's only script dep
+assets/vendor/        mapbox-gl 3.18.0, vendored — loaded on demand, only for the live map
 assets/pins/          the 22 territory owner pins (ring+glow baked in)
 assets/territory.geojson  street-snapped conquest loops (build-territory.py)
 assets/screens/       app screenshots used in the product sections
