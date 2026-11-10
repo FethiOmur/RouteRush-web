@@ -65,7 +65,6 @@
 <meta name="twitter:title" content="RouteRush — App para correr y conquistar territorio | iOS">
 <meta name="twitter:description" content="Cierra un circuito corriendo y las calles de dentro pasan a ser tu territorio, en un mapa 3D nocturno y en vivo de tu ciudad.">
 <meta name="twitter:image" content="https://routerushapp.com/assets/og.jpg">
-<link rel="stylesheet" href="/assets/vendor/mapbox-gl-3.18.0.css">
 <link rel="preconnect" href="https://api.mapbox.com" crossorigin>
 <link rel="preload" as="image" href="/assets/hero/poster-start.webp" fetchpriority="high">
 <!-- The brand face is the first thing a visitor reads, so it must not arrive
@@ -2095,7 +2094,6 @@
   }, 2200);
 })();
 </script>
-<script src="/assets/vendor/mapbox-gl-3.18.0.js"></script>
 <script>
 /* ================================================================
    RouteRush — live scroll-flown hero (Mapbox GL)
@@ -2199,8 +2197,25 @@
     } catch (e) { return false; }
   }
   const noMap = params.has('nomap')
-    || thrifty || typeof mapboxgl === 'undefined' || !mapboxgl.supported?.() && !window.WebGLRenderingContext
+    || thrifty || !window.WebGLRenderingContext
     || (params.get('map') !== 'force' && softwareGL());
+
+  /* mapbox-gl.js (449 KB over the wire, 1.7 MB parsed) and its CSS are
+     fetched only when the live map will actually be built. Poster visitors —
+     ?nomap=1, reduced motion, save-data, no WebGL, software GL, which is
+     what crawlers render with — never download or parse them. */
+  function loadMapbox() {
+    const css = document.createElement('link');
+    css.rel = 'stylesheet'; css.href = '/assets/vendor/mapbox-gl-3.18.0.css';
+    document.head.appendChild(css);
+    return new Promise((resolve, reject) => {
+      const js = document.createElement('script');
+      js.src = '/assets/vendor/mapbox-gl-3.18.0.js';
+      js.onload = () => typeof mapboxgl === 'undefined' ? reject(new Error('mapboxgl missing')) : resolve();
+      js.onerror = reject;
+      document.head.appendChild(js);
+    });
+  }
 
   const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
 
@@ -2502,11 +2517,10 @@
 
   applyMode();
   if (!reduced && !noMap) {
-    /* hard cap, counted from navigation start: this script only runs after
-       the 1.7 MB mapbox-gl.js has arrived, and until then the poster is what
-       the visitor sees. On a slow link the budget is already spent, so the
-       veil never drops over a poster they have been looking at for seconds;
-       the map simply fades in over it when ready. */
+    /* hard cap, counted from navigation start. If the page itself was slow
+       to arrive the budget is already spent: the veil never drops over a
+       poster the visitor has been looking at for seconds; the map simply
+       fades in over it when ready. */
     const veilLeft = VEIL_CAP_MS - performance.now();
     if (veilLeft > 400) {
       if (veil) veil.hidden = false;
@@ -2515,7 +2529,9 @@
       veilLifted = true;
       performance.mark('hero-veil-lift');
     }
-    buildMap();
+    loadMapbox().then(() => {
+      if (!mapboxgl.supported || mapboxgl.supported()) buildMap(); else toPoster();
+    }).catch(() => toPoster());
   } else if (!reduced) {
     toPoster();
   }

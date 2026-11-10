@@ -1,0 +1,16 @@
+# Cache rules for the routerush-site Worker's static assets (Cloudflare
+# reads this file at deploy time and does not serve it). HTML keeps the
+# default max-age=0 so a deploy shows up at once.
+#
+# Assets: one day fresh, then served stale for up to a week while the
+# browser revalidates in the background. Replacing an asset under the same
+# name therefore reaches returning visitors within a day; give it a new name
+# (the project's rule anyway) if it must change at once.
+/assets/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
+# The vendor files carry their version in the name and never change.
+# "!" drops the rule above; matching rules would otherwise be joined.
+/assets/vendor/*
+  ! Cache-Control
+  Cache-Control: public, max-age=31536000, immutable

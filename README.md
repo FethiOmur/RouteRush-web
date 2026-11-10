@@ -88,6 +88,9 @@ a 526).
   for directory URLs, redirects `/tr` to `/tr/`, and returns `404.html` with a
   404. It also answers Range requests for `*.mp4` with 206, because static
   assets ignore Range and Safari will not play video without it.
+- `_headers` sets caching: `/assets/*` one day (stale-while-revalidate a
+  week), `/assets/vendor/*` a year immutable, HTML the default `max-age=0`.
+  It applies to static assets only, not to responses `workers/site.js` builds.
 - `.assetsignore` keeps repo-only files (`tools/`, `i18n/`, `workers/`, docs,
   configs) off the site. Add new non-site files there.
 - `www` is redirected to the apex by a Cloudflare Redirect Rule, not by code.
