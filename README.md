@@ -19,7 +19,8 @@ assets/fonts/         Splash-Subset.ttf — the brand face, subset (see below)
 assets/hero/          two posters only: the hero is a LIVE Mapbox GL map now.
                       poster-start paints before the map, poster-final IS the
                       hero under reduced motion / save-data / no WebGL /
-                      ?nomap=1 (the golden harness runs this mode)
+                      software GL / ?nomap=1 (the golden harness runs this
+                      mode)
 assets/vendor/        mapbox-gl 3.18.0, vendored — the page's only script dep
 assets/pins/          the 22 territory owner pins (ring+glow baked in)
 assets/territory.geojson  street-snapped conquest loops (build-territory.py)
@@ -30,7 +31,9 @@ There is no build pipeline. Since the live-map hero (owner call, 2026-08-11)
 the page talks to **api.mapbox.com** at runtime — tiles, glyphs, sprites — and
 sends Mapbox's billing pings to events.mapbox.com. One billable "map load" per
 visit; 50k/month are free, then $5/1k. Everything else is local, and the
-`?nomap=1` mode renders fully offline (poster hero).
+`?nomap=1` mode renders fully offline (poster hero). `?map=force` skips only
+the software-GL check (below), so the live map can be exercised in headless
+browsers, which render with SwiftShader and otherwise get the poster hero.
 
 ### The brand font is subset — regenerate it if you set new text in it
 
@@ -112,10 +115,24 @@ Then visit <http://localhost:8899>.
   is the only source of truth; one normalized progress value drives the camera
   (`cam(warp(p))` — the measured ARC pacing) and the copy stops. The playhead
   *glides* toward the scroll position (`sequence.glideTauMs`) so a fast flick
-  eases instead of teleporting. A loading veil flies the corridor once, hidden,
-  so the dive's tiles are cached before anything is visible; it is time-capped
-  and can never strand the page. Reduced motion, save-data, missing WebGL and
-  `?nomap=1` all get the poster hero with the same copy. The embedded token is
+  eases instead of teleporting. The loading veil waits only for the opening
+  camera (`cam(warp(progress))`, whose low-zoom globe tiles cover the first
+  part of the scroll): it lifts on that view's `idle` or after a hard 2.5 s
+  cap (`VEIL_CAP_MS`, counted from navigation start), whichever comes first,
+  and can never strand the page. On a link slow enough that mapbox-gl.js
+  arrives after the cap, the veil is skipped entirely rather than dropped
+  over a poster the visitor has already been looking at.
+  If the map is not live by then the poster stays visible and the map fades in
+  over it once ready (on slow 4G that can take 25 s or more; the poster covers
+  it); only a
+  chain still not live after 45 s is abandoned for the poster. Deeper tiles
+  load on demand — `jumpTo({ preloadOnly: true })` was measured to buy nothing
+  in GL JS 3.18, so nothing preloads the corridor. Reduced motion, save-data, missing WebGL,
+  software GL (renderer string contains SwiftShader / llvmpipe / Software /
+  Microsoft Basic Render, read via `WEBGL_debug_renderer_info` — never the user
+  agent; this is what headless crawlers render with) and `?nomap=1` all get the
+  poster hero with the same copy and never construct a Mapbox map. `?map=force`
+  overrides only the software-GL check. The embedded token is
   a web-only pk token, URL-restricted to routerushapp.com (+ localhost:8899
   for local runs) in the Mapbox console — useless anywhere else. Never embed
   the app's token here: it cannot be URL-restricted without breaking the app.

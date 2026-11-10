@@ -2108,14 +2108,18 @@
    is gone. What it buys is the property no frame set can have:
    the camera is continuous, so there is nothing between frames to
    see. The loading veil is the same pattern his reference sites
-   open with — the corridor is flown once, hidden, while it shows.
+   open with, but it only waits for the OPENING view (the first part
+   of the scroll needs low-zoom globe tiles alone, ~2.5 s at most);
+   deeper tiles stream in while the visitor reads the headline.
 
    Contract, unchanged:
      • ONE normalized progress value (0..1) from native scroll.
      • Native scroll is the only source of truth; the playhead
        GLIDES toward it (glideTauMs) and settles exactly on it.
-     • prefers-reduced-motion / save-data / no-WebGL / ?nomap=1:
-       no map at all — the poster is the hero.
+     • prefers-reduced-motion / save-data / no-WebGL / software GL
+       (SwiftShader, llvmpipe — what headless crawlers render with) /
+       ?nomap=1: no map at all — the poster is the hero. ?map=force
+       skips only the software-GL check, for testing the live path.
    ================================================================ */
 (() => {
   'use strict';
@@ -2177,8 +2181,26 @@
 
   const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   const thrifty = !!conn && (conn.saveData === true || /^(slow-2g|2g|3g)$/.test(conn.effectiveType || ''));
-  const noMap = new URLSearchParams(location.search).has('nomap')
-    || thrifty || typeof mapboxgl === 'undefined' || !mapboxgl.supported?.() && !window.WebGLRenderingContext;
+  const params = new URLSearchParams(location.search);
+  /* Software GL (SwiftShader / llvmpipe / WARP) flies the corridor at a few
+     frames a second and takes >10 s to build the map, so a crawler or a
+     GPU-less VM would sit on a black veil. Read from the driver's own
+     renderer string — never the user agent. ?map=force skips only this check. */
+  function softwareGL() {
+    try {
+      const c = document.createElement('canvas');
+      const gl = c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl');
+      if (!gl) return false;                         /* no-WebGL is handled below */
+      const ext = gl.getExtension('WEBGL_debug_renderer_info');
+      const renderer = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : '';
+      const lose = gl.getExtension('WEBGL_lose_context');
+      if (lose) lose.loseContext();
+      return /swiftshader|llvmpipe|software|microsoft basic render/i.test(renderer);
+    } catch (e) { return false; }
+  }
+  const noMap = params.has('nomap')
+    || thrifty || typeof mapboxgl === 'undefined' || !mapboxgl.supported?.() && !window.WebGLRenderingContext
+    || (params.get('map') !== 'force' && softwareGL());
 
   const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
 
@@ -2194,14 +2216,17 @@
   let map = null, mapReady = false, labelsOn = false;
 
   function buildMap() {
-    /* The veil must be unstrandable BY CONSTRUCTION. The warm chain crosses a
-       style load, a geojson fetch, 22 image callbacks and eleven bounded idle
-       waits — verified flaky under software GL, where one run went live in
-       10s and the next never did. Rather than trust every link, the watchdog
-       reveals whatever exists after 15s. */
+    /* The veil is unstrandable BY CONSTRUCTION: its own hard timer lifts it
+       after VEIL_CAP_MS whatever the map is doing (see liftVeil). The map
+       chain crosses a style load, a geojson fetch and 22 image callbacks —
+       verified flaky under software GL, where one run went live in 10s and
+       the next never did. The poster covers a slow map, so the map may keep
+       loading well past the veil (on slow 4G, 25s and more); this
+       watchdog only gives up on a chain that is genuinely stuck, and then
+       stays on the poster. A half-built map is never revealed. */
     setTimeout(() => {
-      if (!mapReady) { console.warn('hero warm watchdog: revealing'); finishWarm(); }
-    }, 15000);
+      if (!mapReady) { console.warn('hero map watchdog: staying on the poster'); toPoster(); }
+    }, 45000);
     mapboxgl.accessToken = TOKEN;
     map = new mapboxgl.Map({
       container: mapEl,
@@ -2211,7 +2236,7 @@
       interactive: false,
       attributionControl: { compact: true },   /* required by the TOS on a live map */
       fadeDuration: 0,
-      maxTileCacheSize: 2048,                  /* hold the warmed corridor */
+      maxTileCacheSize: 2048,                  /* hold the corridor's tiles */
       config: { basemap: {
         lightPreset: 'night',
         showAdminBoundaries: false,
@@ -2245,6 +2270,7 @@
          legible. The blobs themselves fade out by street level, where only
          the real, street-snapped Turin claims remain. */
       const world = await withTimeout(fetch('/assets/world-territory.geojson').then(r => r.json()), 8000);
+      if (!map) return;   /* the watchdog gave the page back to the poster meanwhile */
       if (world) {
         const wc = ['match', ['get', 'c']]
           .concat(PALETTE.flatMap((c, i) => [i, c])).concat([PALETTE[0]]);
@@ -2263,7 +2289,8 @@
       }
 
       const terr = await withTimeout(fetch('/assets/territory.geojson').then(r => r.json()), 6000);
-      if (!terr) { warm(); return; }   // conquest missing beats a stuck veil
+      if (!map) return;
+      if (!terr) { warm(); return; }   // conquest missing beats a stuck hero
       map.addSource('terr', { type: 'geojson', data: terr });
       map.addLayer({ id: 'terr-fill', type: 'fill', source: 'terr',
         paint: { 'fill-color': colorExp, 'fill-opacity': 0.45, 'fill-emissive-strength': 0.85 } }, under);
@@ -2278,10 +2305,11 @@
       const pinned = terr.features.filter(f => f.properties.pin);
       await withTimeout(Promise.all(pinned.map(f => new Promise(res => {
         map.loadImage('/assets/pins/pin-' + f.properties.owner + '.png', (e, img) => {
-          if (!e && img && !map.hasImage(f.properties.pin)) map.addImage(f.properties.pin, img, { pixelRatio: 3 });
+          if (!e && img && map && !map.hasImage(f.properties.pin)) map.addImage(f.properties.pin, img, { pixelRatio: 3 });
           res();
         });
       }))), 6000);
+      if (!map) return;
       /* the speckle — one dot per claim, constant screen size, z2-z10 */
       {
         const centroid = f => {
@@ -2342,48 +2370,63 @@
     else if (labelsOn && zoom <= 4.3) { labelsOn = false; map.setConfigProperty('basemap', 'showPlaceLabels', false); }
   }
 
-  /* ---------- the loading veil + corridor warm-up ---------- */
-  /* The reference sites all open with a loader while assets arrive. Ours
-     flies the corridor once, hidden: every zoom level the dive crosses gets
-     its tiles into cache before the visitor sees a single moving pixel.
-     Bounded — a slow network gets a best-effort cache and the veil lifts
-     anyway; it can never hold the page hostage. */
-  const bounded = ms => new Promise(r => { const done = () => r(); map.once('idle', done); setTimeout(done, ms); });
-  async function warm() {
-    /* Eight stations, tighter caps. The first cut used eleven stations with
-       900/650ms caps — on mobile the veil ran 18-27s, three to five times
-       what the reference sites hold their loaders for. The cap is a CEILING:
-       fast networks still advance on the idle event, and anything a shorter
-       warm leaves cold streams in while the visitor reads the headline. */
-    const stations = [0, 0.116, 0.25, 0.42, 0.55, 0.68, 0.84, 1];
-    for (let i = 0; i < stations.length; i++) {
-      const c = cam(warp(stations[i]));
-      syncLabels(c.zoom);
-      map.jumpTo(c);
-      await bounded(i < 2 ? 700 : 450);
-      if (veilBar) veilBar.style.transform = 'scaleX(' + ((i + 1) / stations.length) + ')';
-    }
-    const c0 = cam(warp(currentProgress()));
-    syncLabels(c0.zoom);
-    map.jumpTo(c0);
-    await bounded(500);
-    finishWarm();
+  /* ---------- the loading veil ---------- */
+  /* The reference sites open with a loader, but ours only waits for what the
+     first screen needs: the OPENING camera (cam(warp(progress)) — the top of
+     the page, or wherever a reload restored the scroll to). Until station
+     0.116 the flight only crosses low-zoom globe tiles, so the veil lifts on
+     that view's idle event or after VEIL_CAP_MS, whichever comes first. If
+     the map is not live by then the poster underneath stays visible and the
+     map fades in over it (#seq-map.is-live) once its opening view is ready.
+     Nothing preloads the rest of the corridor: the old veil flew all eight
+     stations first (4-15s), and jumpTo({ preloadOnly: true }) was measured
+     on 2026-11-10 to buy nothing in GL JS 3.18 (preloaded tiles never reach
+     the render cache, so scroll-to-p0.42/0.84 timings were identical with
+     and without it) while costing a phone bandwidth and worker CPU. Deeper
+     tiles load on demand; Mapbox draws the loaded parent tile overscaled
+     until they land, so a fast scroll shows soft tiles, never holes. */
+  const VEIL_CAP_MS = 2500;
+  let veilLifted = false;
+
+  /* Idempotent. Called by the opening view's idle, and by the hard timer. */
+  function liftVeil() {
+    if (veilLifted) return;
+    veilLifted = true;
+    if (veilBar) veilBar.style.transform = 'scaleX(1)';
+    if (veil) { veil.classList.add('is-done'); setTimeout(() => { veil.hidden = true; }, 600); }
+    performance.mark('hero-veil-lift');
   }
 
-  /* Idempotent, and the watchdog's target: however the warm-up ends — clean,
-     slow network, or a stall anywhere in the chain — the page ends up in the
-     same live state. Tiles still streaming just finish loading in view. */
-  function finishWarm() {
-    if (mapReady) return;
+  const bounded = ms => new Promise(r => { if (!map) return r(); const done = () => r(); map.once('idle', done); setTimeout(done, ms); });
+  async function warm() {
+    if (!map) return;
+    if (veilBar) veilBar.style.transform = 'scaleX(0.6)';
+    const p0 = currentProgress();
+    const c0 = cam(warp(p0));
+    syncLabels(c0.zoom);
+    map.jumpTo(c0);
+    /* a late map (style slower than the veil cap) can afford to wait longer:
+       the poster is on screen, so nobody is looking at a half-loaded view */
+    await bounded(veilLifted ? 4000 : VEIL_CAP_MS);
+    if (!map) return;   /* the watchdog or an error gave up meanwhile */
+    goLive();
+    liftVeil();
+  }
+
+  /* Idempotent: the map becomes the visible hero. Never called for a map
+     whose opening view has not been warmed (or given up on, at the cap). */
+  function goLive() {
+    if (mapReady || !map) return;
     mapReady = true;
     mapEl.classList.add('is-live');
-    if (veil) { veil.classList.add('is-done'); setTimeout(() => { veil.hidden = true; }, 600); }
+    performance.mark('hero-map-live');
     dirty = true; schedule();
   }
 
   function toPoster() {
     if (poster) poster.src = '/assets/hero/poster-final.webp';
     if (veil) veil.hidden = true;
+    veilLifted = true;
     if (map) { try { map.remove(); } catch (e) {} map = null; }
     mapEl.style.display = 'none';
   }
@@ -2459,7 +2502,19 @@
 
   applyMode();
   if (!reduced && !noMap) {
-    if (veil) veil.hidden = false;
+    /* hard cap, counted from navigation start: this script only runs after
+       the 1.7 MB mapbox-gl.js has arrived, and until then the poster is what
+       the visitor sees. On a slow link the budget is already spent, so the
+       veil never drops over a poster they have been looking at for seconds;
+       the map simply fades in over it when ready. */
+    const veilLeft = VEIL_CAP_MS - performance.now();
+    if (veilLeft > 400) {
+      if (veil) veil.hidden = false;
+      setTimeout(liftVeil, veilLeft);
+    } else {
+      veilLifted = true;
+      performance.mark('hero-veil-lift');
+    }
     buildMap();
   } else if (!reduced) {
     toPoster();
