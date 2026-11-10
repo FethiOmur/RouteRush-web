@@ -27,6 +27,6 @@
     // Static assets ignore Range headers; Safari needs 206 to play video.
     "run_worker_first": ["/assets/*.mp4"]
   },
-  "workers_dev": true,
+  "workers_dev": false,
   "preview_urls": false
 }

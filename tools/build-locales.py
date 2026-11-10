@@ -19,6 +19,8 @@ Usage:  python3 tools/build-locales.py [--check]
         (for CI, or for answering "did someone hand-edit a generated file?").
 """
 
+import datetime
+import hashlib
 import json
 import pathlib
 import re
@@ -343,14 +345,13 @@ def rewrite_links(html, lang):
     # App Store CTAs: each locale reports as its own App Analytics campaign,
     # so installs can be read per market (see the note above the nav CTA).
     html = html.replace('ct=web-en&amp;', f'ct=web-{lang}&amp;')
-    # Home links point at the locale's own front page — but only these specific
-    # ones. A blanket href="/" rewrite would also hit the language switcher's
-    # English entry and strand every visitor inside one locale.
-    html = html.replace('<a href="/">Home</a>', f'<a href="/{lang}/">Home</a>')
-    html = html.replace('<div class="wordmark"><a href="/">',
-                        f'<div class="wordmark"><a href="/{lang}/">')
-    html = html.replace('<p class="cta">See the map for yourself — <a href="/">',
-                        f'<p class="cta">See the map for yourself — <a href="/{lang}/">')
+    # Home links point at the locale's own front page. Match the bare anchor
+    # only: the language switcher's English entry carries hreflang/aria
+    # attributes and the JS language hint carries an id, so neither matches and
+    # visitors can still leave the locale. Matching on the anchor rather than
+    # its text matters: this runs after translation, when "Home" has already
+    # become "Ana sayfa" (only Italian kept "Home", so only Italian worked).
+    html = html.replace('<a href="/">', f'<a href="/{lang}/">')
     # Language switcher: current locale is marked and inert, English loses the
     # marker it carries in the source.
     html = html.replace(' href="/" hreflang="en" aria-current="page"',
@@ -398,9 +399,29 @@ def write_sitemap(check):
     costs nothing. Generated rather than hand-kept for the same reason the
     pages are: adding a locale should not be an invitation to forget a file.
     """
-    today = (ROOT / "sitemap.xml").exists() and re.search(
-        r"<lastmod>([\d-]+)</lastmod>", (ROOT / "sitemap.xml").read_text())
-    stamp = LASTMOD or (today.group(1) if today else "2026-08-13")
+    manifest = json.loads(LASTMOD_FILE.read_text()) if LASTMOD_FILE.exists() else {}
+    dirty = False
+
+    def lastmod(rel):
+        """lastmod of one served file: kept while its bytes are unchanged,
+        moved to today when they change. A content hash rather than git dates,
+        because a git date changes with the very commit that records it, which
+        would make --check fail right after every commit."""
+        nonlocal dirty
+        digest = hashlib.sha256((ROOT / rel).read_bytes()).hexdigest()
+        entry = manifest.get(rel)
+        if entry and entry["sha256"] == digest:
+            return entry["lastmod"]
+        if check:
+            fail(f"{rel} changed since its sitemap lastmod was recorded "
+                 f"— run the build")
+        manifest[rel] = {"sha256": digest,
+                         "lastmod": datetime.date.today().isoformat()}
+        dirty = True
+        return manifest[rel]["lastmod"]
+
+    def served_file(lang, page):
+        return page if lang == "en" else f"{lang}/{page}"
 
     langs = ["en"] + LOCALES
     lines = ['<?xml version="1.0" encoding="UTF-8"?>',
@@ -420,7 +441,7 @@ def write_sitemap(check):
                              f'href="{url_for(alt, page)}"/>')
             lines.append('    <xhtml:link rel="alternate" hreflang="x-default" '
                          f'href="{url_for("en", page)}"/>')
-            lines.append(f"    <lastmod>{stamp}</lastmod>")
+            lines.append(f"    <lastmod>{lastmod(served_file(lang, page))}</lastmod>")
             lines.append("  </url>")
     # press.html is English-only on purpose: journalists asking for assets are
     # not the audience a translation serves, and a stale one would be worse.
@@ -430,7 +451,7 @@ def write_sitemap(check):
     for page in ("press.html", "privacy.html", "terms.html"):
         lines.append("  <url>")
         lines.append(f"    <loc>{ORIGIN}/{page}</loc>")
-        lines.append(f"    <lastmod>{stamp}</lastmod>")
+        lines.append(f"    <lastmod>{lastmod(page)}</lastmod>")
         lines.append("  </url>")
     lines.append("</urlset>")
     xml = "\n".join(lines) + "\n"
@@ -441,17 +462,16 @@ def write_sitemap(check):
             fail("sitemap.xml differs from what the sources produce")
         return None
     out.write_text(xml)
+    if dirty:
+        LASTMOD_FILE.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     return out
 
 
-LASTMOD = None   # set with --lastmod=YYYY-MM-DD when the copy actually changed
+# Per-file sitemap lastmod, keyed by served path: {"sha256": ..., "lastmod": ...}.
+LASTMOD_FILE = ROOT / "tools" / "lastmod.json"
 
 
 def main():
-    global LASTMOD
-    for a in sys.argv:
-        if a.startswith("--lastmod="):
-            LASTMOD = a.split("=", 1)[1]
     check = "--check" in sys.argv
     written = []
     for lang in LOCALES:
