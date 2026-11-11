@@ -270,7 +270,14 @@ export default {
 
     // /post/<id> and /u/<handle>. Anything deeper is not a share link.
     const [, kind, ...rest] = path.split("/");
-    const slug = decodeURIComponent(rest.join("/")).trim();
+    // A malformed percent-escape ("/u/%") makes decodeURIComponent throw;
+    // such a link is not a share link, so it falls through to the site (404).
+    let slug;
+    try {
+      slug = decodeURIComponent(rest.join("/")).trim();
+    } catch (e) {
+      return fetch(request);
+    }
     if (!slug || rest.length > 1) return fetch(request);
 
     const isProfile = kind === "u";
