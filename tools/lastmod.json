@@ -12,8 +12,8 @@
     "sha256": "36b69968ee4917aa09cec65c6fc3aef3bcd920d70fe97d24da4f39d2b9c6ead8"
   },
   "de/index.html": {
-    "lastmod": "2026-11-10",
-    "sha256": "391aafaeaf0797b860b612b45467c82a48d3714cfc7498ec93d59fdc2e67b6f7"
+    "lastmod": "2026-11-12",
+    "sha256": "679d99c0451b62a794159b7ec5579cd5e6af0d130a6402261beb9fa4ae70eece"
   },
   "es/credits.html": {
     "lastmod": "2026-11-10",
@@ -24,8 +24,8 @@
     "sha256": "bbb396bd50d199aff96211e216921b29b74cd022381ab543e999af3d497dc16d"
   },
   "es/index.html": {
-    "lastmod": "2026-11-10",
-    "sha256": "bf33bd85e2071fe5c17c86ba6cadf6d8e882fc5f61153e2fd25c686c94213917"
+    "lastmod": "2026-11-12",
+    "sha256": "62295a7b8ddf761f3998af5d7bc26a57c87dba608f3a67a98988801104f8b51c"
   },
   "faq.html": {
     "lastmod": "2026-11-10",
@@ -40,12 +40,12 @@
     "sha256": "bbdabe302c24093190154f0f535560f5e8c62c2b3dd5c982c60d34f277f5f87f"
   },
   "fr/index.html": {
-    "lastmod": "2026-11-10",
-    "sha256": "388bd6ac04e28ac95d4acfad3fae732e93fabee110603e11b2f9e0dc7b30dfbb"
+    "lastmod": "2026-11-12",
+    "sha256": "1c53a12dd15bd8d743a907f4ff9c7b41b54ddff2af948e1c361cbef280e63d68"
   },
   "index.html": {
-    "lastmod": "2026-11-10",
-    "sha256": "d05e8ad57819cb8e97df87cec8698927546f8be1d16ebe9af691a55d2b704918"
+    "lastmod": "2026-11-12",
+    "sha256": "5ac57fb1e93d482d4a6a84913e16306ad0d7ff1e6a9388e96c920c17950453ac"
   },
   "it/credits.html": {
     "lastmod": "2026-11-10",
@@ -56,8 +56,8 @@
     "sha256": "d74903e76a5d9ac607b7deab34f91f8088eb0efab678b028d40cc67f7d0639b9"
   },
   "it/index.html": {
-    "lastmod": "2026-11-10",
-    "sha256": "0d6e5d55f60ec974b796b62e1e435112da9cd3007b3811097b1618305a27d922"
+    "lastmod": "2026-11-12",
+    "sha256": "6ab6ffb5192df7bd84e9ba7b647d5c400e63cab0ccd1e320a5583b79ae2de6b9"
   },
   "press.html": {
     "lastmod": "2026-10-24",
@@ -80,7 +80,7 @@
     "sha256": "6d24275f37d5e5ac628dd635566188ecb7f738ce21154430311a53ec0b7886ec"
   },
   "tr/index.html": {
-    "lastmod": "2026-11-10",
-    "sha256": "85d96e7cf4514751ce21aecadbe72be8141b8a22bf29e98a67b5c2a99f1a3269"
+    "lastmod": "2026-11-12",
+    "sha256": "6a2775b98cadfb058172fe9c742ba1f4818a1299d3cf0452d88accad03dd8244"
   }
 }

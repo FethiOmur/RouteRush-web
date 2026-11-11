@@ -593,6 +593,11 @@
   .stage-visual { position: relative; min-width: 0; overflow: hidden; background: #000; }
   .stage-visual canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   .stage-visual .poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 42%; }
+  /* While the live map is coming, poster-start is scaled so its globe is the
+     live map's opening globe, limb on limb: the map then dissolves in over it
+     as a pure change of light instead of a second, bigger globe. The numbers
+     are computed per viewport by fitPoster() in the head script. */
+  html.poster-fit .stage-visual .poster { transform: translateY(var(--poster-dy, 0px)) scale(var(--poster-k, 1)); }
   #seq-map { position: absolute; inset: 0; opacity: 0; transition: opacity .7s ease; }
   #seq-map.is-live { opacity: 1; }
   /* Mapbox's own chrome, kept (TOS) but quieted to the house palette */
@@ -600,17 +605,29 @@
   #seq-map .mapboxgl-ctrl-attrib a { color: rgba(255,255,255,.55); }
 
   /* The loading veil — the "asset intro" every reference site opens with.
-     Shown only when the live map is coming; capped, never sticky. */
+     Shown only when the live map is coming and the hero is what the visitor
+     lands on; capped, never sticky. The head script decides (html.veil) so
+     it covers the first paint instead of dropping over a painted hero. */
   .hero-loading {
     position: fixed; inset: 0; z-index: 80; background: #000;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
-    opacity: 1; transition: opacity .5s ease; pointer-events: none;
+    display: none; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    opacity: 1; transition: opacity .45s cubic-bezier(.4,0,.2,1); pointer-events: none;
   }
-  .hero-loading.is-done { opacity: 0; }
-  .hero-loading[hidden] { display: none; }
+  html.veil .hero-loading { display: flex; }
+  /* Two-stage exit: the wordmark and bar leave first, then the black. Fading
+     all three together left the white script ghosted over the App Store
+     button and the globe for a third of a second. */
+  html.veil-out .hero-loading { opacity: 0; transition-delay: .14s; }
+  .hl-mark, .hl-bar { transition: opacity .16s ease-out, transform .24s cubic-bezier(.22,1,.36,1); }
+  html.veil-out .hl-mark, html.veil-out .hl-bar { opacity: 0; transform: translateY(-6px); }
   .hl-mark { font-family: 'Splash', cursive; font-size: 40px; color: #fff; }
   .hl-bar { width: 180px; height: 2px; background: rgba(255,255,255,.14); border-radius: 2px; overflow: hidden; }
-  .hl-bar i { display: block; height: 100%; width: 100%; background: #fff; transform-origin: left; transform: scaleX(0); transition: transform .3s ease; }
+  .hl-bar i { display: block; height: 100%; width: 100%; background: #fff; transform-origin: left; transform: scaleX(0); }
+  /* The bar is driven by time, not by map events: it starts with the first
+     paint and decelerates toward the cap, so it never sits at 0 while the
+     visitor waits. The lift finishes it to 1 (see lift() in the head). */
+  html.veil .hl-bar i { animation: hl-fill var(--veil-ms, 2500ms) cubic-bezier(.25,.6,.35,1) forwards; }
+  @keyframes hl-fill { from { transform: scaleX(0); } to { transform: scaleX(.88); } }
   .cue {
     position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
     writing-mode: vertical-rl; font-family: var(--ff-mono);
@@ -1301,6 +1318,11 @@
   @media (prefers-reduced-motion: no-preference) {
     html { scroll-behavior: smooth; }
   }
+  /* ...except the jump a deep link (/#leagues) makes while the page loads:
+     smooth, it flew the whole hero for two seconds before the section the
+     visitor asked for arrived. The head script sets the class, and drops it
+     after load so in-page anchors glide again. */
+  html.hash-jump { scroll-behavior: auto; }
   /* The nav floats over content, so anchored sections need breathing room —
      otherwise their headings land hidden underneath the fixed capsule. */
   [id] { scroll-margin-top: 92px; }
@@ -1411,10 +1433,113 @@
     if (location.hash) return;
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   });
+
+  // Hero boot decisions, made here because they must hold from the very first
+  // paint. Made at the end of <body> they came one paint late: the first frame
+  // was the split-column layout (no .has-motion yet), and on a real network
+  // the hero painted and THEN the black veil dropped over it. The hero script
+  // reads the result from window.__hero.
+  (function () {
+    var root = document.documentElement;
+    var VEIL_CAP_MS = 2500;   // counted from navigation start
+    var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    var thrifty = !!conn && (conn.saveData === true || /^(slow-2g|2g|3g)$/.test(conn.effectiveType || ''));
+    var params = new URLSearchParams(location.search);
+    // Software GL (SwiftShader / llvmpipe / WARP) flies the corridor at a few
+    // frames a second and takes >10 s to build the map, so a crawler or a
+    // GPU-less VM would sit on a black veil. Read from the driver's own
+    // renderer string — never the user agent. ?map=force skips only this check.
+    function softwareGL() {
+      try {
+        var c = document.createElement('canvas');
+        var gl = c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl');
+        if (!gl) return false;                         // no-WebGL is handled below
+        var ext = gl.getExtension('WEBGL_debug_renderer_info');
+        var renderer = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : '';
+        var lose = gl.getExtension('WEBGL_lose_context');
+        if (lose) lose.loseContext();
+        return /swiftshader|llvmpipe|software|microsoft basic render/i.test(renderer);
+      } catch (e) { return false; }
+    }
+    var noMap = params.has('nomap') || thrifty || !window.WebGLRenderingContext
+      || (params.get('map') !== 'force' && softwareGL());
+    // A deep link (/#leagues) lands below the hero: no veil over a section that
+    // has nothing to do with it, and the map is built only if the hero comes
+    // near the viewport (see the hero script).
+    var deep = !!location.hash && !/^#(top|sequence)?$/.test(location.hash);
+    var live = !reduced && !noMap;
+
+    // The poster is a still of the opening view rendered once at 1600x1000 and
+    // shown with object-fit: cover, so its globe came out 8% (desktop) to 16%
+    // (phone) smaller than the live map's and the dissolve showed two globes.
+    // GL JS 3.18 draws the opening globe (zoom 1.45) at a radius that depends
+    // only on the map's height h: r = 1.5h·ρ/√(d²−ρ²), ρ = 222.6, d = 1.0607h + ρ
+    // (measured through map.project at five viewports, within 0.1 px). In the
+    // poster the globe is centred with a 264.8 px limb radius.
+    function fitPoster(w, h) {
+      var rho = 222.6, d = 1.0607 * h + rho;
+      var r = 1.5 * h * rho / Math.sqrt(d * d - rho * rho);
+      var s = Math.max(w / 1600, h / 1000);              // object-fit: cover
+      var k = r / (264.8 * s);
+      var py = (h - 1000 * s) * 0.42 + 500 * s;          // object-position: center 42%
+      root.style.setProperty('--poster-k', k.toFixed(4));
+      root.style.setProperty('--poster-dy', (k * (h / 2 - py)).toFixed(1) + 'px');
+    }
+
+    var hero = window.__hero = { noMap: noMap, deep: deep, veil: false, lifted: true,
+                                 lift: lift, drop: drop, fitPoster: fitPoster };
+    // Idempotent; called by the opening view's idle (hero script) and by the
+    // hard cap below, which lives here so no failure further down the page can
+    // strand the veil. The bar finishes first, then the veil leaves in two
+    // stages (CSS, html.veil-out).
+    function lift() {
+      if (hero.lifted) return;
+      hero.lifted = true;
+      performance.mark('hero-veil-lift');
+      var bar = document.getElementById('hl-fill');
+      if (bar) {
+        var now = getComputedStyle(bar).transform;
+        bar.style.animation = 'none';
+        bar.style.transform = now === 'none' ? 'scaleX(0)' : now;
+        void bar.offsetWidth;
+        bar.style.transition = 'transform .18s ease-out';
+        bar.style.transform = 'scaleX(1)';
+      }
+      setTimeout(function () { root.classList.add('veil-out'); }, 120);
+      setTimeout(drop, 800);
+    }
+    function drop() {
+      hero.lifted = true;
+      root.classList.remove('veil', 'veil-out');
+    }
+
+    if (!reduced) root.classList.add('has-motion');
+    if (deep) {
+      root.classList.add('hash-jump');
+      window.addEventListener('load', function () {
+        setTimeout(function () { root.classList.remove('hash-jump'); }, 0);
+      });
+    }
+    if (live && !deep) { root.classList.add('poster-fit'); fitPoster(innerWidth, innerHeight); }
+    if (live) {
+      // If the page itself was slow to arrive the budget is already spent: no
+      // veil at all rather than a flash of one.
+      var veilLeft = VEIL_CAP_MS - performance.now();
+      if (!deep && veilLeft > 400) {
+        hero.veil = true; hero.lifted = false;
+        root.style.setProperty('--veil-ms', Math.round(veilLeft) + 'ms');
+        root.classList.add('veil');
+        setTimeout(lift, veilLeft);
+      } else {
+        performance.mark('hero-veil-lift');
+      }
+    }
+  })();
 </script>
 </head>
 <body>
-<div class="hero-loading" id="hero-loading" hidden>
+<div class="hero-loading" id="hero-loading" aria-hidden="true">
   <span class="hl-mark">RouteRush</span>
   <span class="hl-bar"><i id="hl-fill"></i></span>
 </div>
@@ -2169,8 +2294,6 @@
   const stage   = document.getElementById('stage-visual');
   const mapEl   = document.getElementById('seq-map');
   const poster  = document.getElementById('hero-poster');
-  const veil    = document.getElementById('hero-loading');
-  const veilBar = document.getElementById('hl-fill');
   const nav     = document.querySelector('.nav');
   const states  = Array.from(document.querySelectorAll('#states .state'));
   if (!section || !stage || !mapEl) return;
@@ -2178,28 +2301,11 @@
   const motionQuery = matchMedia('(prefers-reduced-motion: reduce)');
   let reduced = motionQuery.matches;
 
-  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-  const thrifty = !!conn && (conn.saveData === true || /^(slow-2g|2g|3g)$/.test(conn.effectiveType || ''));
-  const params = new URLSearchParams(location.search);
-  /* Software GL (SwiftShader / llvmpipe / WARP) flies the corridor at a few
-     frames a second and takes >10 s to build the map, so a crawler or a
-     GPU-less VM would sit on a black veil. Read from the driver's own
-     renderer string — never the user agent. ?map=force skips only this check. */
-  function softwareGL() {
-    try {
-      const c = document.createElement('canvas');
-      const gl = c.getContext('webgl2') || c.getContext('webgl') || c.getContext('experimental-webgl');
-      if (!gl) return false;                         /* no-WebGL is handled below */
-      const ext = gl.getExtension('WEBGL_debug_renderer_info');
-      const renderer = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : '';
-      const lose = gl.getExtension('WEBGL_lose_context');
-      if (lose) lose.loseContext();
-      return /swiftshader|llvmpipe|software|microsoft basic render/i.test(renderer);
-    } catch (e) { return false; }
-  }
-  const noMap = params.has('nomap')
-    || thrifty || !window.WebGLRenderingContext
-    || (params.get('map') !== 'force' && softwareGL());
+  /* Poster mode (save-data, no WebGL, software GL, ?nomap=1), the deep-link
+     entry and the veil were decided in the head script, before first paint. */
+  const boot = window.__hero || { noMap: true, deep: false, veil: false, lifted: true,
+                                  lift() {}, drop() {}, fitPoster() {} };
+  const noMap = boot.noMap;
 
   /* mapbox-gl.js (449 KB over the wire, 1.7 MB parsed) and its CSS are
      fetched only when the live map will actually be built. Poster visitors —
@@ -2233,7 +2339,7 @@
 
   function buildMap() {
     /* The veil is unstrandable BY CONSTRUCTION: its own hard timer lifts it
-       after VEIL_CAP_MS whatever the map is doing (see liftVeil). The map
+       at its cap whatever the map is doing (see lift() in the head). The map
        chain crosses a style load, a geojson fetch and 22 image callbacks —
        verified flaky under software GL, where one run went live in 10s and
        the next never did. The poster covers a slow map, so the map may keep
@@ -2252,7 +2358,13 @@
       interactive: false,
       attributionControl: { compact: true },   /* required by the TOS on a live map */
       fadeDuration: 0,
-      maxTileCacheSize: 2048,                  /* hold the corridor's tiles */
+      /* A ceiling only: GL JS sizes each source's cache from the viewport
+         (about 60 tiles on a desktop, 30 on a phone) and this can only lower
+         it. Raising the floor instead (minTileCacheSize: 240) was measured on
+         2026-11-12 and did not reduce the reverse-scroll holes: GL empties
+         its tile cache when the globe hands over to the flat projection, and
+         the holes are areas the way down never loaded at all. */
+      maxTileCacheSize: 2048,
       config: { basemap: {
         lightPreset: 'night',
         showAdminBoundaries: false,
@@ -2278,6 +2390,11 @@
       const under = (map.getStyle().layers.find(l => l.type === 'fill-extrusion') || {}).id;
 
       const withTimeout = (pr, ms) => Promise.race([pr, new Promise(res => setTimeout(() => res(null), ms))]);
+      /* A failed fetch (network error, 404, a body that is not JSON) resolves
+         null like a slow one does: a rejection used to escape this async
+         handler, warm() never ran and the hero sat on the poster until the
+         45 s watchdog. A missing data file costs its layer, not the map. */
+      const getJSON = (url, ms) => withTimeout(fetch(url).then(r => r.ok ? r.json() : null).catch(() => null), ms);
       /* The world's conquest. Thousands of illustrative claims clustered on
          real cities (Europe densest — the dive corridor and the market), plus
          the app's own far-zoom answer lifted from TerritoryRenderer: a real
@@ -2285,7 +2402,7 @@
          a constant-size SPECKLE dot from z2, fading out as the fills become
          legible. The blobs themselves fade out by street level, where only
          the real, street-snapped Turin claims remain. */
-      const world = await withTimeout(fetch('assets/world-territory.geojson').then(r => r.json()), 8000);
+      const world = await getJSON('assets/world-territory.geojson', 8000);
       if (!map) return;   /* the watchdog gave the page back to the poster meanwhile */
       if (world) {
         const wc = ['match', ['get', 'c']]
@@ -2304,21 +2421,25 @@
                      6.5, 0, 8.5, 0.9, 11.5, 0] } }, under);
       }
 
-      const terr = await withTimeout(fetch('assets/territory.geojson').then(r => r.json()), 6000);
+      const terr = await getJSON('assets/territory.geojson', 6000);
       if (!map) return;
-      if (!terr) { warm(); return; }   // conquest missing beats a stuck hero
-      map.addSource('terr', { type: 'geojson', data: terr });
-      map.addLayer({ id: 'terr-fill', type: 'fill', source: 'terr',
-        paint: { 'fill-color': colorExp, 'fill-opacity': 0.45, 'fill-emissive-strength': 0.85 } }, under);
-      map.addLayer({ id: 'terr-outline', type: 'line', source: 'terr',
-        paint: { 'line-color': colorExp, 'line-opacity': 0.95, 'line-emissive-strength': 1.0,
-                 'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1, 12, 2, 16, 3] },
-        layout: { 'line-join': 'round', 'line-cap': 'round' } }, under);
+      /* conquest missing beats a stuck hero: the world layers and their
+         speckle still draw, only the Turin claims and pins are skipped */
+      const claims = terr ? terr.features : [];
+      if (terr) {
+        map.addSource('terr', { type: 'geojson', data: terr });
+        map.addLayer({ id: 'terr-fill', type: 'fill', source: 'terr',
+          paint: { 'fill-color': colorExp, 'fill-opacity': 0.45, 'fill-emissive-strength': 0.85 } }, under);
+        map.addLayer({ id: 'terr-outline', type: 'line', source: 'terr',
+          paint: { 'line-color': colorExp, 'line-opacity': 0.95, 'line-emissive-strength': 1.0,
+                   'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1, 12, 2, 16, 3] },
+          layout: { 'line-join': 'round', 'line-cap': 'round' } }, under);
+      }
 
       /* Only claims that CARRY a pin get one — the original owners the
          finale frames. The city-fill claims are anonymous rivals: two
          hundred repeating faces would read smaller, not bigger. */
-      const pinned = terr.features.filter(f => f.properties.pin);
+      const pinned = claims.filter(f => f.properties.pin);
       await withTimeout(Promise.all(pinned.map(f => new Promise(res => {
         map.loadImage('assets/pins/pin-' + f.properties.owner + '.png', (e, img) => {
           if (!e && img && map && !map.hasImage(f.properties.pin)) map.addImage(f.properties.pin, img, { pixelRatio: 3 });
@@ -2338,7 +2459,7 @@
         const dots = [];
         if (world) for (const f of world.features) dots.push({ type: 'Feature',
           properties: { c: f.properties.c }, geometry: { type: 'Point', coordinates: centroid(f) } });
-        for (const f of terr.features) dots.push({ type: 'Feature',
+        for (const f of claims) dots.push({ type: 'Feature',
           properties: { c: f.properties.color_index % 12 }, geometry: { type: 'Point', coordinates: [f.properties.cx, f.properties.cy] } });
         const dc = ['match', ['get', 'c']]
           .concat(PALETTE.flatMap((c, i) => [i, c])).concat([PALETTE[0]]);
@@ -2391,42 +2512,44 @@
      first screen needs: the OPENING camera (cam(warp(progress)) — the top of
      the page, or wherever a reload restored the scroll to). Until station
      0.116 the flight only crosses low-zoom globe tiles, so the veil lifts on
-     that view's idle event or after VEIL_CAP_MS, whichever comes first. If
-     the map is not live by then the poster underneath stays visible and the
-     map fades in over it (#seq-map.is-live) once its opening view is ready.
+     that view's idle event or at its hard cap (2.5 s from navigation start,
+     owned by the head script), whichever comes first. If the map is not live
+     by then the poster underneath stays visible and the map fades in over it
+     (#seq-map.is-live) once its opening view is ready.
      Nothing preloads the rest of the corridor: the old veil flew all eight
      stations first (4-15s), and jumpTo({ preloadOnly: true }) was measured
      on 2026-11-10 to buy nothing in GL JS 3.18 (preloaded tiles never reach
      the render cache, so scroll-to-p0.42/0.84 timings were identical with
      and without it) while costing a phone bandwidth and worker CPU. Deeper
-     tiles load on demand; Mapbox draws the loaded parent tile overscaled
-     until they land, so a fast scroll shows soft tiles, never holes. */
+     tiles load on demand; Mapbox draws a loaded parent or child tile until
+     they land, so a fast scroll down shows soft tiles. Scrolling back up
+     can still show flat navy where the way down never loaded a tile (GL
+     also empties its cache at the globe/flat handover, zoom ~5-6). */
   const VEIL_CAP_MS = 2500;
-  let veilLifted = false;
-
-  /* Idempotent. Called by the opening view's idle, and by the hard timer. */
-  function liftVeil() {
-    if (veilLifted) return;
-    veilLifted = true;
-    if (veilBar) veilBar.style.transform = 'scaleX(1)';
-    if (veil) { veil.classList.add('is-done'); setTimeout(() => { veil.hidden = true; }, 600); }
-    performance.mark('hero-veil-lift');
-  }
 
   const bounded = ms => new Promise(r => { if (!map) return r(); const done = () => r(); map.once('idle', done); setTimeout(done, ms); });
   async function warm() {
     if (!map) return;
-    if (veilBar) veilBar.style.transform = 'scaleX(0.6)';
     const p0 = currentProgress();
     const c0 = cam(warp(p0));
     syncLabels(c0.zoom);
     map.jumpTo(c0);
     /* a late map (style slower than the veil cap) can afford to wait longer:
        the poster is on screen, so nobody is looking at a half-loaded view */
-    await bounded(veilLifted ? 4000 : VEIL_CAP_MS);
+    await bounded(boot.lifted ? 4000 : VEIL_CAP_MS);
     if (!map) return;   /* the watchdog or an error gave up meanwhile */
-    goLive();
-    liftVeil();
+    if (!boot.lifted) {
+      /* The veil is still opaque: put the map up under it with no fade, so
+         the veil opens onto one globe. Cross-fading map and poster while the
+         veil faded showed both globes at once. */
+      mapEl.style.transition = 'none';
+      goLive();
+      void mapEl.offsetWidth;
+      mapEl.style.transition = '';
+      boot.lift();
+    } else {
+      goLive();
+    }
   }
 
   /* Idempotent: the map becomes the visible hero. Never called for a map
@@ -2440,9 +2563,9 @@
   }
 
   function toPoster() {
+    root.classList.remove('poster-fit');
     if (poster) poster.src = 'assets/hero/poster-final.webp';
-    if (veil) veil.hidden = true;
-    veilLifted = true;
+    boot.lift();
     if (map) { try { map.remove(); } catch (e) {} map = null; }
     mapEl.style.display = 'none';
   }
@@ -2502,7 +2625,8 @@
       section.style.height = '';
       root.classList.remove('has-motion');
       if (poster) poster.src = 'assets/hero/poster-final.webp';
-      if (veil) veil.hidden = true;
+      root.classList.remove('poster-fit');
+      boot.drop();
       mapEl.style.display = 'none';
     } else {
       section.style.height = sequence.scrollVh + 'vh';
@@ -2511,28 +2635,53 @@
     refresh();
   }
 
+  /* keeps poster-start's globe on the map's as the stage resizes; the head
+     script made the first fit from innerWidth/innerHeight */
+  function fitPoster() {
+    if (root.classList.contains('poster-fit')) boot.fitPoster(stage.clientWidth, stage.clientHeight);
+  }
+
   addEventListener('scroll', onScroll, { passive: true });
   addEventListener('resize', refresh);
+  addEventListener('resize', fitPoster);
   motionQuery.addEventListener ? motionQuery.addEventListener('change', applyMode)
                                : motionQuery.addListener(applyMode);
 
   applyMode();
-  if (!reduced && !noMap) {
-    /* hard cap, counted from navigation start. If the page itself was slow
-       to arrive the budget is already spent: the veil never drops over a
-       poster the visitor has been looking at for seconds; the map simply
-       fades in over it when ready. */
-    const veilLeft = VEIL_CAP_MS - performance.now();
-    if (veilLeft > 400) {
-      if (veil) veil.hidden = false;
-      setTimeout(liftVeil, veilLeft);
-    } else {
-      veilLifted = true;
-      performance.mark('hero-veil-lift');
-    }
+  fitPoster();
+  let started = false;
+  function startMap() {
+    if (started) return;
+    started = true;
     loadMapbox().then(() => {
       if (!mapboxgl.supported || mapboxgl.supported()) buildMap(); else toPoster();
     }).catch(() => toPoster());
+  }
+  if (!reduced && !noMap) {
+    if (boot.deep && 'IntersectionObserver' in window) {
+      /* A deep link lands below the hero. Build the map only once the hero
+         comes within a viewport of the screen, so a visit that never scrolls
+         back up costs no map load (and no tiles for a view nobody sees). The
+         observer is armed after load, when the fragment jump has settled;
+         armed earlier it would see the hero at scrollY 0 and fire at once.
+         Such a visitor enters the hero from its far end, so the poster
+         behind the late map is the finale, not the opening globe. */
+      if (poster) {
+        poster.src = 'assets/hero/poster-final.webp';
+        /* decode now: off-screen, an async-decoded image can come up blank
+           for a frame when the visitor scrolls back into the hero */
+        if (poster.decode) poster.decode().catch(() => {});
+      }
+      const arm = () => {
+        const io = new IntersectionObserver(entries => {
+          if (entries.some(e => e.isIntersecting)) { io.disconnect(); startMap(); }
+        }, { rootMargin: '100% 0px' });
+        io.observe(section);
+      };
+      if (document.readyState === 'complete') arm(); else addEventListener('load', arm, { once: true });
+    } else {
+      startMap();
+    }
   } else if (!reduced) {
     toPoster();
   }
