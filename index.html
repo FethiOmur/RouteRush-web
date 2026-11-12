@@ -356,10 +356,16 @@
     height: 48px; padding: 0 22px; border-radius: 999px;
     font-size: 15px; font-weight: 640; letter-spacing: -.012em;
     border: 1px solid transparent; cursor: pointer; white-space: nowrap;
-    transition: transform .42s var(--spring), background-color .32s ease, border-color .32s ease;
+    /* Hover answers in .18s: at .32s the tint was still catching up after the
+       pointer had settled, which reads as lag rather than as softness. */
+    /* --btn-fade is the hero copy's end-of-flight fade (see .stage-copy.is-out).
+       It rides in this list because the hero buttons fade themselves, and a
+       separate `transition` there would replace the hover and press timings. */
+    transition: transform .42s var(--spring), background-color .18s ease-out, border-color .18s ease-out,
+                var(--btn-fade, opacity 0s);
   }
   /* Feedback on pointer-DOWN, not on release, and fast enough to feel direct. */
-  .btn:active { transform: scale(.97); transition: transform var(--press); }
+  .btn:active { transform: scale(.97); transition: transform var(--press), var(--btn-fade, opacity 0s); }
   .btn-primary { background: #fff; color: #000; }
   .btn-primary svg { fill: #000; }
   .btn-primary:hover { background: rgba(255,255,255,.9); }
@@ -514,8 +520,10 @@
     .lockup-xl img { width: 62px; height: 62px; }
   }
   .nav-links { display: flex; gap: 28px; margin-right: 8px; }
-  .nav-links a { font-size: 14px; color: var(--text-2); transition: color .3s ease; }
+  .nav-links a { font-size: 14px; color: var(--text-2); transition: color .3s ease, opacity .2s ease-out; }
   .nav-links a:hover { color: #fff; }
+  /* Pressed answers on pointer-down, like .btn:active; the release eases back. */
+  .nav-links a:active { opacity: .6; transition: color .3s ease, opacity var(--press); }
   @media (max-width: 860px) {
     .nav-links { display: none; }
     /* With the links gone the full-width capsule is mostly empty glass — the
@@ -580,10 +588,20 @@
   .state {
     position: absolute; inset: 18px 0 auto 0; max-width: 46ch;
     opacity: 0; transform: translateY(9px);
-    transition: opacity .28s linear, transform .38s cubic-bezier(.22,1,.36,1);
+    /* Leaving: a quick fade in place, front-loaded so the old copy is under
+       ~10% by the time the new one starts (80ms), then a silent reset to the
+       9px start line once invisible. With one symmetric crossfade the two
+       paragraphs sat on top of each other for ~160ms, and the motion the eye
+       caught was the old copy dropping 9px, against the scroll. */
+    transition: opacity .14s cubic-bezier(0,0,.2,1), transform 0s linear .14s;
     pointer-events: none;
   }
-  .state.is-active { opacity: 1; transform: none; pointer-events: auto; }
+  /* Entering waits until the old copy is mostly gone, so its rise is the
+     only motion on screen and it moves with the scroll. */
+  .state.is-active {
+    opacity: 1; transform: none; pointer-events: auto;
+    transition: opacity .24s ease-out .08s, transform .42s cubic-bezier(.22,1,.36,1) .08s;
+  }
   .state b { display: block; font-size: 11px; letter-spacing: .17em; text-transform: uppercase; margin-bottom: 9px; font-weight: 600; }
   .state p { color: var(--text-2); font-size: clamp(14.5px, 1.15vw, 17px); line-height: 1.55; }
 
@@ -600,6 +618,18 @@
   html.poster-fit .stage-visual .poster { transform: translateY(var(--poster-dy, 0px)) scale(var(--poster-k, 1)); }
   #seq-map { position: absolute; inset: 0; opacity: 0; transition: opacity .7s ease; }
   #seq-map.is-live { opacity: 1; }
+  /* A dark foot that rises over the last 4% of the flight, so the stage
+     hands off to the black section below through a gradient instead of
+     sliding up as a hard-edged bright rectangle. It lives inside the map
+     container at z-index 1 because Mapbox's logo and attribution sit there
+     at z-index 2: the foot passes under them, and the TOS chrome stays
+     readable on the final frame. */
+  #seq-map::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 14%;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(180deg, rgba(0,0,0,0), #000);
+    opacity: clamp(0, calc((var(--p) - .96) / .04), 1);
+  }
   /* Mapbox's own chrome, kept (TOS) but quieted to the house palette */
   #seq-map .mapboxgl-ctrl-attrib { background: rgba(0,0,0,.35); color: rgba(255,255,255,.45); font-size: 10px; }
   #seq-map .mapboxgl-ctrl-attrib a { color: rgba(255,255,255,.55); }
@@ -632,6 +662,9 @@
     position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
     writing-mode: vertical-rl; font-family: var(--ff-mono);
     font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--text-4);
+    /* Its job is done once scrolling starts: gone over the first 5% of the
+       flight instead of riding the whole way and sliding out with the map. */
+    opacity: clamp(0, calc(1 - var(--p) / .05), 1);
   }
 
   @media (max-width: 900px) {
@@ -896,16 +929,25 @@
     overflow: hidden;
     border-radius: 20px; padding: 22px;
     display: flex; flex-direction: column; gap: 11px; min-width: 0;
-    transition: transform .5s var(--spring), box-shadow .4s ease, background-color .4s ease;
+    transition: translate .45s var(--spring), box-shadow .3s ease, background-color .3s ease;
   }
-  /* Hover thickens the material and lifts it further — same four shadow parts. */
-  .tile:hover {
-    transform: translateY(-3px); background: var(--glass-tint-strong);
-    box-shadow:
-      inset 0 1px 0 0 var(--glass-rim),
-      inset 0 0 0 1px rgba(255,255,255,.22),
-      inset 0 -10px 24px -12px rgba(255,255,255,.34),
-      0 22px 60px rgba(0,0,0,.6), 0 2px 10px rgba(0,0,0,.42);
+  /* Hover thickens the material and lifts it further — same four shadow parts.
+     The lift uses `translate`, not `transform`: every tile is also a
+     [data-reveal] element, and `[data-reveal].is-in { transform: none }`
+     comes later at the same specificity, so a transform lift never showed.
+     The two properties compose, so the reveal and the hover cannot fight.
+     The transitions that animate it live in the reveal list, which replaces
+     this one under has-motion. Gated on a real hover so a tap on a phone
+     does not leave a tile stuck in the lifted state. */
+  @media (hover: hover) {
+    .tile:hover {
+      translate: 0 -3px; background: var(--glass-tint-strong);
+      box-shadow:
+        inset 0 1px 0 0 var(--glass-rim),
+        inset 0 0 0 1px rgba(255,255,255,.22),
+        inset 0 -10px 24px -12px rgba(255,255,255,.34),
+        0 22px 60px rgba(0,0,0,.6), 0 2px 10px rgba(0,0,0,.42);
+    }
   }
   .tile .h3 { letter-spacing: -.02em; }
   .tile p { color: var(--text-2); font-size: 14px; line-height: 1.5; }
@@ -1045,7 +1087,10 @@
     -webkit-backdrop-filter: blur(20px) saturate(160%);
     box-shadow: 0 12px 40px rgba(0,0,0,.5);
     font-size: 14px; color: var(--text-2);
-    opacity: 0; transition: opacity .4s ease, transform .4s ease;
+    /* This is the EXIT transition (the state without .is-in): a dismissal
+       should be quicker than an arrival, and at the old symmetric .4s a third
+       of it was spent at near-zero opacity. The entrance is on .is-in. */
+    opacity: 0; transition: opacity .2s cubic-bezier(.4,0,1,1), transform .24s cubic-bezier(.4,0,1,1);
     /* Fixed + left:50% leaves the box only half the viewport to be laid out in,
        so shrink-to-fit collapsed it to ~195px on a phone and broke the sentence
        across four lines. max-content sizes it to the copy; max-width still caps
@@ -1054,7 +1099,10 @@
     max-width: calc(100vw - 32px);
   }
   .lang-hint.is-shown { display: flex; }
-  .lang-hint.is-in { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .lang-hint.is-in {
+    opacity: 1; transform: translateX(-50%) translateY(0);
+    transition: opacity .3s ease-out, transform .45s var(--ease-out);
+  }
   .lang-hint a {
     flex: none; padding: 7px 15px; border-radius: 999px;
     background: #fff; color: #000; font-size: 13px; font-weight: 560; text-decoration: none;
@@ -1065,7 +1113,7 @@
     cursor: pointer;
   }
   .lang-hint button:hover { color: #fff; }
-  @media (prefers-reduced-motion: reduce) { .lang-hint { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .lang-hint, .lang-hint.is-in { transition: none; } }
   @media (max-width: 460px) {
     .lang-hint { gap: 10px; padding-left: 14px; font-size: 13px; }
   }
@@ -1110,11 +1158,18 @@
      it takes a plain deep ease-out and runs slightly longer than the movement,
      which is what leaves the type hanging soft for a beat after it stops. */
   [data-reveal] { opacity: 0; transform: translateY(20px); filter: blur(14px); }
+  /* The last three entries are hover properties, not reveal ones (the bento
+     tile's lift and material; see .tile:hover). This list replaces the tile's
+     own transition, so they must live here, and they take no delay: the
+     stagger `--d` is for the entrance, and on a hover it read as lag. */
   html.has-motion [data-reveal] {
     transition: opacity .55s ease-out,
                 transform .75s var(--spring),
-                filter .9s cubic-bezier(.22, 1, .3, 1);
-    transition-delay: var(--d, 0ms);
+                filter .9s cubic-bezier(.22, 1, .3, 1),
+                translate .45s var(--spring),
+                background-color .3s ease,
+                box-shadow .3s ease;
+    transition-delay: var(--d, 0ms), var(--d, 0ms), var(--d, 0ms), 0s, 0s, 0s;
     will-change: transform, opacity;
   }
   [data-reveal].is-in { will-change: auto; }
@@ -1190,6 +1245,11 @@
      clear tint, no sheen film — the lensing is the effect. */
   .btn-ghost.lg-refract { --glass-tint: rgba(24, 28, 40, .22); background: var(--glass-tint); }
   .btn-ghost.lg-refract::before { display: none; }
+  /* The rule above has the same specificity as `.btn-ghost:hover` and comes
+     later, so it silently ate the hover wherever refraction is on. The hover
+     tint steps to .42, not the frosted .62: thick enough to answer the
+     pointer, still clear enough that the lensing reads through it. */
+  .btn-ghost.lg-refract:hover { background: rgba(31, 37, 54, .42); }
   /* Feature tiles get the same treatment; their sheen also steps aside. */
   /* Tiles are large flat rectangles: the nav's bright lens ring reads as a
      white border at that scale, not as a lens edge. Quiet it to a hairline and
@@ -1206,6 +1266,18 @@
       inset 0 1px 0 0 rgba(255,255,255,.10),
       inset 0 0 0 .5px rgba(255,255,255,.05),
       0 26px 60px -28px rgba(0,0,0,.9);
+  }
+  /* The refracted tile's hover, in its own quieter terms: the frosted hover
+     above would bury the lensing under a .62 tint and a bright ring. Same
+     three shadow parts as the rest state so the change interpolates. */
+  @media (hover: hover) {
+    .tile.lg-refract:hover {
+      background: rgba(31, 37, 54, .42);
+      box-shadow:
+        inset 0 1px 0 0 rgba(255,255,255,.18),
+        inset 0 0 0 .5px rgba(255,255,255,.10),
+        0 32px 64px -28px rgba(0,0,0,.95);
+    }
   }
 
 
@@ -1246,7 +1318,15 @@
   /* Hidden copies of EVERY phrase reserve the width. They are block-level, so
      each takes its own line and the inline-block roll resolves to the widest of
      them — the capsule then never resizes as words swap. */
-  .roll { position: relative; overflow: hidden; height: 27px; display: inline-block; }
+  /* The mask feathers the window's top and bottom 5px: mid-roll the words
+     dissolve through the edge instead of being guillotined flat, which at 2x
+     and 3x read as a clipping bug. The resting word's caps sit inside the
+     opaque band, so it is untouched. */
+  .roll {
+    position: relative; overflow: hidden; height: 27px; display: inline-block;
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 5px, #000 22px, transparent 27px);
+            mask-image: linear-gradient(180deg, transparent 0, #000 5px, #000 22px, transparent 27px);
+  }
   .roll .ghost { visibility: hidden; white-space: nowrap; display: block; }
   .roll b {
     position: absolute; inset: 0; display: flex; align-items: center;
@@ -1258,11 +1338,15 @@
   .roll b.run  { animation-delay: 0s; }
   .roll b.rush { animation-delay: 3.2s; }
   .roll b.ride { animation-delay: 6.4s; }
-  /* Each word owns a third of the cycle: rise in, dwell, leave upward. */
+  /* Each word owns a third of the cycle: rise in, dwell, leave upward. The
+     exit (33.333% -> 38.333%, 3200-3680ms) is exactly the next word's entry
+     window (its 0% -> 5%), on the same curve, so the two words stay one line
+     apart and move as one odometer roll. The exit used to finish before the
+     next entry began, leaving the label blank for ~200ms on every change. */
   @keyframes roll {
     0%              { opacity: 0; transform: translateY(100%); }
-    4%, 30%         { opacity: 1; transform: translateY(0); }
-    34%, 100%       { opacity: 0; transform: translateY(-100%); }
+    5%, 33.333%     { opacity: 1; transform: translateY(0); }
+    38.333%, 100%   { opacity: 0; transform: translateY(-100%); }
   }
   @media (prefers-reduced-motion: reduce) {
     .roll b { animation: none; }
@@ -1337,15 +1421,23 @@
      ============================================================ */
   .has-motion .stage { display: block; }
   .has-motion .stage-visual { position: absolute; inset: 0; }
+  /* The ≤900px split layout's border-bottom is reset here, not only at ≤860:
+     over the full-bleed map it was a 1px seam across the live flight, and in
+     861–900px it sat along the bottom of the screen. */
   .has-motion .stage-copy {
     position: relative; z-index: 2; height: 100%; max-width: 640px;
-    border-right: 0;
+    border-right: 0; border-bottom: 0;
+  }
+  /* The scrim is a pseudo-element, not the column's background, so it can
+     fade on its own at the end of the flight (below). */
+  .has-motion .stage-copy::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
     background: linear-gradient(90deg,
       rgba(0,0,0,.84) 0%, rgba(0,0,0,.58) 52%, rgba(0,0,0,0) 100%);
   }
   @media (max-width: 860px) {
-    .has-motion .stage-copy {
-      max-width: none; height: auto; min-height: 62%;
+    .has-motion .stage-copy { max-width: none; height: auto; min-height: 62%; }
+    .has-motion .stage-copy::before {
       background: linear-gradient(180deg,
         rgba(0,0,0,.88) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,0) 100%);
     }
@@ -1355,11 +1447,35 @@
      with it and passes behind the nav capsule, where the refractive backdrop
      renders the CTA label as ghosted double text — the single worst-looking
      moment on the page, and worst of all on a phone, where the copy block is
-     tall enough to still be mid-screen when the release starts. Dissolving it
-     across the last 4.5% of the flight means the stage is already empty by the
-     time it moves. `--p` is the same progress value the canvas reads, so this
-     stays deterministic in both scroll directions and needs no new listener. */
-  .has-motion .stage-copy { opacity: clamp(0, calc((1 - var(--p)) / .045), 1); }
+     tall enough to still be mid-screen when the release starts. So the copy
+     leaves before the release, as a state, not a scrub: the hero script sets
+     .is-out at p >= .965 and clears it below .955 (the gap stops it
+     flickering when the visitor rests on the threshold).
+     It used to be a scroll-linked opacity on the whole column, which had
+     three faults: the visitor could rest on a half-transparent UI; at p 1 the
+     invisible App Store button was still clickable and reachable by Tab; and
+     the moment the column dropped below opacity 1 it became a backdrop root,
+     so the glass buttons inside it stopped sampling the map and popped to
+     dark grey. Hence: only the leaves fade, never an ancestor of the glass
+     (a glass element's own opacity is safe); the text goes first and the
+     scrim lifts after it, so no half-faded type ever sits on the bare map;
+     pointer-events go at once and visibility after the fade, which takes the
+     links out of hit-testing and the tab order (the script also sets inert). */
+  /* One fade, two carriers: the text blocks take it as their transition, the
+     buttons (.hero-cta > .btn) through --btn-fade in .btn's own list. */
+  .has-motion .stage-copy { --btn-fade: opacity .3s cubic-bezier(.22,1,.36,1) .06s; }
+  .has-motion .stage-copy.is-out { --btn-fade: opacity .2s cubic-bezier(.4,0,1,1); }
+  .has-motion .stage-copy > :not(.hero-cta) { transition: var(--btn-fade); }
+  .has-motion .stage-copy::before { transition: opacity .3s cubic-bezier(.4,0,.2,1); }
+  .has-motion .stage-copy.is-out > :not(.hero-cta),
+  .has-motion .stage-copy.is-out .hero-cta > * { opacity: 0; }
+  .has-motion .stage-copy.is-out::before {
+    opacity: 0; transition: opacity .36s cubic-bezier(.4,0,.2,1) .12s;
+  }
+  .has-motion .stage-copy.is-out {
+    pointer-events: none; visibility: hidden;
+    transition: visibility 0s linear .48s;
+  }
   /* Full-bleed layout: the copy column now owns the top-left, so the H3 HUD
      moves to the right shoulder, clear of the eyebrow. */
 </style>
@@ -2209,14 +2325,20 @@
   document.getElementById('lang-hint-x').addEventListener('click', function () {
     remember();
     el.classList.remove('is-in');
-    setTimeout(function () { el.classList.remove('is-shown'); }, 400);
+    // matches the CSS exit (.24s), so display:none lands as the card does
+    setTimeout(function () { el.classList.remove('is-shown'); }, 240);
   });
 
   // After the hero has had its moment. Nothing here can shift layout — the
   // element is fixed — but arriving mid-flight would still be a distraction.
   setTimeout(function () {
     el.classList.add('is-shown');
-    requestAnimationFrame(function () { el.classList.add('is-in'); });
+    // Force a style pass while the card is displayed but not yet .is-in, so
+    // the entrance has a start state to animate from. One rAF was a race:
+    // rAF callbacks run before the frame's style pass, so display:flex and
+    // .is-in could land in the same recalc and the card popped in (desktop).
+    void el.offsetWidth;
+    el.classList.add('is-in');
   }, 2200);
 })();
 </script>
@@ -2327,11 +2449,24 @@
   const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
 
   /* ---------- copy stops, driven by the glided progress ---------- */
+  /* The copy column leaves at the end of the flight as a state with
+     hysteresis (out at .965, back below .955), never as a scrubbed opacity;
+     see `.stage-copy.is-out` in the stylesheet for why. `inert` takes the
+     links out of the tab order and the accessibility tree at once, while the
+     CSS fade is still running. Reduced motion has no flight, so no exit. */
+  const copyCol = section.querySelector('.stage-copy');
+  let copyOut = false;
   function paintUI(progress) {
     section.style.setProperty('--p', progress.toFixed(4));
     let active = 0;
     for (let i = 0; i < sequence.copyStops.length; i++) if (progress >= sequence.copyStops[i]) active = i;
     for (let i = 0; i < states.length; i++) states[i].classList.toggle('is-active', i === active);
+    const out = !reduced && (copyOut ? progress >= 0.955 : progress >= 0.965);
+    if (out !== copyOut && copyCol) {
+      copyOut = out;
+      copyCol.classList.toggle('is-out', out);
+      copyCol.inert = out;
+    }
   }
 
   /* ---------- the live map ---------- */
