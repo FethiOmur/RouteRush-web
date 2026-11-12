@@ -13,7 +13,7 @@
   },
   "de/index.html": {
     "lastmod": "2026-11-12",
-    "sha256": "9d3eed9015d66d6b02d3a262180870debce13a94a1593f49eb62d2776b71b92f"
+    "sha256": "beda9264d010919da577c64c6ad8a2149c3b192cb22db13bb823e2c0a9c0e826"
   },
   "es/credits.html": {
     "lastmod": "2026-11-10",
@@ -25,7 +25,7 @@
   },
   "es/index.html": {
     "lastmod": "2026-11-12",
-    "sha256": "f6a03fc059e260f99bde641b941ddd6fed8cf87b5606b9d555451483acfb9064"
+    "sha256": "9ae4b5d4ea7a805e0cc25eb769b750022c0bdcec91bb1f01c7a8a7528a0a158a"
   },
   "faq.html": {
     "lastmod": "2026-11-10",
@@ -41,11 +41,11 @@
   },
   "fr/index.html": {
     "lastmod": "2026-11-12",
-    "sha256": "0afbab879ce0da662e09c520d15c1fe5f749909fdc9025c04d4f21c2fb6e47a6"
+    "sha256": "9ea09d6623ca2d17adaff6a6d8acbdb1ab3e1959a732161109741727bcf6d0c2"
   },
   "index.html": {
     "lastmod": "2026-11-12",
-    "sha256": "84ef8820b9912bb0b9aa0cb303b777ed203bba154be577661c4a42d1ddcd04b0"
+    "sha256": "2cb8d2a9d2b3b45d888d3d6b8fdd71d1770265b02b1735ee453549a01678eaf3"
   },
   "it/credits.html": {
     "lastmod": "2026-11-10",
@@ -57,7 +57,7 @@
   },
   "it/index.html": {
     "lastmod": "2026-11-12",
-    "sha256": "6fe57e92c684690889068a2c044dc4ff7a45da7b34cf9c54498794d31160ad0f"
+    "sha256": "bfe44446fe42f3e99d6157ea4d321db0350735f416154d75b4408ebe3a4b20ab"
   },
   "press.html": {
     "lastmod": "2026-10-24",
@@ -81,6 +81,6 @@
   },
   "tr/index.html": {
     "lastmod": "2026-11-12",
-    "sha256": "7aff8329f92a53884095fd81202aa8b32b91657a6125b3b38c6d89124dac987e"
+    "sha256": "9949ba2b85e99f14c64f09044eca963d1a856acaa18ceb449e0d33b9ee84034c"
   }
 }

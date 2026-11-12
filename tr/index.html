@@ -1155,9 +1155,11 @@
 
      Filter gets its own duration and its own curve. The spring on `transform`
      overshoots by design; a blur cannot overshoot (negative radius clamps), so
-     it takes a plain deep ease-out and runs slightly longer than the movement,
-     which is what leaves the type hanging soft for a beat after it stops. */
-  [data-reveal] { opacity: 0; transform: translateY(20px); filter: blur(14px); }
+     it takes a plain deep ease-out. It used to start at 14px and run .9s,
+     longer than the movement: siblings 60 ms apart were all still a soft
+     smear together, so the stagger never read. At 8px / .6s each line is
+     legible about when the next one starts. */
+  [data-reveal] { opacity: 0; transform: translateY(20px); filter: blur(8px); }
   /* The last three entries are hover properties, not reveal ones (the bento
      tile's lift and material; see .tile:hover). This list replaces the tile's
      own transition, so they must live here, and they take no delay: the
@@ -1165,7 +1167,7 @@
   html.has-motion [data-reveal] {
     transition: opacity .55s ease-out,
                 transform .75s var(--spring),
-                filter .9s cubic-bezier(.22, 1, .3, 1),
+                filter .6s cubic-bezier(.22, 1, .3, 1),
                 translate .45s var(--spring),
                 background-color .3s ease,
                 box-shadow .3s ease;
@@ -1236,8 +1238,8 @@
      no sheen, hairline ring only. The lensing IS the effect.
      ============================================================ */
   .nav .wrap.lg-refract {
-    -webkit-backdrop-filter: url(#lgLens) blur(2px) saturate(1.5) brightness(1.04);
-    backdrop-filter: url(#lgLens) blur(2px) saturate(1.5) brightness(1.04);
+    -webkit-backdrop-filter: url(#lgLens) blur(5px) saturate(1.5) brightness(1.04);
+    backdrop-filter: url(#lgLens) blur(5px) saturate(1.5) brightness(1.04);
     --glass-tint: rgba(24, 28, 40, .22);   /* clearer: refraction needs transmission */
   }
   .nav .wrap.lg-refract::before { display: none; }          /* no sheen film */
@@ -1397,7 +1399,10 @@
   /* Smooth anchor navigation. Position-driven work (the hero scrub, the nav
      condensing) is unaffected: smooth scrolling only animates the journey,
      and every frame of it still resolves through the same scroll position —
-     so a nav click glides through the hero sequence instead of teleporting.
+     so a nav click glides instead of teleporting. A link whose journey
+     crosses the hero flight is not left to this: native smooth scrolling
+     crossed the 460vh flight in about a second, so the hero script drives
+     those clicks itself (see "in-page links that cross the flight").
      Gated on reduced-motion: an instant jump IS the reduced-motion behaviour. */
   @media (prefers-reduced-motion: no-preference) {
     html { scroll-behavior: smooth; }
@@ -1429,17 +1434,20 @@
     border-right: 0; border-bottom: 0;
   }
   /* The scrim is a pseudo-element, not the column's background, so it can
-     fade on its own at the end of the flight (below). */
+     fade on its own at the end of the flight (below). It holds darker for
+     longer than a plain two-stop ramp: the map's city labels and bright
+     claims used to run through the body copy. The camera's framing padding
+     (hero script) moves the subject out from under it. */
   .has-motion .stage-copy::before {
     content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
     background: linear-gradient(90deg,
-      rgba(0,0,0,.84) 0%, rgba(0,0,0,.58) 52%, rgba(0,0,0,0) 100%);
+      rgba(0,0,0,.84) 0%, rgba(0,0,0,.64) 60%, rgba(0,0,0,.30) 85%, rgba(0,0,0,0) 100%);
   }
   @media (max-width: 860px) {
     .has-motion .stage-copy { max-width: none; height: auto; min-height: 62%; }
     .has-motion .stage-copy::before {
       background: linear-gradient(180deg,
-        rgba(0,0,0,.88) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,0) 100%);
+        rgba(0,0,0,.90) 0%, rgba(0,0,0,.76) 55%, rgba(0,0,0,.40) 85%, rgba(0,0,0,0) 100%);
     }
   }
   /* The flight finishes at --p 1, and only then does the sticky stage release
@@ -1794,14 +1802,14 @@
     <div class="wrap claim">
       <div>
         <p class="eyebrow" data-reveal>Aradaki fark</p>
-        <h2 class="h2" id="claim-title" data-reveal style="--d:60ms; margin-top:18px">Takip uygulaması nereye gittiğini söyler.<br>RouteRush nereyi aldığını söyler.</h2>
-        <p class="lede" data-reveal style="--d:120ms; max-width:52ch; margin-top:22px">
+        <h2 class="h2" id="claim-title" data-reveal style="--d:90ms; margin-top:18px">Takip uygulaması nereye gittiğini söyler.<br>RouteRush nereyi aldığını söyler.</h2>
+        <p class="lede" data-reveal style="--d:180ms; max-width:52ch; margin-top:22px">
           Aynı koşu, başka bir puanlama. Mesafe ve tempo sadece kayıt; asıl skor haritada —
           gerçekten geçtiğin sokakların blok blok kalıcı dökümü. Karşında da kendi
           sokaklarını geçen herkes var.
         </p>
       </div>
-      <dl class="specs" data-reveal style="--d:160ms">
+      <dl class="specs" data-reveal style="--d:270ms">
         <div class="spec">
           <dt>2,5<span style="font-size:.5em; letter-spacing:0"> m</span></dt>
           <dd><b>Sokak çözünürlüğü</b>Çizgin iki buçuk metrelik hassasiyetle korunur — sürüşte de koşuda da aynı.</dd>
@@ -2379,10 +2387,21 @@
   const TOKEN = 'pk.eyJ1IjoiZmV0aGlvbXVyIiwiYSI6ImNtc291OGtubjAwbXUyenNiNzVsYWVoam8ifQ.9sTuSfzH7ntGQ_xzztfPNA';
   const TURIN = [7.6864, 45.0703];
 
-  /* Measured pacing (see the generator): cumulative on-screen change
-     across the flight, blended 65/35 with uniform time. warp(u) inverts
-     it so equal scroll steps produce equal visual steps. */
-  const ARC = [[0.0,0.0],[0.01181,0.00352],[0.02362,0.00705],[0.03543,0.01057],[0.04724,0.01425],[0.05906,0.01812],[0.07087,0.02215],[0.08268,0.02635],[0.09449,0.03071],[0.1063,0.03523],[0.11811,0.0399],[0.12992,0.04473],[0.14173,0.04968],[0.15354,0.05476],[0.16535,0.05995],[0.17717,0.06528],[0.18898,0.07065],[0.20079,0.07605],[0.2126,0.08145],[0.22441,0.08681],[0.23622,0.09207],[0.24803,0.09717],[0.25984,0.10202],[0.27165,0.10655],[0.28346,0.11062],[0.29528,0.11414],[0.30419,0.11766],[0.31118,0.12158],[0.31816,0.12638],[0.32515,0.13193],[0.33213,0.1381],[0.33912,0.1447],[0.3461,0.15168],[0.35309,0.15908],[0.36007,0.16696],[0.36706,0.17543],[0.37404,0.1843],[0.38103,0.1937],[0.38801,0.20358],[0.395,0.2129],[0.40198,0.22102],[0.40897,0.22831],[0.41595,0.23547],[0.42294,0.24261],[0.42992,0.25034],[0.43691,0.25869],[0.44389,0.26699],[0.45088,0.276],[0.45786,0.28502],[0.46485,0.2934],[0.47183,0.30132],[0.47882,0.30904],[0.4858,0.31643],[0.49279,0.3238],[0.49977,0.33085],[0.50676,0.33769],[0.51374,0.3441],[0.52073,0.35057],[0.52771,0.35673],[0.5347,0.36258],[0.54168,0.36864],[0.54867,0.37498],[0.55565,0.38146],[0.56264,0.38817],[0.56962,0.39516],[0.57661,0.40149],[0.58359,0.40719],[0.59058,0.41289],[0.59756,0.41864],[0.60455,0.42437],[0.61153,0.43001],[0.61852,0.43737],[0.6255,0.44441],[0.63249,0.45133],[0.63947,0.4584],[0.64646,0.46596],[0.65344,0.47408],[0.66043,0.48199],[0.66741,0.49012],[0.6744,0.49852],[0.68138,0.50727],[0.68837,0.51683],[0.69535,0.52667],[0.70234,0.53704],[0.70932,0.54777],[0.71631,0.55893],[0.72329,0.57039],[0.73028,0.58175],[0.73726,0.59282],[0.74425,0.60382],[0.75123,0.61464],[0.75822,0.62505],[0.7652,0.63478],[0.77219,0.64322],[0.77917,0.64895],[0.78616,0.65364],[0.79314,0.66142],[0.80013,0.67073],[0.80711,0.6809],[0.8141,0.69166],[0.82108,0.70287],[0.82807,0.71441],[0.83505,0.72628],[0.84204,0.73844],[0.84902,0.75087],[0.85564,0.76339],[0.8622,0.77599],[0.86877,0.7886],[0.87533,0.80135],[0.88189,0.815],[0.88845,0.82892],[0.89501,0.84273],[0.90157,0.85627],[0.90814,0.86946],[0.9147,0.88222],[0.92126,0.89466],[0.92782,0.90668],[0.93438,0.9183],[0.94094,0.92931],[0.94751,0.93989],[0.95407,0.95006],[0.96063,0.95967],[0.96719,0.96856],[0.97375,0.97665],[0.98031,0.98406],[0.98688,0.99066],[0.99344,0.99612],[1.0,1.0]];
+  /* Measured pacing: cumulative on-screen change across the flight, blended
+     65/35 with uniform time. warp(u) inverts it so equal scroll steps
+     produce equal visual steps. The rows for t < 0.30 and t > 0.78 come
+     from the original generator (not in the repo). The dive between them
+     was re-derived on 2026-11-12 with the pan exponent 4 (generator:
+     _agent-scratch/fix-2026-11-12/p3/arcgen.mjs): the metric is the mean
+     displacement of the ground under a 7x7 screen grid, through Mapbox's
+     own project/unproject. The old rows came from a measure that saturates
+     when a frame is all new, so the fastest part of the dive got the least
+     scroll: one 0.04 step near p 0.42 moved the ground ~2900 px and p
+     0.60-0.68 barely moved. Now every interior step of the dive moves
+     ~360-430 px (desktop). Its ends stay pinned at s(0.30) = 0.116 and
+     s(0.78) = 0.650, where the camera stops and the copy changes
+     (sequence.copyStops). */
+  const ARC = [[0.0,0.0],[0.01181,0.00352],[0.02362,0.00705],[0.03543,0.01057],[0.04724,0.01425],[0.05906,0.01812],[0.07087,0.02215],[0.08268,0.02635],[0.09449,0.03071],[0.1063,0.03523],[0.11811,0.0399],[0.12992,0.04473],[0.14173,0.04968],[0.15354,0.05476],[0.16535,0.05995],[0.17717,0.06528],[0.18898,0.07065],[0.20079,0.07605],[0.2126,0.08145],[0.22441,0.08681],[0.23622,0.09207],[0.24803,0.09717],[0.25984,0.10202],[0.27165,0.10655],[0.28346,0.11062],[0.29528,0.11414],[0.3,0.116],[0.304,0.1176],[0.308,0.11929],[0.312,0.12107],[0.316,0.12294],[0.32,0.12489],[0.324,0.12693],[0.328,0.12905],[0.332,0.13126],[0.336,0.13355],[0.34,0.13593],[0.344,0.13842],[0.348,0.14101],[0.352,0.14369],[0.356,0.14645],[0.36,0.14937],[0.364,0.1524],[0.368,0.15557],[0.372,0.15884],[0.376,0.16222],[0.38,0.16572],[0.384,0.16931],[0.388,0.17299],[0.392,0.17676],[0.396,0.18061],[0.4,0.18456],[0.404,0.1886],[0.408,0.19272],[0.412,0.19695],[0.416,0.20126],[0.42,0.20568],[0.424,0.21019],[0.428,0.2148],[0.432,0.21952],[0.436,0.22434],[0.44,0.22925],[0.444,0.23427],[0.448,0.23939],[0.452,0.24458],[0.456,0.24983],[0.46,0.25515],[0.464,0.26053],[0.468,0.26598],[0.472,0.27149],[0.476,0.27705],[0.48,0.28267],[0.484,0.28835],[0.488,0.29408],[0.492,0.29987],[0.496,0.3057],[0.5,0.31159],[0.504,0.31753],[0.508,0.32352],[0.512,0.32955],[0.516,0.33563],[0.52,0.34175],[0.524,0.34791],[0.528,0.35411],[0.532,0.36035],[0.536,0.36662],[0.54,0.37293],[0.544,0.37926],[0.548,0.38562],[0.552,0.392],[0.556,0.3984],[0.56,0.40481],[0.564,0.41123],[0.568,0.41765],[0.572,0.42407],[0.576,0.43047],[0.58,0.43686],[0.584,0.44323],[0.588,0.44957],[0.592,0.45587],[0.596,0.46212],[0.6,0.46833],[0.604,0.47447],[0.608,0.48056],[0.612,0.48657],[0.616,0.4925],[0.62,0.49835],[0.624,0.50412],[0.628,0.5098],[0.632,0.51538],[0.636,0.52086],[0.64,0.52625],[0.644,0.53153],[0.648,0.53672],[0.652,0.5418],[0.656,0.54677],[0.66,0.55165],[0.664,0.55643],[0.668,0.5611],[0.672,0.56568],[0.676,0.57015],[0.68,0.57453],[0.684,0.57881],[0.688,0.58299],[0.692,0.58708],[0.696,0.59106],[0.7,0.59495],[0.704,0.59873],[0.708,0.60242],[0.712,0.606],[0.716,0.60949],[0.72,0.61287],[0.724,0.61614],[0.728,0.61931],[0.732,0.62237],[0.736,0.62531],[0.74,0.62815],[0.744,0.63088],[0.748,0.63349],[0.752,0.63598],[0.756,0.63835],[0.76,0.64061],[0.764,0.64274],[0.768,0.64474],[0.772,0.64662],[0.776,0.64838],[0.78,0.65],[0.78616,0.65364],[0.79314,0.66142],[0.80013,0.67073],[0.80711,0.6809],[0.8141,0.69166],[0.82108,0.70287],[0.82807,0.71441],[0.83505,0.72628],[0.84204,0.73844],[0.84902,0.75087],[0.85564,0.76339],[0.8622,0.77599],[0.86877,0.7886],[0.87533,0.80135],[0.88189,0.815],[0.88845,0.82892],[0.89501,0.84273],[0.90157,0.85627],[0.90814,0.86946],[0.9147,0.88222],[0.92126,0.89466],[0.92782,0.90668],[0.93438,0.9183],[0.94094,0.92931],[0.94751,0.93989],[0.95407,0.95006],[0.96063,0.95967],[0.96719,0.96856],[0.97375,0.97665],[0.98031,0.98406],[0.98688,0.99066],[0.99344,0.99612],[1.0,1.0]];
   function warp(u) {
     if (u <= 0) return 0;
     if (u >= 1) return 1;
@@ -2392,7 +2411,11 @@
     return t0 + (t1 - t0) * ((u - s0) / ((s1 - s0) || 1e-9));
   }
 
-  /* Camera path — byte-for-byte the pre-rendered flight's. */
+  /* Camera path — the pre-rendered flight's, except the dive's pan
+     exponent (2.5 -> 4, 2026-11-12). The pan has to be nearly done before
+     the zoom gets deep: a degree left to cross is worth 2^zoom pixels, so
+     with 2.5 the last few percent of the pan swept the screen at street
+     zoom. Change this path and the ARC dive rows must be regenerated. */
   const ss = t => t * t * (3 - 2 * t);
   const lerp = (a, b, t) => a + (b - a) * t;
   function cam(t) {
@@ -2402,12 +2425,40 @@
     }
     if (t < 0.78) {
       const u = ss((t - 0.30) / 0.48);
-      const w = 1 - Math.pow(1 - u, 2.5);
+      const w = 1 - Math.pow(1 - u, 4);
       return { center: [lerp(9, TURIN[0], w), lerp(40, TURIN[1], w)],
                zoom: lerp(2.4, 14.2, u), bearing: 0, pitch: lerp(0, 25, u) };
     }
     const u = ss((t - 0.78) / 0.22);
     return { center: TURIN, zoom: lerp(14.2, 16.6, u), bearing: lerp(0, -24, u), pitch: lerp(25, 62, u) };
+  }
+
+  /* Framing. Without padding the camera looks at the middle of the screen,
+     which is where the copy sits: on a phone the column covers the top ~70%,
+     so city labels ran through the body text, the final subject sat behind
+     the secondary button and the bottom quarter was empty. Padding moves
+     the point the camera looks at into the open part of the screen: down on
+     a phone (top padding, centre at ~(1 + .42) / 2 = 71% of the height),
+     right on a desktop (left padding, centre ~200 px right of the middle).
+     It eases in over the globe segment with the camera's own curve and is 0
+     at t = 0, so the opening globe stays centred where the poster and its
+     fit (fitPoster in the head script) expect it. It eases out again over
+     p .955-1, while the copy leaves (.is-out at .965): with the copy gone
+     there is nothing to frame around, and kept to p 1 the lowered centre
+     filled the phone's top third with hazy horizon. So the final frame is
+     the centred one it always was. */
+  let framePad = { top: 0, left: 0 };
+  function measurePad() {
+    const w = stage.clientWidth, h = stage.clientHeight;
+    framePad = w <= 860 ? { top: Math.round(h * 0.42), left: 0 }
+                        : { top: 0, left: Math.round(Math.min(w * 0.28, 400)) };
+  }
+  function view(p) {
+    const t = warp(p);
+    const k = (t < 0.30 ? ss(t / 0.30) : 1) * (p > 0.955 ? 1 - ss(Math.min(1, (p - 0.955) / 0.045)) : 1);
+    const c = cam(t);
+    c.padding = { top: framePad.top * k, left: framePad.left * k, right: 0, bottom: 0 };
+    return c;
   }
 
   const root    = document.documentElement;
@@ -2545,9 +2596,12 @@
         map.addLayer({ id: 'world-fill', type: 'fill', source: 'world',
           paint: { 'fill-color': wc, 'fill-emissive-strength': 0.85,
                    /* fills arrive only once a neighbourhood-scale claim is
-                      legible; before that the speckle carries the story */
+                      legible; before that the speckle carries the story.
+                      Kept faint (.22): these blobs are rough rectangles,
+                      and at .45 the close pass read as grey boxes; the
+                      outline carries their shape */
                    'fill-opacity': ['interpolate', ['linear'], ['zoom'],
-                     6.5, 0, 8, 0.45, 10, 0.45, 11.5, 0] } }, under);
+                     7.5, 0, 9, 0.22, 10.5, 0.22, 12.5, 0] } }, under);
         map.addLayer({ id: 'world-outline', type: 'line', source: 'world',
           paint: { 'line-color': wc, 'line-emissive-strength': 1.0,
                    'line-width': ['interpolate', ['linear'], ['zoom'], 7, 0.5, 10, 1.2],
@@ -2643,7 +2697,7 @@
 
   /* ---------- the loading veil ---------- */
   /* The reference sites open with a loader, but ours only waits for what the
-     first screen needs: the OPENING camera (cam(warp(progress)) — the top of
+     first screen needs: the OPENING camera (view(progress) — the top of
      the page, or wherever a reload restored the scroll to). Until station
      0.116 the flight only crosses low-zoom globe tiles, so the veil lifts on
      that view's idle event or at its hard cap (2.5 s from navigation start,
@@ -2665,7 +2719,7 @@
   async function warm() {
     if (!map) return;
     const p0 = currentProgress();
-    const c0 = cam(warp(p0));
+    const c0 = view(p0);
     syncLabels(c0.zoom);
     map.jumpTo(c0);
     /* a late map (style slower than the veil cap) can afford to wait longer:
@@ -2726,7 +2780,7 @@
       dirty = false;
       lastProgress = shown;
       if (map && mapReady) {
-        const c = cam(warp(shown));
+        const c = view(shown);
         syncLabels(c.zoom);
         map.jumpTo(c);
       }
@@ -2747,6 +2801,7 @@
   }
 
   function refresh() {
+    measurePad();
     dirty = true;
     if (reduced) paintUI(1);
     else schedule();
@@ -2774,6 +2829,76 @@
   function fitPoster() {
     if (root.classList.contains('poster-fit')) boot.fitPoster(stage.clientWidth, stage.clientHeight);
   }
+
+  /* ---------- in-page links that cross the flight ---------- */
+  /* With native smooth scrolling, "See how territory works" crossed the
+     whole 460vh flight in about 1.2 s, most of it in under half a second:
+     the flight read as a smear, not a flight. A link whose journey crosses
+     the pinned hero is driven here instead, eased in and out over ~2.4 s
+     (2 s on a phone), still through native scroll, so the map follows the
+     same progress it always does. Any wheel, touch, key or pointer press
+     hands the page back where it is. Reduced motion is not intercepted: it
+     has no flight, and its jump is the native instant one. */
+  const easeInOut = (() => {                       /* cubic-bezier(.65, 0, .35, 1) */
+    const x1 = 0.65, y1 = 0, x2 = 0.35, y2 = 1;
+    const bz = (t, a, b) => 3 * a * t * (1 - t) * (1 - t) + 3 * b * t * t * (1 - t) + t * t * t;
+    const dbz = (t, a, b) => 3 * a * (1 - t) * (1 - t) + 6 * (b - a) * t * (1 - t) + 3 * (1 - b) * t * t;
+    return x => {
+      let t = x;
+      for (let i = 0; i < 6; i++) { const d = dbz(t, x1, x2); if (Math.abs(d) < 1e-6) break; t -= (bz(t, x1, x2) - x) / d; }
+      return bz(Math.min(1, Math.max(0, t)), y1, y2);
+    };
+  })();
+  let glide = 0;
+  const STOP_EVENTS = ['wheel', 'touchstart', 'keydown', 'mousedown'];
+  function stopGlide() {
+    if (!glide) return;
+    cancelAnimationFrame(glide); glide = 0;
+    STOP_EVENTS.forEach(ev => removeEventListener(ev, stopGlide, { passive: true }));
+  }
+  document.addEventListener('click', e => {
+    if (reduced || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const hash = a.getAttribute('href');
+    const el = hash.length > 1 && document.getElementById(decodeURIComponent(hash.slice(1)));
+    if (!el) return;
+    const y0 = window.scrollY;
+    const maxY = document.documentElement.scrollHeight - window.innerHeight;
+    const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+    const y1 = Math.max(0, Math.min(maxY, el.getBoundingClientRect().top + y0 - margin));
+    const heroTop = section.offsetTop, heroEnd = heroTop + section.offsetHeight - window.innerHeight;
+    const crossed = Math.min(Math.max(y0, y1), heroEnd) - Math.max(Math.min(y0, y1), heroTop);
+    if (crossed < window.innerHeight) return;      /* not through the flight: native smooth scroll */
+    e.preventDefault();
+    stopGlide();
+    if (location.hash !== hash) history.pushState(null, '', hash);
+    const dist = Math.abs(y1 - y0);
+    const dur = (window.innerWidth <= 860 ? 2000 : 2400) * Math.min(1.25, Math.max(0.8, Math.sqrt(dist / 4600)));
+    const keyboard = e.detail === 0;
+    let t0 = 0, revealed = false;
+    STOP_EVENTS.forEach(ev => addEventListener(ev, stopGlide, { passive: true }));
+    const step = now => {
+      if (!t0) t0 = now;
+      const u = Math.min(1, (now - t0) / dur);
+      window.scrollTo({ top: Math.round(y0 + (y1 - y0) * easeInOut(u)), behavior: 'instant' });
+      /* the destination is in view for the last ~600 ms: start its reveal
+         then, so it is not still blurred when the glide lands */
+      if (!revealed && now - t0 >= dur - 600) {
+        revealed = true;
+        if (el.matches('[data-reveal]')) el.classList.add('is-in');
+        el.querySelectorAll('[data-reveal]').forEach(r => r.classList.add('is-in'));
+      }
+      if (u < 1) { glide = requestAnimationFrame(step); return; }
+      stopGlide();
+      /* a keyboard user continues from the destination, as with a native jump */
+      if (keyboard) {
+        if (!el.hasAttribute('tabindex')) el.setAttribute('tabindex', '-1');
+        el.focus({ preventScroll: true });
+      }
+    };
+    glide = requestAnimationFrame(step);
+  });
 
   addEventListener('scroll', onScroll, { passive: true });
   addEventListener('resize', refresh);
@@ -2901,8 +3026,11 @@
     return cv.toDataURL();
   }
 
-  function attach(el, id, bezel) {
+  /* scale and blur default to the buttons' and tiles' values; the nav passes
+     its own (see its call below) */
+  function attach(el, id, bezel, scale, blur) {
     if (!el) return;
+    scale = scale || 52; blur = blur || 2;
     var filter = document.createElementNS(NS, 'filter');
     filter.setAttribute('id', id);
     filter.setAttribute('filterUnits', 'userSpaceOnUse');
@@ -2915,7 +3043,7 @@
     var disp = document.createElementNS(NS, 'feDisplacementMap');
     disp.setAttribute('in', 'SourceGraphic');
     disp.setAttribute('in2', 'map');
-    disp.setAttribute('scale', '52');
+    disp.setAttribute('scale', String(scale));
     disp.setAttribute('xChannelSelector', 'R');
     disp.setAttribute('yChannelSelector', 'G');
     filter.appendChild(image);
@@ -2931,7 +3059,7 @@
       image.setAttribute('width', w);   image.setAttribute('height', h);
       var r = parseFloat(getComputedStyle(el).borderTopLeftRadius) || h / 2;
       image.setAttribute('href', buildMap(w, h, bezel, r));
-      var v = 'url(#' + id + ') blur(2px) saturate(1.5) brightness(1.04)';
+      var v = 'url(#' + id + ') blur(' + blur + 'px) saturate(1.5) brightness(1.04)';
       el.style.webkitBackdropFilter = v;
       el.style.backdropFilter = v;
       el.classList.add('lg-refract');
@@ -2944,7 +3072,13 @@
     build();
   }
 
-  attach(document.querySelector('.nav .wrap'), 'lgLensNav', 16);
+  /* The nav is a thin capsule (~50 px) that large headings scroll under. At
+     scale 52 its rim sampled up to 26 px away, so a heading passing beneath
+     showed up as a shifted second copy that fought the nav links; with a
+     2px blur that copy stayed legible. A gentler lens on a narrower rim and
+     a softer blur keep the edge bend but turn what passes under into tone,
+     not text. The tint (.22) is unchanged. */
+  attach(document.querySelector('.nav .wrap'), 'lgLensNav', 10, 24, 5);
   /* querySelectorAll, not querySelector: there are two of these capsules — one
      under the hero copy, one in the closing CTA — and the singular form left the
      second on the frosted fallback while the first refracted, so the same button
@@ -2968,24 +3102,38 @@
    monochrome register. Frame rate capped at 30fps exactly like the app's
    TimelineView(.animation(minimumInterval: 1/30)). Reduce Motion pins t=0
    and draws the static field once — the shader's own mechanism. If WebGL is
-   unavailable the static SVG contours behind this canvas stay visible. */
+   unavailable the static SVG contours behind this canvas stay visible.
+   Two departures, both for small screens: the ring spacing has a floor and
+   the opacity ramp is scaled by .65 at <= 640 px (see u_gain). */
 (function () {
   var canvas = document.getElementById('topo-gl');
   if (!canvas) return;
   var gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false });
   if (!gl) return;   /* SVG fallback stays */
 
+  /* highp where the GPU has it: u_time is seconds since load and grows
+     without bound, and at mediump (fp16 on phones) the phases lose their
+     fraction after a few minutes and the rings start to step. The guard
+     keeps mediump on a GPU without highp fragments instead of failing the
+     compile (which would leave the SVG fallback). */
   var FRAG = [
+    '#ifdef GL_FRAGMENT_PRECISION_HIGH',
+    'precision highp float;',
+    '#else',
     'precision mediump float;',
+    '#endif',
     'uniform vec2 u_size;',
     'uniform float u_time;',
+    'uniform float u_gain;',
     'const vec2 CENTER = vec2(0.65, 0.40);',
     'const vec3 COL_A = vec3(0.910, 0.918, 0.929);',   /* platinum  E8EAED */
     'const vec3 COL_B = vec3(0.682, 0.714, 0.749);',   /* steel     AEB6BF */
     'const vec3 COL_C = vec3(0.557, 0.604, 0.671);',   /* blue-gray 8E9AAB */
     'void main() {',
     '  vec2 pos = vec2(gl_FragCoord.x, u_size.y - gl_FragCoord.y);',
-    '  float diagonal = length(u_size) * 0.5;',
+    /* the ring spacing follows the canvas size, so a phone got rings about
+       twice as dense as a desktop; a floor keeps them near desktop spacing */
+    '  float diagonal = max(length(u_size) * 0.5, 700.0);',
     '  vec2 centerPoint = u_size * CENTER;',
     '  vec2 delta = pos - centerPoint;',
     '  float d = length(delta);',
@@ -2997,7 +3145,7 @@
     '    float fk = float(k);',
     '    float progress = fk / 10.0;',
     '    float baseRadius = diagonal * (0.10 + 0.68 * progress);',
-    '    float opacity = 0.24 - 0.15 * progress;',
+    '    float opacity = (0.24 - 0.15 * progress) * u_gain;',
     '    float phase1 = fk * 0.62 + u_time * 0.502655;',   /* 2π/12.5 */
     '    float phase2 = fk * 1.17 + 1.4 + u_time * 0.397384;', /* 2π/15.8 */
     '    float modulation = 1.0 + 0.12 * sin(3.0 * rt + phase1) + 0.07 * sin(5.0 * rt + phase2);',
@@ -3036,6 +3184,7 @@
   gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
   var uSize = gl.getUniformLocation(prog, 'u_size');
   var uTime = gl.getUniformLocation(prog, 'u_time');
+  var uGain = gl.getUniformLocation(prog, 'u_gain');
 
   /* WebGL is live: the SVG fallback steps aside */
   document.querySelectorAll('.bg-topo svg').forEach(function (s) { s.style.display = 'none'; });
@@ -3048,6 +3197,9 @@
       gl.viewport(0, 0, w, h);
     }
     gl.uniform2f(uSize, canvas.width, canvas.height);
+    /* On a phone the brightest rings sit right behind the body copy, and the
+       1x canvas on a 3x screen draws them soft and thick: quieter there. */
+    gl.uniform1f(uGain, w <= 640 ? 0.65 : 1.0);
     return true;
   }
 
@@ -3149,14 +3301,20 @@
     if (c.sep) parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, c.sep);
     return parts.join(c.mark);
   }
+  /* The count waits 300 ms: the card it sits on reveals out of a blur, and
+     a number that counts while it is still a smear is a count nobody sees. */
   function count(c) {
-    var t0 = performance.now(), D = 950;
-    (function step(now) {
-      var u = Math.min(1, (now - t0) / D);
-      var e = 1 - Math.pow(1 - u, 3);              /* easeOutCubic, like the app's spring tail */
-      c.node.textContent = fmt(c.final * e, c);
-      if (u < 1) requestAnimationFrame(step);
-    })(performance.now());
+    var D = 1100;
+    c.node.textContent = fmt(0, c);                  /* hold at zero, not at the final value */
+    setTimeout(function () {
+      var t0 = performance.now();
+      (function step(now) {
+        var u = Math.min(1, Math.max(0, (now - t0) / D));
+        var e = 1 - Math.pow(1 - u, 3);              /* easeOutCubic, like the app's spring tail */
+        c.node.textContent = fmt(c.final * e, c);
+        if (u < 1) requestAnimationFrame(step);
+      })(t0);
+    }, 300);
   }
   var io = null;
   function armCounters() {

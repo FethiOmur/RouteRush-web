@@ -117,21 +117,26 @@ Then visit <http://localhost:8899>.
 
 - **The hero is a live Mapbox GL map flown by scroll.** Native scroll position
   is the only source of truth; one normalized progress value drives the camera
-  (`cam(warp(p))` — the measured ARC pacing) and the copy stops. The playhead
+  (`cam(warp(p))` — the ARC pacing table; its dive rows were rebuilt on
+  2026-11-12 for even travel, generator in `_agent-scratch/fix-2026-11-12/p3/arcgen.mjs`) and the copy stops. The playhead
   *glides* toward the scroll position (`sequence.glideTauMs`) so a fast flick
-  eases instead of teleporting. The loading veil waits only for the opening
-  camera (`cam(warp(progress))`, whose low-zoom globe tiles cover the first
-  part of the scroll): it lifts on that view's `idle` or after a hard 2.5 s
-  cap (`VEIL_CAP_MS`, counted from navigation start), whichever comes first,
-  and can never strand the page. On a link slow enough that mapbox-gl.js
-  arrives after the cap, the veil is skipped entirely rather than dropped
-  over a poster the visitor has already been looking at.
-  If the map is not live by then the poster stays visible and the map fades in
-  over it once ready (on slow 4G that can take 25 s or more; the poster covers
-  it); only a
-  chain still not live after 45 s is abandoned for the poster. Deeper tiles
-  load on demand — `jumpTo({ preloadOnly: true })` was measured to buy nothing
-  in GL JS 3.18, so nothing preloads the corridor. Reduced motion, save-data, missing WebGL,
+  eases instead of teleporting. The loading veil is decided before first paint by the
+  head script (`window.__hero`): it covers the first frame, lifts on the
+  opening view's `idle` or at a hard 2.5 s cap counted from navigation start
+  (`VEIL_CAP_MS`), and can never strand the page. A map that is ready under
+  the opaque veil appears without a fade; a late map fades in over the
+  poster, which `fitPoster()` scales so its globe matches the live one (on
+  slow 4G that can take 25 s or more; only a chain still not live after 45 s
+  is abandoned for the poster). A visit that lands below the hero (`/#leagues`)
+  gets no veil and builds the map only when the hero nears the viewport. The
+  copy column leaves at the end of the flight by a hysteresis class and
+  becomes inert; never fade `.stage-copy` or `.hero-cta` by opacity, or the
+  glass buttons lose their backdrop and pop dark. Map padding frames the
+  subject beside the copy (left on desktop, top on phones) and is 0 at p=0
+  and p=1. Deeper tiles load on demand — `jumpTo({ preloadOnly: true })` and
+  a larger tile cache were both measured to buy nothing in GL JS 3.18, so
+  scrolling back up can show unloaded areas briefly.
+  Reduced motion, save-data, missing WebGL,
   software GL (renderer string contains SwiftShader / llvmpipe / Software /
   Microsoft Basic Render, read via `WEBGL_debug_renderer_info` — never the user
   agent; this is what headless crawlers render with) and `?nomap=1` all get the
