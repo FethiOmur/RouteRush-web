@@ -3580,16 +3580,21 @@
 /* The map-to-reality film. When the flight has settled on the landing view,
    the film plays once over the live map; its first and last frames are that
    same view (a 1080px-tall capture of it), so it dissolves in and out of the
-   map. Landscape screens with a live map only: the film is 16:9, and poster
-   visitors (reduced motion, save-data, no WebGL, ?nomap=1) have no map to
-   leave from. The file is fetched once the dive is under way. */
+   map. There is a 16:9 cut for landscape screens and a 9:16 cut for
+   portrait ones, each framed on its own capture; shapes in between get no
+   film, and neither do poster visitors (reduced motion, save-data, no WebGL,
+   ?nomap=1), who have no map to leave from. The file is fetched once the
+   dive is under way. */
 (function () {
   var film = document.getElementById('hero-film'), seq = document.getElementById('sequence'),
       mapEl = document.getElementById('seq-map');
   if (!film || !seq || !mapEl) return;
-  var SRC = 'assets/rome-film-v1.mp4';
   var state = 'idle', settle = 0, loaded = false;
-  function eligible() { return mapEl.classList.contains('is-live') && innerWidth / innerHeight >= 1.2; }
+  function cut() {
+    var r = innerWidth / innerHeight;
+    return r >= 1.2 ? 'assets/rome-film-v1.mp4' : r <= 0.8 ? 'assets/rome-film-v1-portrait.mp4' : '';
+  }
+  function eligible() { return mapEl.classList.contains('is-live') && !!cut(); }
   function progress() { var r = seq.getBoundingClientRect(); return -r.top / (r.height - innerHeight); }
   function start() {
     if (state !== 'idle' || !eligible() || film.readyState < 2) return;
@@ -3600,7 +3605,7 @@
   function stop() { state = 'idle'; film.pause(); film.classList.remove('is-on'); }
   addEventListener('scroll', function () {
     var p = progress(); clearTimeout(settle);
-    if (!loaded && p > 0.45 && p < 1.1 && eligible()) { loaded = true; film.preload = 'auto'; film.src = SRC; film.load(); }
+    if (!loaded && p > 0.45 && p < 1.1 && eligible()) { loaded = true; film.preload = 'auto'; film.src = cut(); film.load(); }
     if (state === 'idle' && p >= 0.99 && p <= 1.04) settle = setTimeout(start, 900);
     else if (state === 'playing' && (p < 0.9 || p > 1.3)) stop();
   }, { passive: true });

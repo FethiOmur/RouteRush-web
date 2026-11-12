@@ -28,7 +28,8 @@ assets/territory-rome.geojson  street-snapped conquest loops around the
                       landing point, the Colosseum (422 claims; generator in
                       _agent-scratch/lab/rome-film/build-rome-territory.py).
                       territory.geojson is the old Turin set, no longer loaded
-assets/rome-film-v1.mp4  the map-to-reality film (1080p, 22 s, 5.3 MB)
+assets/rome-film-v1.mp4  the map-to-reality film, 16:9 (1080p, 22 s, 5.3 MB)
+assets/rome-film-v1-portrait.mp4  the same film, 9:16 (1080x1920, 6.3 MB)
 assets/screens/       app screenshots used in the product sections
 ```
 
@@ -153,14 +154,18 @@ Then visit <http://localhost:8899>.
   for local runs) in the Mapbox console — useless anywhere else. Never embed
   the app's token here: it cannot be URL-restricted without breaking the app.
 - **The film plays once over the landing view.** When the flight settles at
-  its end on a landscape screen with a live map, `#hero-film` dissolves in
+  its end on a screen with a live map (16:9 cut at aspect >= 1.2, 9:16 cut
+  at <= 0.8, nothing in between), `#hero-film` dissolves in
   over the map, plays muted and dissolves out. Its first and last frames are
-  a 1080px-tall capture of the landing view itself, which is why the final
+  a capture of the landing view itself (1920x1080 for the 16:9 cut, 1080x1920
+  for the 9:16 one; both follow the same height rule), which is why the final
   zoom carries `log2(innerHeight / 1080)` and the claim outlines and pins are
   scaled by `innerHeight / 1080`. **If the landing view changes (camera,
   claims, pins, map style), recapture that frame and regenerate the film's
-  opening and closing clips**, or the join shows. Portrait screens and poster
-  visitors get no film (there is no vertical cut yet) and never download it;
+  opening and closing clips**, or the join shows. The 9:16 running shots were made by square-cropping the 16:9 clips and
+  expanding them with Higgsfield's reframe, which redraws the frame: check
+  Boldi's outfit in anything it adds. Poster visitors get no film and never
+  download it;
   the file is requested once the dive passes p 0.45. `poster-final-rome.webp`
   is the same landing view for poster mode.
 - **Never set `overflow-x: hidden` on `html`.** It makes `<html>` the scroll
