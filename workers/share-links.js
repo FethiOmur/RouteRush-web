@@ -268,8 +268,9 @@ export default {
     const isShare = ORIGIN_PASSTHROUGH.some((p) => path.startsWith(p));
     if (!isShare) return fetch(request);
 
-    // /post/<id> and /u/<handle>. Anything deeper is not a share link.
-    const [, kind, ...rest] = path.split("/");
+    // /post/<id> and /u/<handle>, with one optional trailing slash. Anything
+    // deeper is not a share link.
+    const [kind, ...rest] = path.split("/").filter(Boolean);
     // A malformed percent-escape ("/u/%") makes decodeURIComponent throw;
     // such a link is not a share link, so it falls through to the site (404).
     let slug;
@@ -290,7 +291,11 @@ export default {
 
     // Only ever reflected into an app-scheme URL, never into HTML text, but
     // escaped anyway so a crafted link cannot smuggle markup into the page.
+    // A handle with characters outside that set (non-ASCII, spaces) would
+    // become a different, wrong deep link once stripped, so it is not a share
+    // link this page can honour: fall through to the site instead.
     const safeSlug = slug.replace(/[^A-Za-z0-9._~-]/g, "");
+    if (safeSlug !== slug) return fetch(request);
     const deepLink = isProfile
       ? `routerush://u/${safeSlug}`
       : `routerush://post/${safeSlug}`;
