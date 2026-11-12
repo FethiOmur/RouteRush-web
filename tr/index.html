@@ -639,6 +639,12 @@
   html.poster-fit .stage-visual .poster { transform: translateY(var(--poster-dy, 0px)) scale(var(--poster-k, 1)); }
   #seq-map { position: absolute; inset: 0; opacity: 0; transition: opacity .7s ease; }
   #seq-map.is-live { opacity: 1; }
+  /* The film sits over the map and under Mapbox's logo and attribution,
+     which stay readable while it plays. */
+  #hero-film { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+               opacity: 0; pointer-events: none; transition: opacity .7s ease; z-index: 3; }
+  #hero-film.is-on { opacity: 1; }
+  #seq-map .mapboxgl-control-container { position: relative; z-index: 4; }
   /* A dark foot that rises over the last 4% of the flight, so the stage
      hands off to the black section below through a gradient instead of
      sliding up as a hard-edged bright rectangle. It lives inside the map
@@ -1850,6 +1856,9 @@
              button and links in here, and those must stay reachable. The
              script hides the canvas alone once the map exists. -->
         <div id="seq-map"></div>
+        <!-- The map-to-reality film. Decoration: it plays once, muted, over
+             the landing view, and its first and last frames are that view. -->
+        <video id="hero-film" muted playsinline preload="none" aria-hidden="true" tabindex="-1" disableremoteplayback></video>
         <span class="cue" aria-hidden="true">Kaydır, fethet</span>
       </div>
     </div>
@@ -2475,7 +2484,7 @@
   /* Public token, restricted to this site's URL in the Mapbox console.
      pk-scope only — it can read styles and tiles, nothing else. */
   const TOKEN = 'pk.eyJ1IjoiZmV0aGlvbXVyIiwiYSI6ImNtc291OGtubjAwbXUyenNiNzVsYWVoam8ifQ.9sTuSfzH7ntGQ_xzztfPNA';
-  const TURIN = [7.6864, 45.0703];
+  const TURIN = [12.4915, 41.8915];   /* the landing point: Rome, the Colosseum (the name is historical) */
 
   /* Measured pacing: cumulative on-screen change across the flight, blended
      65/35 with uniform time. warp(u) inverts it so equal scroll steps
@@ -2520,7 +2529,7 @@
                zoom: lerp(2.4, 14.2, u), bearing: 0, pitch: lerp(0, 25, u) };
     }
     const u = ss((t - 0.78) / 0.22);
-    return { center: TURIN, zoom: lerp(14.2, 16.6, u), bearing: lerp(0, -24, u), pitch: lerp(25, 62, u) };
+    return { center: TURIN, zoom: lerp(14.2, 16.6 + Math.log2(innerHeight / 1080), u) /* the film's first frame is this view captured 1080px tall */, bearing: lerp(0, -35, u), pitch: lerp(25, 62, u) };
   }
 
   /* Framing. Without padding the camera looks at the middle of the screen,
@@ -2684,7 +2693,7 @@
          polygon is sub-pixel at continent zoom, so every claim also draws as
          a constant-size SPECKLE dot from z2, fading out as the fills become
          legible. The blobs themselves fade out by street level, where only
-         the real, street-snapped Turin claims remain. */
+         the real, street-snapped Rome claims remain. */
       const world = await getJSON('/assets/world-territory.geojson', 8000);
       if (!map) return;   /* the watchdog gave the page back to the poster meanwhile */
       if (world) {
@@ -2707,10 +2716,13 @@
                      6.5, 0, 8.5, 0.9, 11.5, 0] } }, under);
       }
 
-      const terr = await getJSON('/assets/territory.geojson', 6000);
+      /* claim outlines and pins are sized against a 1080px-tall view, like
+         the film's opening frame, so the live map matches it at any height */
+      const plateK = innerHeight / 1080;
+      const terr = await getJSON('/assets/territory-rome.geojson', 6000);
       if (!map) return;
       /* conquest missing beats a stuck hero: the world layers and their
-         speckle still draw, only the Turin claims and pins are skipped */
+         speckle still draw, only the Rome claims and pins are skipped */
       const claims = terr ? terr.features : [];
       if (terr) {
         map.addSource('terr', { type: 'geojson', data: terr });
@@ -2718,7 +2730,7 @@
           paint: { 'fill-color': colorExp, 'fill-opacity': 0.45, 'fill-emissive-strength': 0.85 } }, under);
         map.addLayer({ id: 'terr-outline', type: 'line', source: 'terr',
           paint: { 'line-color': colorExp, 'line-opacity': 0.95, 'line-emissive-strength': 1.0,
-                   'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1, 12, 2, 16, 3] },
+                   'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1, 12, 2, 16, 3 * plateK] },
           layout: { 'line-join': 'round', 'line-cap': 'round' } }, under);
       }
 
@@ -2766,7 +2778,7 @@
       }});
       map.addLayer({ id: 'terr-pins', type: 'symbol', source: 'pins',
         layout: { 'icon-image': ['get', 'pin'], 'icon-allow-overlap': true, 'icon-ignore-placement': true,
-                  'icon-size': ['interpolate', ['linear'], ['zoom'], 14, 0.62, 17, 1.08] },
+                  'icon-size': ['interpolate', ['linear'], ['zoom'], 14, 0.62 * plateK, 17, 1.08 * plateK] },
         paint: { 'icon-opacity': ['interpolate', ['linear'], ['zoom'], 13.5, 0, 15, 1],
                  'icon-emissive-strength': 1.0 } });
 
@@ -2846,11 +2858,19 @@
     mapEl.classList.add('is-live');
     performance.mark('hero-map-live');
     dirty = true; schedule();
+    /* Once the opening view is idle, have GL fetch the landing view's tiles.
+       They never reach the render cache (measured 2026-11-10), but they do
+       reach the HTTP cache: on a 6 Mbps line the landing view settled 4 s
+       after arrival instead of 21 s (2026-11-12, 66 extra requests). */
+    map.once('idle', () => {
+      if (!map) return;
+      try { map.jumpTo(Object.assign({}, view(1), { preloadOnly: true })); } catch (e) {}
+    });
   }
 
   function toPoster() {
     root.classList.remove('poster-fit');
-    if (poster) poster.src = '/assets/hero/poster-final.webp';
+    if (poster) poster.src = '/assets/hero/poster-final-rome.webp';
     boot.lift();
     if (map) { try { map.remove(); } catch (e) {} map = null; }
     mapEl.style.display = 'none';
@@ -2928,7 +2948,7 @@
     if (reduced) {
       setHeight('');
       root.classList.remove('has-motion');
-      if (poster) poster.src = '/assets/hero/poster-final.webp';
+      if (poster) poster.src = '/assets/hero/poster-final-rome.webp';
       root.classList.remove('poster-fit');
       boot.drop();
       mapEl.style.display = 'none';
@@ -3077,7 +3097,7 @@
          Such a visitor enters the hero from its far end, so the poster
          behind the late map is the finale, not the opening globe. */
       if (poster) {
-        poster.src = '/assets/hero/poster-final.webp';
+        poster.src = '/assets/hero/poster-final-rome.webp';
         /* decode now: off-screen, an async-decoded image can come up blank
            for a frame when the visitor scrolls back into the hero */
         if (poster.decode) poster.decode().catch(() => {});
@@ -3553,6 +3573,41 @@
   mq.addEventListener && mq.addEventListener('change', function () {
     if (mq.matches) disable(); else enable();
   });
+})();
+</script>
+<script>
+/* The map-to-reality film. When the flight has settled on the landing view,
+   the film plays once over the live map; its first and last frames are that
+   same view (a 1080px-tall capture of it), so it dissolves in and out of the
+   map. Landscape screens with a live map only: the film is 16:9, and poster
+   visitors (reduced motion, save-data, no WebGL, ?nomap=1) have no map to
+   leave from. The file is fetched once the dive is under way. */
+(function () {
+  var film = document.getElementById('hero-film'), seq = document.getElementById('sequence'),
+      mapEl = document.getElementById('seq-map');
+  if (!film || !seq || !mapEl) return;
+  var SRC = '/assets/rome-film-v1.mp4';
+  var state = 'idle', settle = 0, loaded = false;
+  function eligible() { return mapEl.classList.contains('is-live') && innerWidth / innerHeight >= 1.2; }
+  function progress() { var r = seq.getBoundingClientRect(); return -r.top / (r.height - innerHeight); }
+  function start() {
+    if (state !== 'idle' || !eligible() || film.readyState < 2) return;
+    state = 'playing'; film.currentTime = 0; film.classList.add('is-on');
+    var pr = film.play(); if (pr && pr.catch) pr.catch(function () { stop(); });
+    performance.mark('hero-film-start');
+  }
+  function stop() { state = 'idle'; film.pause(); film.classList.remove('is-on'); }
+  addEventListener('scroll', function () {
+    var p = progress(); clearTimeout(settle);
+    if (!loaded && p > 0.45 && p < 1.1 && eligible()) { loaded = true; film.preload = 'auto'; film.src = SRC; film.load(); }
+    if (state === 'idle' && p >= 0.99 && p <= 1.04) settle = setTimeout(start, 900);
+    else if (state === 'playing' && (p < 0.9 || p > 1.3)) stop();
+  }, { passive: true });
+  film.addEventListener('ended', function () {
+    state = 'done'; performance.mark('hero-film-end');
+    setTimeout(function () { film.classList.remove('is-on'); }, 500);
+  });
+  film.addEventListener('error', function () { state = 'done'; film.classList.remove('is-on'); });
 })();
 </script>
 </body>

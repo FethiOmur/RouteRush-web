@@ -24,7 +24,11 @@ assets/hero/          two posters only: the hero is a LIVE Mapbox GL map now.
                       mode)
 assets/vendor/        mapbox-gl 3.18.0, vendored — loaded on demand, only for the live map
 assets/pins/          the 22 territory owner pins (ring+glow baked in)
-assets/territory.geojson  street-snapped conquest loops (build-territory.py)
+assets/territory-rome.geojson  street-snapped conquest loops around the
+                      landing point, the Colosseum (422 claims; generator in
+                      _agent-scratch/lab/rome-film/build-rome-territory.py).
+                      territory.geojson is the old Turin set, no longer loaded
+assets/rome-film-v1.mp4  the map-to-reality film (1080p, 22 s, 5.3 MB)
 assets/screens/       app screenshots used in the product sections
 ```
 
@@ -133,9 +137,11 @@ Then visit <http://localhost:8899>.
   becomes inert; never fade `.stage-copy` or `.hero-cta` by opacity, or the
   glass buttons lose their backdrop and pop dark. Map padding frames the
   subject beside the copy (left on desktop, top on phones) and is 0 at p=0
-  and p=1. Deeper tiles load on demand — `jumpTo({ preloadOnly: true })` and
-  a larger tile cache were both measured to buy nothing in GL JS 3.18, so
-  scrolling back up can show unloaded areas briefly.
+  and p=1. Deeper tiles load on demand, except the landing view: once the opening
+  view is idle, `jumpTo({ preloadOnly: true })` fetches its tiles into the
+  HTTP cache (on a 6 Mbps line the landing settled 4 s after arrival instead
+  of 21 s; the render cache gains nothing, so scrolling back up can still
+  show unloaded areas briefly).
   Reduced motion, save-data, missing WebGL,
   software GL (renderer string contains SwiftShader / llvmpipe / Software /
   Microsoft Basic Render, read via `WEBGL_debug_renderer_info` — never the user
@@ -146,6 +152,17 @@ Then visit <http://localhost:8899>.
   a web-only pk token, URL-restricted to routerushapp.com (+ localhost:8899
   for local runs) in the Mapbox console — useless anywhere else. Never embed
   the app's token here: it cannot be URL-restricted without breaking the app.
+- **The film plays once over the landing view.** When the flight settles at
+  its end on a landscape screen with a live map, `#hero-film` dissolves in
+  over the map, plays muted and dissolves out. Its first and last frames are
+  a 1080px-tall capture of the landing view itself, which is why the final
+  zoom carries `log2(innerHeight / 1080)` and the claim outlines and pins are
+  scaled by `innerHeight / 1080`. **If the landing view changes (camera,
+  claims, pins, map style), recapture that frame and regenerate the film's
+  opening and closing clips**, or the join shows. Portrait screens and poster
+  visitors get no film (there is no vertical cut yet) and never download it;
+  the file is requested once the dive passes p 0.45. `poster-final-rome.webp`
+  is the same landing view for poster mode.
 - **Never set `overflow-x: hidden` on `html`.** It makes `<html>` the scroll
   container and silently breaks the hero's sticky pinning.
 - **Glass surfaces** follow the project's own web Liquid Glass system: a tinted
