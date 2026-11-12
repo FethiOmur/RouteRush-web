@@ -140,7 +140,8 @@ Then visit <http://localhost:8899>.
   software GL (renderer string contains SwiftShader / llvmpipe / Software /
   Microsoft Basic Render, read via `WEBGL_debug_renderer_info` — never the user
   agent; this is what headless crawlers render with) and `?nomap=1` all get the
-  poster hero with the same copy and never construct a Mapbox map. `?map=force`
+  poster hero with the same copy and never construct a Mapbox map. The poster
+  hero is 200vh, not the flight's 460vh, with its copy stops at 0 / .3 / .6. `?map=force`
   overrides only the software-GL check. The embedded token is
   a web-only pk token, URL-restricted to routerushapp.com (+ localhost:8899
   for local runs) in the Mapbox console — useless anywhere else. Never embed
@@ -177,6 +178,11 @@ a locale directory — the next build overwrites it.
 python3 tools/build-locales.py            # regenerate all locales + sitemap.xml
 python3 tools/build-locales.py --check    # fail if the committed output is stale
 ```
+
+The build fails, naming the phrase and page, when English text has no entry
+in a locale's `i18n/<lang>.json`; a string that should stay English is
+recorded as `"Name": "Name"`. Nothing is written unless every locale builds.
+`.github/workflows/check-locales.yml` runs `--check` on every push.
 
 Run the build after **any** copy change to `index.html` or `faq.html`, and
 commit the regenerated files with it. If an English phrase changed, the build

@@ -12,22 +12,31 @@ readable to a human reviewer.
 The safety property that makes this trustworthy: every English key must still
 be present in the source. If it is gone the copy was edited and the
 translation is now stale, so the build fails and refuses to write rather than
-shipping a page that quietly says something we retired.
+shipping a page that quietly says something we retired. The reverse holds too:
+English copy with no entry in a locale's file (and not on the i18nlib
+allow-list) fails the build instead of shipping untranslated. All locales are
+built in memory first and written only if every one succeeded.
 
 Usage:  python3 tools/build-locales.py [--check]
         --check verifies the committed output matches what the sources produce
+        and that no stray .html sits in a locale directory
         (for CI, or for answering "did someone hand-edit a generated file?").
 """
 
 import datetime
 import hashlib
 import json
+import os
 import pathlib
 import re
 import sys
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-# (i18nlib holds the shared notion of what counts as translatable copy)
+# i18nlib holds the shared notion of what counts as translatable copy, and
+# where in a page it can live; the extractor uses the same code.
+from i18nlib import (ATTR_RE, LD_CONTENT_FIELDS, LD_FIELD_RE, blank,  # noqa: E402
+                     is_copy, ld_decode, scope as _scope,
+                     segments as _segments, units)
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 I18N = ROOT / "i18n"
@@ -45,58 +54,37 @@ def fail(msg):
     sys.exit(1)
 
 
-# Regions that are code, not copy. A naive whole-file replace turns
-# `setTimeout` into `setSüreout` and `TerritoryRenderer` into `BölgeRenderer`,
-# because "Time" and "Territory" are both legitimate copy elsewhere on the
-# page. That shipped once in development and killed the map outright, so the
-# replacement is confined to text nodes, a whitelist of human-readable
-# attributes, and the JSON-LD block.
-SEGMENT_RE = re.compile(
-    r'(<script\b(?![^>]*application/ld\+json)[^>]*>.*?</script>'   # JS
-    r'|<style\b[^>]*>.*?</style>'                                  # CSS
-    r'|<!--.*?-->'                                                 # comments
-    r'|<script\b[^>]*application/ld\+json[^>]*>.*?</script>'       # JSON-LD
-    r'|<[^>]+>)',                                                  # any tag
-    re.S)
-
-# Attribute values a reader actually sees or hears.
-ATTR_RE = re.compile(
-    r'\b(alt|title|aria-label|placeholder|content)="([^"]*)"')
-
-# The only JSON-LD fields that hold copy. Everything else in that block is
-# structure — vocabulary schema.org defines, not language a visitor reads.
-# Treating the whole block as prose shipped `"@type": "FAQPage"` to Turkish as
-# `"SSSPage"`, because "FAQ" is a key there and "SSS" is its translation. There
-# is no such type, so Google saw no FAQ markup on the Turkish page at all. It
-# was live from the six-locale launch until it was found; nothing looked wrong,
-# because the visible copy was perfect and the rich result simply never
-# appeared. Audited when this narrowed: across both pages and five locales,
-# every legitimate JSON-LD translation was already a whole-value match of one
-# of these three fields (1 in index.html, 20 in faq.html), and the only
-# substring match in the entire corpus was the corruption above.
-LD_CONTENT_FIELDS = ("description", "name", "text", "headline")
-LD_FIELD_RE = re.compile(
-    r'"(' + "|".join(LD_CONTENT_FIELDS) + r')":\s*"((?:[^"\\]|\\.)*)"')
+# `&` that does not already start an entity. A translator may write `&amp;` or
+# `&nbsp;` on purpose (the keys themselves are raw HTML), so entities pass
+# through and only a bare `&` is escaped.
+_BARE_AMP = re.compile(r"&(?!(?:#\d+|#[xX][0-9a-fA-F]+|[A-Za-z][A-Za-z0-9]*);)")
 
 
-def _segments(src):
-    """Yield (text, translatable) pairs covering the whole document."""
-    pos = 0
-    for m in SEGMENT_RE.finditer(src):
-        if m.start() > pos:
-            yield src[pos:m.start()], True          # text node
-        seg = m.group(0)
-        low = seg[:200].lower()
-        if low.startswith("<!--") or low.startswith("<script") and "ld+json" not in low \
-                or low.startswith("<style"):
-            yield seg, False                        # code or comment: untouched
-        elif low.startswith("<script"):
-            yield seg, "ldjson"                     # JSON-LD: copy fields only
-        else:
-            yield seg, "attrs"                      # a tag: whitelisted attrs only
-        pos = m.end()
-    if pos < len(src):
-        yield src[pos:], True
+def _attr_value(raw, table):
+    """What goes between the quotes of an attribute whose source value is `raw`.
+
+    A translation is plain text, not markup: a `"` in it would end the
+    attribute early and a bare `&` or `<` would be misread, and the build used
+    to exit 0 on that. `'` is left alone (safe inside a double-quoted
+    attribute, and escaping it would rewrite every apostrophe in it, fr/it/tr).
+    A value equal to its key is the explicit "keep English" and is already
+    source HTML, so it is written back untouched.
+    """
+    v = table.get(raw)
+    if v is None or v == raw:
+        return raw
+    return (_BARE_AMP.sub("&amp;", v).replace('"', "&quot;")
+            .replace("<", "&lt;").replace(">", "&gt;"))
+
+
+def _ld_value(raw, table):
+    """Same for a JSON-LD string: `raw` is the source's JSON-encoded text, a
+    translation is plain text and gets JSON-escaped (`"`, `\\`, newlines).
+    Non-ASCII stays literal, exactly as the source writes it."""
+    v = table.get(raw)
+    if v is None or v == raw:
+        return raw
+    return json.dumps(v, ensure_ascii=False)[1:-1]
 
 
 def _apply_to_segment(seg, kind, sub, table):
@@ -119,28 +107,9 @@ def _apply_to_segment(seg, kind, sub, table):
         return sub(seg)
     if kind == "ldjson":
         return LD_FIELD_RE.sub(
-            lambda m: f'"{m.group(1)}": "{table.get(m.group(2), m.group(2))}"', seg)
+            lambda m: f'"{m.group(1)}": "{_ld_value(m.group(2), table)}"', seg)
     return ATTR_RE.sub(
-        lambda m: f'{m.group(1)}="{table.get(m.group(2), m.group(2))}"', seg)
-
-
-def _scope(src):
-    """(prose, whole-value slots) — the two ways a translation can land.
-
-    They are kept apart because they match by different rules: prose by
-    substring, an attribute or a JSON-LD content field only as a whole value.
-    Flattening them into one blob is what let a key that exists solely inside a
-    longer attribute look present while never actually being applied.
-    """
-    prose, exact = [], []
-    for seg, kind in _segments(src):
-        if kind is True:
-            prose.append(seg)
-        elif kind == "attrs":
-            exact.extend(m.group(2) for m in ATTR_RE.finditer(seg))
-        elif kind == "ldjson":
-            exact.extend(m.group(2) for m in LD_FIELD_RE.finditer(seg))
-    return "\n".join(prose), exact
+        lambda m: f'{m.group(1)}="{_attr_value(m.group(2), table)}"', seg)
 
 
 def translatable_text(src):
@@ -216,6 +185,30 @@ def require_head_copy(src, strings, lang, page):
              f"get word-substituted into half-English titles.")
 
 
+def untranslated(scan, table, pattern):
+    """English copy in `scan` that the locale neither translates nor keeps.
+
+    The missing-key check above only catches a key that left the source. This
+    is the other direction: new English text with no key at all, which would
+    ship untranslated while the build passed. Text nodes are checked after the
+    phrases the table covers are cut out, so a half-translated node is caught
+    too. Allowed: anything with an entry (an entry equal to the English is the
+    explicit "keep"), and the shared allow-list in i18nlib (brand, product
+    nouns, demo data, numbers, units).
+    """
+    found = {}
+    for kind, raw in units(scan):
+        if kind == "text":
+            rest = pattern.sub("\x00", raw) if pattern else raw
+            for frag in rest.split("\x00"):
+                if is_copy(frag):
+                    found.setdefault(" ".join(frag.split()), "text")
+        elif raw not in table:
+            if is_copy(ld_decode(raw) if kind == "ld" else raw):
+                found.setdefault(raw, kind)
+    return found
+
+
 def apply_strings(src, strings, lang, page):
     """Swap English copy for the locale's, failing loudly on any drift."""
     require_head_copy(src, strings, lang, page)
@@ -226,11 +219,13 @@ def apply_strings(src, strings, lang, page):
     # cannot match inside a text node and is applied here instead. The author
     # writes these deliberately (they contain markup), so an exact single match
     # is required.
+    scan = src                      # English with the whole-element keys cut out
     for en in [k for k in strings if k.startswith("<")]:
         if src.count(en) != 1:
             fail(f"{lang}/{page}: whole-element key must appear exactly once, "
                  f"found {src.count(en)}:\n  {en[:100]!r}")
         src = src.replace(en, strings[en], 1)
+        scan = blank(scan, [en])
 
     prose, attr_values = _scope(src)
     missing, table, repeated = [], {}, []
@@ -267,16 +262,25 @@ def apply_strings(src, strings, lang, page):
              f"\n\nThe English copy changed. Update i18n/*.json for every "
              f"locale before shipping, or the translations go stale silently.")
 
-    if not table:
-        return src
-
     # One pass, longest needle first. Sequential str.replace would corrupt
     # overlapping phrases — "Area" is a key and so is "Area captured", and
     # whichever ran first would eat the other. A single regex alternation also
     # guarantees translated output is never rescanned, so a translation that
     # happens to contain an English key cannot be double-replaced.
     pattern = re.compile("|".join(
-        re.escape(k) for k in sorted(table, key=len, reverse=True)))
+        re.escape(k) for k in sorted(table, key=len, reverse=True))) if table else None
+
+    stale = untranslated(scan, table, pattern)
+    if stale:
+        fail(f"{lang}/{page}: {len(stale)} English text(s) have no entry in "
+             f"i18n/{lang}.json and would ship untranslated:\n" +
+             "\n".join(f"  {t[:80]!r} ({k})" for t, k in stale.items()) +
+             f"\n\nTranslate each one. If it is meant to stay English (a name, "
+             f"a product noun), add it with the same text as its value, "
+             f'e.g. "Name": "Name", so keeping it is a recorded decision.')
+
+    if not pattern:
+        return src
 
     def sub(text):
         return pattern.sub(lambda m: table[m.group(0)], text)
@@ -366,12 +370,15 @@ def rewrite_links(html, lang, page):
     return html
 
 
-def build(lang, page, check):
-    src = (ROOT / page).read_text()
+def build(lang, page):
+    """The generated page as a string. Nothing is read from or written to the
+    locale directories here: main() builds every page first and writes only if
+    all of them succeeded."""
+    src = (ROOT / page).read_text(encoding="utf-8")
     locale_file = I18N / f"{lang}.json"
     if not locale_file.exists():
         fail(f"missing {locale_file.relative_to(ROOT)}")
-    strings = json.loads(locale_file.read_text()).get(page)
+    strings = json.loads(locale_file.read_text(encoding="utf-8")).get(page)
     if not strings:
         fail(f"i18n/{lang}.json has no entry for {page}")
 
@@ -382,27 +389,20 @@ def build(lang, page, check):
     assert_ldjson_structure_survived(src, html, lang, page)
     html = rewrite_head(html, lang, page)
     html = rewrite_links(html, lang, page)
-
-    out = ROOT / lang / page
-    if check:
-        if not out.exists():
-            fail(f"{out.relative_to(ROOT)} is missing — run the build")
-        if out.read_text() != html:
-            fail(f"{out.relative_to(ROOT)} differs from what the sources "
-                 f"produce — it was hand-edited, or the build was not re-run")
-        return None
-    out.parent.mkdir(exist_ok=True)
-    out.write_text(html)
-    return out
+    return html
 
 
-def write_sitemap(check):
-    """Emit the sitemap with the full hreflang cluster on every entry.
+def render_sitemap(check, generated):
+    """Render the sitemap with the full hreflang cluster on every entry.
 
     Google wants the alternates declared in at least one place; declaring them
     in both the HTML head and the sitemap is the belt-and-braces version and
     costs nothing. Generated rather than hand-kept for the same reason the
     pages are: adding a locale should not be an invitation to forget a file.
+
+    `generated` maps each locale page's path to the text about to be written,
+    so lastmod hashes what the build produced rather than what is on disk.
+    Returns (xml, manifest, dirty); the caller writes.
     """
     manifest = json.loads(LASTMOD_FILE.read_text()) if LASTMOD_FILE.exists() else {}
     dirty = False
@@ -413,7 +413,9 @@ def write_sitemap(check):
         because a git date changes with the very commit that records it, which
         would make --check fail right after every commit."""
         nonlocal dirty
-        digest = hashlib.sha256((ROOT / rel).read_bytes()).hexdigest()
+        data = (generated[rel].encode("utf-8") if rel in generated
+                else (ROOT / rel).read_bytes())
+        digest = hashlib.sha256(data).hexdigest()
         entry = manifest.get(rel)
         if entry and entry["sha256"] == digest:
             return entry["lastmod"]
@@ -461,37 +463,69 @@ def write_sitemap(check):
     lines.append("</urlset>")
     xml = "\n".join(lines) + "\n"
 
-    out = ROOT / "sitemap.xml"
-    if check:
-        if out.read_text() != xml:
-            fail("sitemap.xml differs from what the sources produce")
-        return None
-    out.write_text(xml)
-    if dirty:
-        LASTMOD_FILE.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
-    return out
+    return xml, manifest, dirty
 
 
 # Per-file sitemap lastmod, keyed by served path: {"sha256": ..., "lastmod": ...}.
 LASTMOD_FILE = ROOT / "tools" / "lastmod.json"
 
 
+def write_all(files):
+    """Write every file, each through a temp file and an atomic rename."""
+    for path, text in files:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_name(path.name + ".tmp")
+        tmp.write_text(text, encoding="utf-8")
+        os.replace(tmp, path)
+
+
+def unexpected_html():
+    """.html files inside a locale directory that no page of the build makes."""
+    return [p for lang in LOCALES for p in sorted((ROOT / lang).rglob("*.html"))
+            if p.relative_to(ROOT / lang).as_posix() not in PAGES]
+
+
 def main():
     check = "--check" in sys.argv
-    written = []
+
+    # Build everything in memory first: an error in any locale must leave every
+    # file on disk exactly as it was, not half-regenerated.
+    generated = {}
     for lang in LOCALES:
         for page in PAGES:
-            r = build(lang, page, check)
-            if r:
-                written.append(r.relative_to(ROOT))
-    write_sitemap(check)
+            generated[f"{lang}/{page}"] = build(lang, page)
+    xml, manifest, dirty = render_sitemap(check, generated)
+
+    extra = unexpected_html()
     if check:
+        if extra:
+            fail("unexpected .html in a locale directory (the build does not "
+                 "make it, and a stale copy would be served): " +
+                 ", ".join(str(p.relative_to(ROOT)) for p in extra))
+        for rel, html in generated.items():
+            out = ROOT / rel
+            if not out.exists():
+                fail(f"{rel} is missing — run the build")
+            if out.read_text(encoding="utf-8") != html:
+                fail(f"{rel} differs from what the sources produce — it was "
+                     f"hand-edited, or the build was not re-run")
+        if (ROOT / "sitemap.xml").read_text(encoding="utf-8") != xml:
+            fail("sitemap.xml differs from what the sources produce")
         print(f"build-locales: OK — {len(LOCALES) * len(PAGES)} generated files "
               f"and sitemap.xml match their sources")
-    else:
-        for w in written:
-            print(f"  wrote {w}")
-        print(f"build-locales: {len(written)} files from {len(PAGES)} sources")
+        return
+
+    for p in extra:
+        print(f"build-locales: warning: {p.relative_to(ROOT)} is not generated "
+              f"and is not removed here; delete it", file=sys.stderr)
+    files = [(ROOT / rel, html) for rel, html in generated.items()]
+    files.append((ROOT / "sitemap.xml", xml))
+    if dirty:
+        files.append((LASTMOD_FILE, json.dumps(manifest, indent=2, sort_keys=True) + "\n"))
+    write_all(files)
+    for rel in generated:
+        print(f"  wrote {rel}")
+    print(f"build-locales: {len(generated)} files from {len(PAGES)} sources")
 
 
 if __name__ == "__main__":

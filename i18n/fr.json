@@ -140,7 +140,13 @@
     "16.1": "16,1",
     "2.5": "2,5",
     "RouteRush territory map over New York at night: hundreds of claimed areas in rival colours, with runners pinned across Manhattan and Brooklyn — gold rings mark Ultra subscribers, cyan rings Pro": "Carte des territoires RouteRush au-dessus de New York la nuit : des centaines de zones conquises aux couleurs des rivaux et des coureurs répartis sur Manhattan et Brooklyn — un anneau doré signale un abonné Ultra, un anneau cyan un abonné Pro",
-    "Credits": "Crédits"
+    "Credits": "Crédits",
+    "Fethi Omur": "Fethi Omur",
+    "Turin, Italy": "Turin, Italy",
+    "Pro": "Pro",
+    "Ultra": "Ultra",
+    "Torino Runners · km": "Torino Runners · km",
+    "Po River Pace · km": "Po River Pace · km"
   },
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "FAQ RouteRush — Comment fonctionne la conquête de territoire",
@@ -178,7 +184,8 @@
     "Press kit": "Kit presse",
     "Privacy": "Confidentialité",
     "Terms": "Conditions",
-    "Credits": "Crédits"
+    "Credits": "Crédits",
+    "Language": "Langue"
   },
   "credits.html": {
     "RouteRush — Sources &amp; Credits": "RouteRush — Sources et crédits",
@@ -197,6 +204,9 @@
     "Press kit": "Kit presse",
     "Privacy": "Confidentialité",
     "Terms": "Conditions",
-    "Credits": "Crédits"
+    "Credits": "Crédits",
+    "Course maps for marathon replays: © OpenStreetMap contributors, data available under the Open Database License (ODbL),": "Course maps for marathon replays: © OpenStreetMap contributors, data available under the Open Database License (ODbL),",
+    "openstreetmap.org/copyright": "openstreetmap.org/copyright",
+    "Language": "Langue"
   }
 }

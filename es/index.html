@@ -5,15 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="RouteRush convierte correr en conquista territorial. Cierra un circuito y las calles de dentro son tuyas, en un mapa 3D en vivo de tu ciudad. Empieza gratis, iOS 18+.">
 <meta name="theme-color" content="#000000">
-<!-- Content policy. GitHub Pages cannot serve custom response headers, so the
-     policy ships in the document instead. It is deliberately strict because the
-     page can afford to be: every asset is same-origin and the page makes zero
-     third-party requests, so the only things this has to permit are the inline
-     <style>/<script> the page is built from, and the data:/blob: URIs the
-     refractive-glass displacement maps are generated as. Anything injected from
-     an outside host — a script tag, a tracking pixel, a font — is refused.
+<!-- Content policy. It ships in the document because that is where it started
+     (GitHub Pages could not send custom headers). The site is now served by a
+     Cloudflare Worker whose `_headers` file could send it as a real response
+     header, but `_headers` carries no CSP yet, so this meta tag is the only one.
+     It is deliberately strict: every script, style, font and image is
+     same-origin (mapbox-gl is vendored under assets/), so beyond 'self' it
+     permits only the inline <style>/<script> the page is built from, the
+     data:/blob: images the refractive-glass maps are generated as, and what the
+     live map needs: its tile workers run from blob: URLs, and it fetches
+     style, tiles, glyphs and sprites from api.mapbox.com / *.tiles.mapbox.com
+     and sends billing pings to events.mapbox.com — the page's only third-party
+     requests (none at all in poster mode). Anything injected from another host
+     — a script tag, a tracking pixel, a font — is refused.
      Known limit: frame-ancestors is ignored in a meta policy, so clickjacking
-     protection would need a real header this host does not offer. -->
+     protection needs the policy moved into a `_headers` response header. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
   script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval';
@@ -251,7 +257,8 @@
      THE SURFACE LIST below is the single definition of "a glass surface
      on this page". prefers-reduced-transparency and prefers-contrast
      override exactly this list — if a surface is added or renamed, it
-     must be added or renamed in all four places.
+     must be added or renamed in every copy of it, including the
+     prefers-contrast block after the refractive-glass styles.
      ============================================================ */
   .lg,
   .nav .wrap,
@@ -315,11 +322,19 @@
   .liveact > * { position: relative; z-index: 3; }
 
   /* HONEST COST.
-     These three sit on the flat #000 sections with nothing behind them, so a
-     backdrop blur would snapshot and blur pure black: a per-frame cost for zero
-     transmitted information. They keep all four material layers — the rim pair,
-     the screen-blended sheen, the lens ring and the lift are what make them read
-     as glass here, and none of those need a blur.
+     These two sit on the flat #000 sections with only the faint contour field
+     behind them, so a backdrop blur would mostly snapshot and blur black: a
+     per-frame cost for almost no transmitted information. The frosted material
+     keeps all four layers — the rim pair, the screen-blended sheen, the lens
+     ring and the lift are what make them read as glass here, and none of those
+     need a blur.
+     One exception, on purpose: in Chromium the refraction script sets the
+     tiles' backdrop-filter inline, which overrides this rule. With a fine
+     pointer (a desktop) each .tile gets its own SVG lens plus a 2px blur; on
+     a touch device only the 2px blur, which is much cheaper and looks the
+     same there. Measured at 412 px, the blur is what makes them glass: with
+     `none` the contour rings ran sharp through the tile copy. So in Chromium
+     this `none` holds only for .liveact; elsewhere it holds for both.
      Everything with something genuinely behind it keeps the blur: .nav .wrap
      (content scrolls under it continuously), .gcard and .tabbar (over the phone
      screen art), .btn-ghost (over the final CTA's glow). */
@@ -537,6 +552,12 @@
      action, and without it the capsule is a wide bar holding only a logo. */
   @media (max-width: 420px) {
     .nav .wrap { padding-inline: 14px; gap: 10px; }
+    /* The scrolled state must be restated here: the global .is-scrolled rule
+       is more specific than the line above, and its 16px / 14px made the
+       capsule GROW 8px at the moment it is meant to condense. Scrolled it
+       loses height (58 -> 50) and a little width; 12px also brings the
+       pill's side inset closer to its 8px top inset, i.e. more concentric. */
+    .nav.is-scrolled .wrap { padding-inline: 12px; gap: 10px; }
     .nav .btn-sm { height: 34px; padding: 0 13px; font-size: 12.5px; }
     .brand span { font-size: 15.5px; }
     .brand img { width: 26px; height: 26px; }
@@ -1057,7 +1078,10 @@
   footer { border-top: 1px solid var(--hair-soft); padding-block: 44px 40px; }
   .foot { display: grid; gap: 28px; grid-template-columns: minmax(0,1.2fr) repeat(3, minmax(0,1fr)); align-items: start; }
   @media (max-width: 720px) { .foot { grid-template-columns: 1fr 1fr; } .foot > :first-child { grid-column: 1 / -1; } }
-  .foot h4 { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-4); font-weight: 560; margin-bottom: 13px; }
+  /* Footer type is --text-3, never --text-4: at .34 these headings, the
+     language links and the legal line measured 2.89:1 on black, under WCAG AA
+     (4.5:1). --text-3 is 6.9:1; size and case keep them quieter than links. */
+  .foot h4 { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-3); font-weight: 560; margin-bottom: 13px; }
   .foot li + li { margin-top: 9px; }
   .foot a { font-size: 14px; color: var(--text-2); transition: color .3s ease; }
   .foot a:hover { color: #fff; }
@@ -1114,20 +1138,39 @@
   }
   .lang-hint button:hover { color: #fff; }
   @media (prefers-reduced-motion: reduce) { .lang-hint, .lang-hint.is-in { transition: none; } }
+  /* Two lines on a narrow phone, so they should be two even lines: unbalanced,
+     iPhone width left "misin?" alone on the second. */
+  .lang-hint span { text-wrap: balance; }
+  /* Below the desktop layout the live map's Mapbox logo and (i) attribution
+     sit in the bottom 34px, and the Mapbox terms need both visible: the card
+     rises clear of them. */
+  @media (max-width: 860px) {
+    .lang-hint { bottom: calc(46px + env(safe-area-inset-bottom, 0px)); }
+  }
   @media (max-width: 460px) {
-    .lang-hint { gap: 10px; padding-left: 14px; font-size: 13px; }
+    .lang-hint { gap: 10px; padding: 9px 10px 9px 14px; font-size: 13px; line-height: 1.4; }
+  }
+  /* A short phone has no free band at the bottom at all: the hero copy runs
+     down to the Start control (about 590px from the top at any phone height),
+     and the Mapbox chrome holds the last 34px. Under 720px tall the card moves
+     to the top, just under the nav capsule, over the eyebrow and wordmark —
+     brand type the visitor has already read, not a control. */
+  @media (max-width: 460px) and (max-height: 720px) {
+    .lang-hint { top: calc(78px + env(safe-area-inset-top, 0px)); bottom: auto; }
   }
 
   .foot-lang { margin-top: 40px; }
   .foot-lang ul { display: flex; flex-wrap: wrap; gap: 8px 20px; list-style: none; }
-  .foot-lang a { font-size: 13px; color: var(--text-4); transition: color .3s ease; }
+  .foot-lang a { font-size: 13px; color: var(--text-3); transition: color .3s ease; }
   .foot-lang a:hover { color: #fff; }
-  .foot-lang a[aria-current] { color: var(--text-2); cursor: default; }
+  /* white, not --text-2: at .70 against the others' .58 the current language
+     no longer stood out once the row moved up from .34 for contrast */
+  .foot-lang a[aria-current] { color: #fff; cursor: default; }
   @media (pointer: coarse) { .foot-lang a { display: inline-block; padding-block: 10px; } }
   .foot-bottom {
     display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center;
     margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair-soft);
-    font-size: 12.5px; color: var(--text-4);
+    font-size: 12.5px; color: var(--text-3);   /* its links inherit it */
   }
   .foot-bottom .dom { margin-left: auto; }
   /* `margin-left: auto` is a two-column idea. Once the row wraps it strands the
@@ -1395,6 +1438,21 @@
       backdrop-filter: none !important;
       background: #0a0d14;
     }
+  }
+  /* More contrast: the glass goes solid black behind its bright rim. The
+     :root --glass-tint: #000 in the first stylesheet could not do it alone —
+     .nav .wrap and every .lg-refract rule set their own tint or background,
+     and the refraction script writes backdrop-filter inline (it no longer
+     runs under this preference, but a preference switched on mid-visit finds
+     those styles already in place), hence !important. Same surface list. */
+  @media (prefers-contrast: more) {
+    .lg, .nav .wrap, .btn-ghost, .gcard, .tabbar, .tile, .liveact {
+      background: #000 !important;
+      -webkit-backdrop-filter: none !important;
+      backdrop-filter: none !important;
+    }
+    /* the one control in the list keeps an answer to the pointer */
+    .btn-ghost:hover { background: #262626 !important; }
   }
   /* Smooth anchor navigation. Position-driven work (the hero scrub, the nav
      condensing) is unaffected: smooth scrolling only animates the journey,
@@ -1745,14 +1803,17 @@
         <h1 class="hero-h1 display" id="hero-title">El terreno<br>se gana <em>corriendo.</em></h1>
 
         <!-- The sequence communicates ordered information, so the same three
-             states also exist as readable text for assistive technology. -->
+             states also exist as readable text for assistive technology. This
+             list is the accessible copy: the visual .states below are hidden
+             from it, or a screen reader would read every step twice, and the
+             two waiting states while they are invisible. -->
         <ol class="sr-only">
           <li>Paso uno. Graba una carrera o una salida en bici con un GPS que aguanta la pérdida de señal.</li>
           <li>Paso dos. Cierra un circuito y el terreno de dentro pasa a ser tu territorio.</li>
           <li>Paso tres. El territorio conquistado se convierte en Puntos Rush, y los Puntos Rush deciden tu puesto en la liga semanal.</li>
         </ol>
 
-        <div class="states" id="states">
+        <div class="states" id="states" aria-hidden="true">
           <div class="state is-active">
             <b>01 — Graba</b>
             <p>Sal a correr o a rodar en bici. RouteRush dibuja tu recorrido con precisión de calle y no deja de grabar aunque se caiga la señal.</p>
@@ -1789,7 +1850,10 @@
              cannot run (reduced motion, save-data, no WebGL, ?nomap=1 for the
              golden harness). The map fades in over it once warmed. -->
         <img class="poster" id="hero-poster" src="/assets/hero/poster-start.webp" alt="" aria-hidden="true" decoding="async" fetchpriority="high" width="1600" height="1000">
-        <div id="seq-map" aria-hidden="true"></div>
+        <!-- Not aria-hidden: Mapbox puts its logo link and the attribution
+             button and links in here, and those must stay reachable. The
+             script hides the canvas alone once the map exists. -->
+        <div id="seq-map"></div>
         <span class="cue" aria-hidden="true">Baja y conquista</span>
       </div>
     </div>
@@ -2101,7 +2165,7 @@
           <div class="vs" aria-hidden="true">
             <div class="side"><b>18,4</b><i>Torino Runners · km</i></div>
             <div class="mid">VS</div>
-            <div class="side"><b>16,1</b><i>Po River Ritmo · km</i></div>
+            <div class="side"><b>16,1</b><i>Po River Pace · km</i></div>
           </div>
         </article>
 
@@ -2382,6 +2446,14 @@
     copyStops:  [0, 0.116, 0.650],
     glideTauMs: 120,
   };
+  /* Poster mode (no live map) has no flight to pace: 460vh of it was 3.6
+     screens of one still image. It pins only long enough for the three copy
+     stops to read, each about a third of a screen of scroll; the stops are
+     even because there is no camera to land on. */
+  const posterSeq = {
+    scrollVh:   200,
+    copyStops:  [0, 0.3, 0.6],
+  };
   /* Public token, restricted to this site's URL in the Mapbox console.
      pk-scope only — it can read styles and tiles, nothing else. */
   const TOKEN = 'pk.eyJ1IjoiZmV0aGlvbXVyIiwiYSI6ImNtc291OGtubjAwbXUyenNiNzVsYWVoam8ifQ.9sTuSfzH7ntGQ_xzztfPNA';
@@ -2478,6 +2550,9 @@
   const boot = window.__hero || { noMap: true, deep: false, veil: false, lifted: true,
                                   lift() {}, drop() {}, fitPoster() {} };
   const noMap = boot.noMap;
+  /* true from the start for the head script's poster visitors, and set by
+     toPoster() when a live map gives up */
+  let posterMode = noMap;
 
   /* mapbox-gl.js (449 KB over the wire, 1.7 MB parsed) and its CSS are
      fetched only when the live map will actually be built. Poster visitors —
@@ -2509,7 +2584,8 @@
   function paintUI(progress) {
     section.style.setProperty('--p', progress.toFixed(4));
     let active = 0;
-    for (let i = 0; i < sequence.copyStops.length; i++) if (progress >= sequence.copyStops[i]) active = i;
+    const stops = posterMode ? posterSeq.copyStops : sequence.copyStops;
+    for (let i = 0; i < stops.length; i++) if (progress >= stops[i]) active = i;
     for (let i = 0; i < states.length; i++) states[i].classList.toggle('is-active', i === active);
     const out = !reduced && (copyOut ? progress >= 0.955 : progress >= 0.965);
     if (out !== copyOut && copyCol) {
@@ -2560,6 +2636,10 @@
         show3dObjects: true
       }}
     });
+    /* The canvas is decoration (the sr-only list carries the story); the
+       logo and attribution controls beside it stay in the tree and the tab
+       order, as the attribution is meant to be reachable. */
+    map.getCanvasContainer().setAttribute('aria-hidden', 'true');
 
     map.on('style.load', async () => {
       map.setConfigProperty('basemap', 'showAdminBoundaries', false);
@@ -2756,6 +2836,23 @@
     boot.lift();
     if (map) { try { map.remove(); } catch (e) {} map = null; }
     mapEl.style.display = 'none';
+    posterMode = true;
+    if (!reduced) { setHeight(posterSeq.scrollVh + 'vh'); dirty = true; schedule(); }
+  }
+
+  /* Changes the pinned section's height without moving what the visitor is
+     looking at: inside the hero the same progress is kept, below it the page
+     shifts by the difference. Matters when a map gives up mid-visit (the
+     watchdog fires at 45 s) and when reduced motion is switched mid-visit. */
+  function setHeight(h) {
+    if (section.style.height === h) return;
+    const y = window.scrollY, top = section.offsetTop, before = section.offsetHeight;
+    const p = currentProgress(), past = y >= top + before - window.innerHeight;
+    section.style.height = h;
+    if (y <= top) return;
+    const after = section.offsetHeight;
+    const to = past ? y + after - before : top + p * Math.max(0, after - window.innerHeight);
+    window.scrollTo({ top: to, behavior: 'instant' });
   }
 
   /* ---------- scroll driver: glide toward native scroll ---------- */
@@ -2811,17 +2908,42 @@
   function applyMode() {
     reduced = motionQuery.matches;
     if (reduced) {
-      section.style.height = '';
+      setHeight('');
       root.classList.remove('has-motion');
       if (poster) poster.src = '/assets/hero/poster-final.webp';
       root.classList.remove('poster-fit');
       boot.drop();
       mapEl.style.display = 'none';
     } else {
-      section.style.height = sequence.scrollVh + 'vh';
+      setHeight((posterMode ? posterSeq.scrollVh : sequence.scrollVh) + 'vh');
       root.classList.add('has-motion');
     }
     refresh();
+  }
+
+  /* Reduced motion switched during the visit. Going to reduced is applyMode
+     alone. Coming back has to undo what it hid: a map that exists is shown
+     again and resized to its container (it was display:none), and a visit
+     that began reduced, which never built one, builds it now unless it is a
+     poster visit. */
+  function onMotionChange() {
+    applyMode();
+    if (reduced || posterMode) return;
+    shown = -1;                                   /* snap, no glide from a stale playhead */
+    mapEl.style.display = '';
+    if (map) {
+      map.resize();
+      dirty = true; schedule();
+    } else if (!started) {
+      /* the reduced layout showed the finale still; at the top of the page
+         the late map fades in over the opening one instead, fitted to it */
+      if (poster && currentProgress() === 0) {
+        poster.src = '/assets/hero/poster-start.webp';
+        root.classList.add('poster-fit');
+        fitPoster();
+      }
+      startWhenNear();
+    }
   }
 
   /* keeps poster-start's globe on the map's as the stage resizes; the head
@@ -2903,18 +3025,29 @@
   addEventListener('scroll', onScroll, { passive: true });
   addEventListener('resize', refresh);
   addEventListener('resize', fitPoster);
-  motionQuery.addEventListener ? motionQuery.addEventListener('change', applyMode)
-                               : motionQuery.addListener(applyMode);
+  motionQuery.addEventListener ? motionQuery.addEventListener('change', onMotionChange)
+                               : motionQuery.addListener(onMotionChange);
 
   applyMode();
   fitPoster();
   let started = false;
   function startMap() {
-    if (started) return;
+    /* an observer can fire after reduced motion was switched on: no map
+       then; onMotionChange arms a new one on the way back */
+    if (started || reduced) return;
     started = true;
     loadMapbox().then(() => {
       if (!mapboxgl.supported || mapboxgl.supported()) buildMap(); else toPoster();
     }).catch(() => toPoster());
+  }
+  /* builds the map once the hero is within a viewport of the screen (at
+     once if it already is) */
+  function startWhenNear() {
+    if (!('IntersectionObserver' in window)) { startMap(); return; }
+    const io = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) { io.disconnect(); startMap(); }
+    }, { rootMargin: '100% 0px' });
+    io.observe(section);
   }
   if (!reduced && !noMap) {
     if (boot.deep && 'IntersectionObserver' in window) {
@@ -2931,13 +3064,8 @@
            for a frame when the visitor scrolls back into the hero */
         if (poster.decode) poster.decode().catch(() => {});
       }
-      const arm = () => {
-        const io = new IntersectionObserver(entries => {
-          if (entries.some(e => e.isIntersecting)) { io.disconnect(); startMap(); }
-        }, { rootMargin: '100% 0px' });
-        io.observe(section);
-      };
-      if (document.readyState === 'complete') arm(); else addEventListener('load', arm, { once: true });
+      if (document.readyState === 'complete') startWhenNear();
+      else addEventListener('load', startWhenNear, { once: true });
     } else {
       startMap();
     }
@@ -2979,7 +3107,9 @@
    the frosted material declared in CSS is the fallback everywhere else. */
 (function () {
   if (!window.chrome) return;
-  if (matchMedia('(prefers-reduced-transparency: reduce)').matches) return;
+  /* Both preferences turn the glass solid in CSS; a lens over an opaque
+     surface would be built and filtered for nothing. */
+  if (matchMedia('(prefers-reduced-transparency: reduce), (prefers-contrast: more)').matches) return;
   var NS   = 'http://www.w3.org/2000/svg';
   var defs = document.getElementById('lgDefs');
 
@@ -3086,9 +3216,20 @@
   document.querySelectorAll('.btn-ghost[href="#territory"]').forEach(function (el, i) {
     attach(el, 'lgLensBtn' + i, 10);
   });
-  /* feature tiles: same material, their own corner geometry */
+  /* Feature tiles: same material, their own corner geometry. On a touch
+     device they get the same look without the lens: the same blur, tint and
+     quiet rim, but no displacement map and no SVG filter. Behind a tile
+     there is only black and the faint contour field, so the lens bends
+     nothing anyone can see (frames at 412 px: the lens and the plain blur
+     are indistinguishable), while five tile-sized SVG backdrop filters
+     re-run on every scrolled frame on a phone GPU. The blur itself stays:
+     with none, the contour rings ran sharp through the tile copy and the
+     tile read as a tinted sheet, not glass (see HONEST COST). */
+  var touch = matchMedia('(pointer: coarse)').matches;
   document.querySelectorAll('.tile').forEach(function (el, i) {
-    attach(el, 'lgLensTile' + i, 14);
+    if (!touch) { attach(el, 'lgLensTile' + i, 14); return; }
+    el.style.webkitBackdropFilter = el.style.backdropFilter = 'blur(2px) saturate(1.5) brightness(1.04)';
+    el.classList.add('lg-refract');
   });
 })();
 </script>

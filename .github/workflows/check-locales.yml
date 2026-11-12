@@ -1,0 +1,21 @@
+# Fails a push or pull request when the generated locale pages (tr/ it/ de/ es/ fr/)
+# and sitemap.xml no longer match what tools/build-locales.py produces from the
+# English pages and i18n/*.json: a hand-edited generated file, a copy change
+# that was not rebuilt, or new English text with no translation. Run
+# `python3 tools/build-locales.py` locally and commit the result to fix it.
+name: Check locales
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  check-locales:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Verify generated locales are current
+        run: python3 tools/build-locales.py --check
