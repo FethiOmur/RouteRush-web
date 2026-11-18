@@ -26,6 +26,10 @@
 
 const ORIGIN_PASSTHROUGH = ["/post/", "/u/"];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+// An invite-only club's invite code, as the app mints it (ClubInviteCode: 12
+// characters from an alphabet without 0/O, 1/I/L). The Worker never checks the
+// code against the database; it only refuses shapes the app could not have made.
+const INVITE_CODE = /^[A-HJKMNP-Z2-9]{12}$/i;
 
 // Club links: /club/<clubId> and /club/<clubId>/event/<eventId>. Copy exists in
 // the app's six languages; the language comes from Accept-Language (or an
@@ -133,7 +137,7 @@ async function lookupClub(env, clubId) {
   }
 }
 
-function clubResponse(request, url, clubId, eventId, club) {
+function clubResponse(request, url, clubId, eventId, club, inviteCode = null) {
   const lang = pickLang(request, url);
   const c = CLUB_COPY[lang];
   let [title, blurb] = eventId ? c.event : c.club;
@@ -149,9 +153,12 @@ function clubResponse(request, url, clubId, eventId, club) {
     if (club.cover) { ogImage = esc(club.cover); hasCover = true; }
   }
   // Both ids are validated UUIDs, so the deep link is built from known-safe text.
+  // The invite code matched INVITE_CODE, so it is known-safe text too.
   const deepLink = eventId
     ? `routerush://club/${clubId}/event/${eventId}`
-    : `routerush://club/${clubId}`;
+    : inviteCode
+      ? `routerush://club/${clubId}/join/${inviteCode}`
+      : `routerush://club/${clubId}`;
   const canonical = `${SITE}${url.pathname}`;
   const langLinks = Object.keys(CLUB_COPY)
     .map((l) => (l === lang ? `<span aria-current="true">${LANG_NAMES[l]}</span>` : `<a href="${url.pathname}?lang=${l}" hreflang="${l}">${LANG_NAMES[l]}</a>`))
@@ -252,8 +259,9 @@ export default {
     }
 
     if (path.startsWith("/club/")) {
-      // /club/<uuid> or /club/<uuid>/event/<uuid>; a trailing slash is allowed.
-      const seg = path.split("/").filter(Boolean); // ["club", id, "event"?, id?]
+      // /club/<uuid>, /club/<uuid>/event/<uuid> or /club/<uuid>/join/<code>; a
+      // trailing slash is allowed.
+      const seg = path.split("/").filter(Boolean); // ["club", id, "event"|"join"?, id|code?]
       const okClub = seg.length >= 2 && UUID.test(seg[1]);
       if (okClub && seg.length === 2) {
         const id = seg[1].toLowerCase();
@@ -261,6 +269,13 @@ export default {
       }
       if (okClub && seg.length === 4 && seg[2] === "event" && UUID.test(seg[3])) {
         return clubResponse(request, url, seg[1].toLowerCase(), seg[3].toLowerCase(), null);
+      }
+      // An invite link: the same club page, with the code carried into the
+      // "Open in RouteRush" link so a visitor who installs the app first can
+      // come back to this page and still join.
+      if (okClub && seg.length === 4 && seg[2] === "join" && INVITE_CODE.test(seg[3])) {
+        const id = seg[1].toLowerCase();
+        return clubResponse(request, url, id, null, await lookupClub(env, id), seg[3].toUpperCase());
       }
       return fetch(request);
     }
