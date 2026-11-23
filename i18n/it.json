@@ -145,9 +145,6 @@
     "Your ground, in numbers": "Il tuo terreno, in numeri",
     "The area you hold right now, your all-time distance and your league, at the top of your profile.": "L'area che tieni in questo momento, la distanza di sempre e la tua lega, in cima al profilo.",
     "Plan and challenges": "Piano e sfide",
-    "RouteRush Club tab on Battles: Torino Bulls against a rival club still to be chosen": "Scheda Club di RouteRush su Battaglie: Torino Bulls contro un club rivale ancora da scegliere",
-    "Pick a rival": "Scegli un rivale",
-    "Call out another club from the Battles tab and set how long the battle runs.": "Sfida un altro club dalla scheda Battaglie e decidi quanto dura la battaglia.",
     "The line you actually ran. Distance, time and pace lead, with the ground you claimed and your splits underneath.": "Il tracciato che hai davvero fatto. Prima distanza, tempo e ritmo; sotto, il terreno che hai preso e i tuoi parziali.",
     "Events near you": "Eventi vicino a te",
     "Explore opens with the running or cycling event closest to you. When nothing is nearby, it shows events in other regions. Free to browse.": "Esplora si apre con l'evento di corsa o ciclismo più vicino a te. Se non c'è nulla nei dintorni, mostra eventi di altre regioni. Consultarli è gratis.",
@@ -160,7 +157,10 @@
     "RouteRush Plans tab: a 5K plan in week three above four live challenges": "Scheda Piani di RouteRush: un piano 5K alla terza settimana sopra quattro sfide attive",
     "Behind every claim": "Dietro ogni conquista",
     "Who holds an area, the run that built it and the pace it was taken at.": "Chi tiene un'area, la corsa che l'ha costruita e il ritmo con cui è stata presa.",
-    "Your plan and how far into it you are, with this week's and this month's challenges right under it.": "Il tuo piano e a che punto sei, con le sfide della settimana e del mese subito sotto."
+    "Your plan and how far into it you are, with this week's and this month's challenges right under it.": "Il tuo piano e a che punto sei, con le sfide della settimana e del mese subito sotto.",
+    "RouteRush Explore tab: a 10K event near you tomorrow leads the page, above the feed": "Scheda Esplora di RouteRush: un evento 10K vicino a te, domani, apre la pagina sopra il feed",
+    "Race day, nearby": "Giorno di gara, vicino a te",
+    "Explore opens with the event closest to you, with the rest a tap away.": "Esplora si apre con l'evento più vicino a te; gli altri sono a un tocco."
   },
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "FAQ RouteRush — Come funziona la conquista del territorio",

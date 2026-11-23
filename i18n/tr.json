@@ -145,9 +145,6 @@
     "Your ground, in numbers": "Bölgen, rakamlarla",
     "The area you hold right now, your all-time distance and your league, at the top of your profile.": "Şu an elinde tuttuğun alan, tüm zamanların mesafesi ve ligin — profilinin en üstünde.",
     "Plan and challenges": "Plan ve yarışmalar",
-    "RouteRush Club tab on Battles: Torino Bulls against a rival club still to be chosen": "RouteRush Kulüp sekmesinde Savaşlar: Torino Bulls, henüz seçilmemiş rakip kulübe karşı",
-    "Pick a rival": "Rakibini seç",
-    "Call out another club from the Battles tab and set how long the battle runs.": "Savaşlar sekmesinden başka bir kulübe meydan oku ve savaşın ne kadar süreceğini belirle.",
     "The line you actually ran. Distance, time and pace lead, with the ground you claimed and your splits underneath.": "Gerçekten koştuğun çizgi. Önce mesafe, süre ve tempo; altında aldığın bölge ve kilometre tempoların.",
     "Events near you": "Yakınındaki etkinlikler",
     "Explore opens with the running or cycling event closest to you. When nothing is nearby, it shows events in other regions. Free to browse.": "Keşfet, sana en yakın koşu ya da bisiklet etkinliğiyle açılır. Yakında bir şey yoksa diğer bölgelerdeki etkinlikleri gösterir. Göz atmak ücretsiz.",
@@ -160,7 +157,10 @@
     "RouteRush Plans tab: a 5K plan in week three above four live challenges": "RouteRush Planlar sekmesi: üçüncü haftasındaki bir 5K planı ve altında dört etkin yarışma",
     "Behind every claim": "Her bölgenin arkasında",
     "Who holds an area, the run that built it and the pace it was taken at.": "Bir alan kimin elinde, hangi koşuyla kuruldu ve hangi tempoyla alındı.",
-    "Your plan and how far into it you are, with this week's and this month's challenges right under it.": "Planın ve neresinde olduğun; hemen altında bu haftanın ve bu ayın yarışmaları."
+    "Your plan and how far into it you are, with this week's and this month's challenges right under it.": "Planın ve neresinde olduğun; hemen altında bu haftanın ve bu ayın yarışmaları.",
+    "RouteRush Explore tab: a 10K event near you tomorrow leads the page, above the feed": "RouteRush Keşfet sekmesi: yarınki yakın bir 10K etkinliği sayfanın başında, altında akış",
+    "Race day, nearby": "Yarış günü, yakınında",
+    "Explore opens with the event closest to you, with the rest a tap away.": "Keşfet sana en yakın etkinlikle açılır; diğerleri bir dokunuş uzakta."
   },
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "RouteRush SSS — Bölge Kapmalı Koşu Nasıl Çalışır?",
