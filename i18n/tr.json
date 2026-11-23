@@ -86,7 +86,6 @@
     "Inside the app.": "Uygulamanın içinden.",
     "Captured on iPhone, running the shipping build.": "iPhone'da, yayındaki sürümle çekildi.",
     "The run, in full": "Koşunun tamamı",
-    "The line you actually ran, with distance, pace, elevation and cadence.": "Gerçekten koştuğun çizgi; mesafe, tempo, yükseklik ve adım sıklığıyla.",
     "Read it your way": "Haritayı kendi yönteminle oku",
     "Switch between heat, the ground you hold, your routes, and the Atlas of everything you have ever taken.": "Isı, elindeki bölge, rotaların ve bugüne kadar aldığın her yerin Atlas'ı arasında geçiş yap.",
     "Everything else that ships in the box.": "Kutudan çıkan diğer her şey.",
@@ -156,7 +155,12 @@
     "The next session of your plan, with this week's and this month's challenges right under it.": "Planının sıradaki antrenmanı, hemen altında bu haftanın ve bu ayın yarışmaları.",
     "RouteRush Club tab on Battles: Torino Bulls against a rival club still to be chosen": "RouteRush Kulüp sekmesinde Savaşlar: Torino Bulls, henüz seçilmemiş rakip kulübe karşı",
     "Pick a rival": "Rakibini seç",
-    "Call out another club from the Battles tab and set how long the battle runs.": "Savaşlar sekmesinden başka bir kulübe meydan oku ve savaşın ne kadar süreceğini belirle."
+    "Call out another club from the Battles tab and set how long the battle runs.": "Savaşlar sekmesinden başka bir kulübe meydan oku ve savaşın ne kadar süreceğini belirle.",
+    "The line you actually ran. Distance, time and pace lead, with the ground you claimed and your splits underneath.": "Gerçekten koştuğun çizgi. Önce mesafe, süre ve tempo; altında aldığın bölge ve kilometre tempoların.",
+    "Events near you": "Yakınındaki etkinlikler",
+    "Explore opens with the running or cycling event closest to you. When nothing is nearby, it shows events in other regions. Free to browse.": "Keşfet, sana en yakın koşu ya da bisiklet etkinliğiyle açılır. Yakında bir şey yoksa diğer bölgelerdeki etkinlikleri gösterir. Göz atmak ücretsiz.",
+    "Open any territory": "Her bölgenin içine bak",
+    "Open an area on the map to see who holds it and how many runs built it. Pull the sheet up for the runs, pace, elevation and splits behind it.": "Haritada bir alanı aç; kimin elinde olduğunu ve kaç koşuyla kurulduğunu gör. Arkasındaki koşular, tempo, yükseklik ve kilometre tempoları için sayfayı yukarı çek."
   },
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "RouteRush SSS — Bölge Kapmalı Koşu Nasıl Çalışır?",
@@ -175,7 +179,6 @@
     "How do leagues work?": "Ligler nasıl çalışır?",
     "Every week you join a league at your tier of up to thirty runners — Bronze, Silver or Gold, each with three divisions. The top sixth goes up and the bottom sixth goes down — five each way in a full league — and you need three scoring runs that week to be promoted. Your very first week is a placement week that decides where you start, and your first week in a new tier is covered by a newbie shield, so one bad week cannot send you straight back down.": "Her hafta kendi seviyende en fazla otuz koşuculuk bir lige girersin — Bronz, Gümüş ya da Altın; her birinin üç divizyonu var. Üstteki altıda bir yükselir, alttaki altıda bir düşer — dolu bir ligde beşer kişi — ve yükselmek için o hafta üç sayılan koşu gerekir. İlk haftan, nereden başlayacağını belirleyen bir yerleştirme haftasıdır; yeni bir seviyedeki ilk haftanı da Acemi Kalkanı korur, böylece kötü geçen tek bir hafta seni doğrudan aşağı gönderemez.",
     "Can other players take my territory?": "Bölgemi başkaları alabilir mi?",
-    "Yes, and it happens in one move rather than by wearing you down: when someone closes a loop that overlaps your territory, the overlap is cut out of your claim the moment their run saves. Running along your streets is not enough — they have to enclose the ground. Territory also fades if you stop: a claim decays over about a month un-run, and running it again resets the clock. One layer never fades — the Atlas keeps every loop you have ever closed, teal for runs and green for rides, even ground a rival has since taken back.": "Evet, ve bu yıpratarak değil tek hamlede olur: biri senin bölgenle çakışan bir tur kapattığında, koşusu kaydedildiği anda çakışan kısım senin bölgenden kesilir. Senin sokaklarında koşmak yetmez — o alanı çevrelemesi gerekir. Koşmayı bırakırsan bölgen de solar: bir bölge koşulmadan yaklaşık bir ayda çürür, tekrar koşarsan saat sıfırlanır. Tek bir katman hiç solmaz — Atlas bugüne kadar kapattığın her turu tutar; koşular teal, sürüşler yeşil, bir rakibin sonradan geri aldığı yerler dahil.",
     "What is Boldi?": "Boldi nedir?",
     "Boldi is RouteRush's AI running coach. On a coached run he speaks while you run — about your pace, unclaimed ground on the route ahead, and how much you have left — and stays quiet the rest of the time. Between runs you can chat with him about your training. Pro includes text chat with Boldi and one coached run a month; Ultra has him coach every run and adds voice conversations between runs.": "Boldi, RouteRush'ın AI koşu koçu. Koçlu bir koşuda sen koşarken konuşur: temponu, önündeki rotada hâlâ sahipsiz olan bölgeleri, ne kadar yolun kaldığını anlatır. Geri kalan zamanda susar. Koşular arasında antrenmanın hakkında onunla yazışabilirsin. Pro, Boldi ile yazışmayı ve ayda bir koçlu koşuyu içerir; Ultra'da her koşuna koçluk eder ve koşular arasında sesli sohbet de eklenir.",
     "Is RouteRush free?": "RouteRush ücretsiz mi?",
@@ -197,7 +200,10 @@
     "Privacy": "Gizlilik",
     "Terms": "Koşullar",
     "Credits": "Atıflar",
-    "Language": "Dil"
+    "Language": "Dil",
+    "Yes, and it happens in one move rather than by wearing you down: when someone closes a loop that overlaps your territory, the overlap is cut out of your claim the moment their run saves. Running along your streets is not enough — they have to enclose the ground. Territory does not fade on its own: what you hold stays yours until someone takes it. And the Atlas keeps every loop you have ever closed, teal for runs and green for rides, even ground a rival has since taken back.": "Evet, ve bu yıpratarak değil tek hamlede olur: biri senin bölgenle çakışan bir tur kapattığında, koşusu kaydedildiği anda çakışan kısım senin bölgenden kesilir. Senin sokaklarında koşmak yetmez — o alanı çevrelemesi gerekir. Bölgen kendiliğinden solmaz: elinde tuttuğun yer, biri alana kadar senindir. Atlas da bugüne kadar kapattığın her turu tutar; koşular teal, sürüşler yeşil, bir rakibin sonradan geri aldığı yerler dahil.",
+    "Does RouteRush show running events near me?": "RouteRush yakınımdaki koşu etkinliklerini gösteriyor mu?",
+    "Yes. The Explore tab lists upcoming running and cycling events near you, and events in other regions when nothing is close. Browsing them is free.": "Evet. Keşfet sekmesi yakınındaki yaklaşan koşu ve bisiklet etkinliklerini listeler; yakında bir şey yoksa diğer bölgelerdeki etkinlikleri gösterir. Göz atmak ücretsiz."
   },
   "credits.html": {
     "RouteRush — Sources &amp; Credits": "RouteRush — Kaynaklar ve Atıflar",

@@ -8,56 +8,56 @@
     "sha256": "bb0e0e36e5ec142b76826e12192bd9043762891fd1817f928e690155ce5d7ba8"
   },
   "de/faq.html": {
-    "lastmod": "2026-11-20",
-    "sha256": "231dfc6cd81db76e8df0e92616f7d578b2becc068ba69171deba64de4e7a01f7"
+    "lastmod": "2026-11-24",
+    "sha256": "96e8108a8d60d0a12e39b8752fd50f3c333142a437cf53b100b15cb26d83a79e"
   },
   "de/index.html": {
-    "lastmod": "2026-11-21",
-    "sha256": "4394b60c62b37cdb27a0e06c451b7b2a2e7bfcbca36fb3244d400c3b6636b37e"
+    "lastmod": "2026-11-24",
+    "sha256": "f276c36a2860ded640a36ed5f96c8eef5fb77149e42845001cdeedd2340c799e"
   },
   "es/credits.html": {
     "lastmod": "2026-11-12",
     "sha256": "c9f29de1c19607604fd7d992ee22c7ce13f13fc9f90dba03998fc04001a6201e"
   },
   "es/faq.html": {
-    "lastmod": "2026-11-20",
-    "sha256": "bc41c2f382d32458ccb274d59f636af85a79a840947891605a9adcae1106b876"
+    "lastmod": "2026-11-24",
+    "sha256": "12223843516363f8a53a489b920cc939646d78bd5a30f13905a0bae090525388"
   },
   "es/index.html": {
-    "lastmod": "2026-11-21",
-    "sha256": "98575b4d380683f684cd10925b24e14e96dd627783b321c80d0b2a0f9be6ff5b"
+    "lastmod": "2026-11-24",
+    "sha256": "00f226d5105dbbf32122588f59514988c749d0afd1638f2d4df8291f3b3f71e4"
   },
   "faq.html": {
-    "lastmod": "2026-11-20",
-    "sha256": "9224425c06c0f9988a0c5410a05ca50c5b86f419c16e7e8a72197f2845ca9cae"
+    "lastmod": "2026-11-24",
+    "sha256": "e390cc40bcec135e41a2d39a4713107c39564cac65ca7325df5e9b7ce5927e5d"
   },
   "fr/credits.html": {
     "lastmod": "2026-11-12",
     "sha256": "fa941e7f3a0f5cbc841b76cfe9043ce13771bf5a32585837a9fd6367fceaf86d"
   },
   "fr/faq.html": {
-    "lastmod": "2026-11-20",
-    "sha256": "246bd15d2504599a2f687821a49173b5b44780d9f517635cb6c64634c2c49f9e"
+    "lastmod": "2026-11-24",
+    "sha256": "b2e4a3efa6f1a72ed579abaf493a32936d9329516e5196fe75f4d15cfa6e4ab3"
   },
   "fr/index.html": {
-    "lastmod": "2026-11-21",
-    "sha256": "99a1d2bb827e37e2870baa32a39e43536919259bbe376ad7c161e006c09852d9"
+    "lastmod": "2026-11-24",
+    "sha256": "4fd30d88934e0ebc649517408009a852a94409f50e7a4a87f189698dbf2fb14a"
   },
   "index.html": {
-    "lastmod": "2026-11-21",
-    "sha256": "9c665f0e393565dcf33a47ebad1d94380b7aae4562c3ef8ecaaffdeab98ff4eb"
+    "lastmod": "2026-11-24",
+    "sha256": "73d8a4f2113a6d830359411b0c4ea4ccc906970d3e00cc543f266aa8482f91b6"
   },
   "it/credits.html": {
     "lastmod": "2026-11-12",
     "sha256": "c122625b8a4e0e1f649b8b8875fc4e2155b724109bbc1999cef2d45aea0b416f"
   },
   "it/faq.html": {
-    "lastmod": "2026-11-20",
-    "sha256": "254c5583292ab08291c63f3abd108e9118890bd75f575fa6b3dcd5f51db9d3f1"
+    "lastmod": "2026-11-24",
+    "sha256": "e4d506552265648aa9cf344ecc76eb804123b568e9e7818939ab67bb5020b279"
   },
   "it/index.html": {
-    "lastmod": "2026-11-21",
-    "sha256": "2a5983ba7c3b3825a800e7f5a4a073c66693c42649207db2b17d324c7a450d1b"
+    "lastmod": "2026-11-24",
+    "sha256": "c94b6e4be09e222cc8d904a87625d907b890b8435cc794a8196736d95c09fea6"
   },
   "press.html": {
     "lastmod": "2026-11-21",
@@ -76,11 +76,11 @@
     "sha256": "a53cf9410efc97b951f1892d93c7a3ced0f9c93dd23be3e9b7c887d9250e6ea1"
   },
   "tr/faq.html": {
-    "lastmod": "2026-11-20",
-    "sha256": "7e977bc7442095cc65cfa0d7ce4b912a29298f6e70f7ccad78a94a78b905daab"
+    "lastmod": "2026-11-24",
+    "sha256": "bf673110fa28db850bcf17c2c954ffaa7ee059c18b6c487751504f529f80be5c"
   },
   "tr/index.html": {
-    "lastmod": "2026-11-21",
-    "sha256": "e3b07f8c004ff336d8b5df893f474b29f02cd19bbe4013bbb43ed0c79324fc87"
+    "lastmod": "2026-11-24",
+    "sha256": "3507fd73c858ebbaf4ad311ca5fb61454fe73725c660e2756f8b1093e106ffc1"
   }
 }
