@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta name="description" content="What RouteRush records, how it is used, what the AI coach and voice coaching send and to whom, what Apple Health touches, how long it is kept, and how to delete it.">
+<meta name="description" content="What RouteRush records and why, what the AI coach and voice coaching send and to whom, what Apple Health touches, how long it is kept and how to delete it.">
 <!-- SVG first so the mark can follow the tab strip's colour scheme; the
      transparent PNG is the fallback for browsers without SVG favicons.
      apple-touch-icon stays opaque on purpose: iOS renders a transparent
@@ -23,8 +23,13 @@
 <meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="RouteRush">
 <meta property="og:title" content="RouteRush — Privacy Policy">
-<meta property="og:description" content="What RouteRush records, how it is used, what the AI coach and voice coaching send and to whom, what Apple Health touches, how long it is kept, and how to delete it.">
+<meta property="og:description" content="What RouteRush records and why, what the AI coach and voice coaching send and to whom, what Apple Health touches, how long it is kept and how to delete it.">
 <meta property="og:url" content="https://routerushapp.com/privacy.html">
+<meta property="og:image" content="https://routerushapp.com/assets/og-rome.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://routerushapp.com/assets/og-rome.jpg">
 <meta name="theme-color" content="#000000">
 <title>RouteRush — Privacy Policy</title>
 <style>
@@ -67,7 +72,9 @@
   .cta { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--hair); }
   .cta a { font-weight: 560; }
   footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair); font-size: 13px; color: var(--text-4); display: flex; gap: 18px; flex-wrap: wrap; }
-  footer a { color: var(--text-3); text-decoration: none; }
+  /* Taller tap target without moving the text: the padding grows the hit
+     area and the equal negative margin keeps the row where it was. */
+  footer a { color: var(--text-3); text-decoration: none; padding: 6px 0; margin: -6px 0; }
 </style>
 </head>
 <body>
@@ -75,7 +82,7 @@
   <p class="eyebrow">LEGAL</p>
   <div class="wordmark"><a href="/">RouteRush</a></div>
   <h1>Privacy Policy</h1>
-  <p class="updated">Last updated 20 November 2026</p>
+  <p class="updated">Last updated 25 November 2026</p>
 
   <div class="changes">
     <p><strong>What changed on 20 November 2026.</strong> If you turn on location for Boldi, he
@@ -113,6 +120,8 @@
     <li><strong>Usage &amp; device data</strong> — app usage events, diagnostics and crash
     reports (feature usage, errors, device model, OS version), stored on our own servers, to
     keep the app working and improve it.</li>
+    <li><strong>Website visits</strong> — this website uses Cloudflare Web Analytics, which counts
+    page views without cookies or cross-site tracking.</li>
     <li><strong>Subscriptions</strong> — purchases are handled by Apple. We receive your
     subscription status from Apple but never see your card or payment details.</li>
   </ul>

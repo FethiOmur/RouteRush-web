@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="description" content="The terms you agree to when you use RouteRush: accounts, subscriptions and billing, acceptable use, your content, and the health and safety disclaimer.">
 <!-- SVG first so the mark can follow the tab strip's colour scheme; the
@@ -22,6 +22,11 @@
 <meta property="og:title" content="RouteRush — Terms of Service">
 <meta property="og:description" content="The terms you agree to when you use RouteRush: accounts, subscriptions and billing, acceptable use, your content, and the health and safety disclaimer.">
 <meta property="og:url" content="https://routerushapp.com/terms.html">
+<meta property="og:image" content="https://routerushapp.com/assets/og-rome.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://routerushapp.com/assets/og-rome.jpg">
 <meta name="theme-color" content="#000000">
 <title>RouteRush — Terms of Service</title>
 <style>
@@ -58,7 +63,9 @@
   .cta { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--hair); }
   .cta a { font-weight: 560; }
   footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair); font-size: 13px; color: var(--text-4); display: flex; gap: 18px; flex-wrap: wrap; }
-  footer a { color: var(--text-3); text-decoration: none; }
+  /* Taller tap target without moving the text: the padding grows the hit
+     area and the equal negative margin keeps the row where it was. */
+  footer a { color: var(--text-3); text-decoration: none; padding: 6px 0; margin: -6px 0; }
 </style>
 </head>
 <body>
@@ -66,7 +73,7 @@
   <p class="eyebrow">LEGAL</p>
   <div class="wordmark"><a href="/">RouteRush</a></div>
   <h1>Terms of Service</h1>
-  <p class="updated">Last updated 14 June 2026</p>
+  <p class="updated">Last updated 25 November 2026</p>
 
 <p>These Terms govern your use of the RouteRush app ("RouteRush", "we", "us"). By downloading or
   using RouteRush you agree to these Terms. If you do not agree, do not use the app.</p>
@@ -78,8 +85,8 @@
 
   <h2>Subscriptions &amp; billing</h2>
   <ul>
-    <li>RouteRush offers an optional "Pro" subscription (weekly, monthly, or yearly) that unlocks
-    the AI coach and related features.</li>
+    <li>RouteRush offers two optional subscriptions, "Pro" and "Ultra" (each weekly, monthly, or
+    yearly), that unlock the AI coach and related features.</li>
     <li>Payment is charged to your Apple ID. Subscriptions renew automatically unless cancelled at
     least 24 hours before the end of the current period.</li>
     <li>You manage and cancel subscriptions in your Apple ID settings (App Store &rsaquo;

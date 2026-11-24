@@ -4,14 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Same posture as the main page: everything local, nothing phones home. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <link rel="icon" href="assets/favicon.svg?v=2" type="image/svg+xml">
 <link rel="icon" href="assets/favicon.png" sizes="512x512" type="image/png">
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-<meta name="description" content="RouteRush press kit — logo, app icon, screenshots, fact sheet and contact.">
+<meta name="description" content="RouteRush press kit: fact sheet, boilerplate, logo, app icon, iPhone screenshots, the Rome film and press contact for the territory running app.">
+<meta name="apple-itunes-app" content="app-id=6783352912">
 <link rel="canonical" href="https://routerushapp.com/press.html">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="RouteRush">
 <meta property="og:title" content="RouteRush — Press kit">
 <meta property="og:description" content="Logo, screenshots, fact sheet, boilerplate and contact for covering RouteRush, the territory running app.">
@@ -19,6 +21,7 @@
 <meta property="og:image" content="https://routerushapp.com/assets/og-rome.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="RouteRush wordmark over a map of Rome covered in claimed territory, beside the app's territory map on an iPhone">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://routerushapp.com/assets/og-rome.jpg">
 <title>RouteRush — Press kit</title>
@@ -65,7 +68,9 @@
 
   .note { font-size: 14px; color: var(--text-3); border-left: 2px solid var(--hair); padding-left: 16px; }
   footer { margin-top: 64px; padding-top: 22px; border-top: 1px solid var(--hair); font-size: 13px; color: var(--text-4); display: flex; gap: 18px; flex-wrap: wrap; }
-  footer a { color: var(--text-3); text-decoration: none; }
+  /* Taller tap target without moving the text: the padding grows the hit
+     area and the equal negative margin keeps the row where it was. */
+  footer a { color: var(--text-3); text-decoration: none; padding: 6px 0; margin: -6px 0; }
 </style>
 </head>
 <body>

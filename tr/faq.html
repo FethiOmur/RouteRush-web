@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="description" content="RouteRush nedir, bölge nasıl kapılır, Rush Puanı, haftalık ligler, AI koç Boldi, fiyatlar ve sıradan bir koşu uygulamasından farkı.">
+<meta name="apple-itunes-app" content="app-id=6783352912">
 <!-- SVG first so the mark can follow the tab strip's colour scheme; the
      transparent PNG is the fallback for browsers without SVG favicons.
      apple-touch-icon stays opaque on purpose: iOS renders a transparent
@@ -74,8 +75,11 @@
   a:hover { color: var(--accent); }
   .cta { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--hair); }
   .cta a { font-weight: 560; }
+  .cta + .cta { margin-top: 10px; padding-top: 0; border-top: 0; }
   footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair); font-size: 13px; color: var(--text-4); display: flex; gap: 18px; flex-wrap: wrap; }
-  footer a { color: var(--text-3); text-decoration: none; }
+  /* Taller tap target without moving the text: the padding grows the hit
+     area and the equal negative margin keeps the row where it was. */
+  footer a { color: var(--text-3); text-decoration: none; padding: 6px 0; margin: -6px 0; }
   .lang-row { margin-top: 14px; font-size: 13px; display: flex; gap: 14px; flex-wrap: wrap; }
   .lang-row a { color: var(--text-3); text-decoration: none; }
   .lang-row a[aria-current] { color: var(--text-2); pointer-events: none; }
@@ -123,6 +127,16 @@
       "@type": "Question",
       "name": "RouteRush ücretsiz mi?",
       "acceptedAnswer": { "@type": "Answer", "text": "İndirmesi de oynaması da ücretsiz: GPS takibi, bölge, ligler, kulüpler, yarışmalar ve tüm antrenman planları dahil. İsteğe bağlı iki abonelik AI koç Boldi'den daha fazlasını açar — Pro'da yazışma ve ayda bir koçlu koşu, Ultra'da her koşuda koçluk — ve ikisi de onay rozeti ile sınırsız kullanıcı adı değişikliği ekler." }
+    },
+    {
+      "@type": "Question",
+      "name": "RouteRush Android'de ya da Apple Watch'ta var mı?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Hayır. RouteRush bir iPhone uygulaması ve iOS 18 ve üzerini gerektirir. Android sürümü ve Apple Watch uygulaması yok: koşular ve sürüşler iPhone'unda kaydedilir, RouteRush da tamamladığın antrenmanları Apple Health'e kaydedebilir." }
+    },
+    {
+      "@type": "Question",
+      "name": "RouteRush Strava'ya bağlanıyor mu?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Hayır, Strava bağlantısı yok. İzin verirsen RouteRush antrenmanlarını ve fitness verilerini Apple Health'ten okur, tamamlanan antrenmanları da oraya geri yazabilir." }
     },
     {
       "@type": "Question",
@@ -186,6 +200,12 @@
   <h2>RouteRush ücretsiz mi?</h2>
   <p>İndirmesi de oynaması da ücretsiz: GPS takibi, bölge, ligler, kulüpler, yarışmalar ve tüm antrenman planları dahil. İsteğe bağlı iki abonelik AI koç Boldi'den daha fazlasını açar — Pro'da yazışma ve ayda bir koçlu koşu, Ultra'da her koşuda koçluk — ve ikisi de onay rozeti ile sınırsız kullanıcı adı değişikliği ekler.</p>
 
+  <h2>RouteRush Android'de ya da Apple Watch'ta var mı?</h2>
+  <p>Hayır. RouteRush bir iPhone uygulaması ve iOS 18 ve üzerini gerektirir. Android sürümü ve Apple Watch uygulaması yok: koşular ve sürüşler iPhone'unda kaydedilir, RouteRush da tamamladığın antrenmanları Apple Health'e kaydedebilir.</p>
+
+  <h2>RouteRush Strava'ya bağlanıyor mu?</h2>
+  <p>Hayır, Strava bağlantısı yok. İzin verirsen RouteRush antrenmanlarını ve fitness verilerini Apple Health'ten okur, tamamlanan antrenmanları da oraya geri yazabilir.</p>
+
   <h2>RouteRush yeni başlayanlar için uygun mu?</h2>
   <p>Evet. RouteRush'ta ücretsiz antrenman planları var: ilk koşuların için hazırlanmış dört haftalık Başla planıyla açılıyor, 5K, 10K, yarı maraton ve maratona kadar gidiyor. Her plan koşularını hafta hafta dizer, haftalık ve aylık yarışmalar da aynı Planlar sekmesinde durur; bölge haritası da sana kapıdan çıkmak için bir sebep verir.</p>
 
@@ -205,6 +225,7 @@
   <p>RouteRush'ı, İtalya'nın Torino kentinde yaşayan bağımsız geliştirici Fethi Omur yapıyor. Tek kişilik bir proje — tasarım, kod, harita motoru ve Boldi koç tek bir kişinin işi.</p>
 
   <p class="cta">Haritayı kendin gör — <a href="/tr/">routerushapp.com</a></p>
+  <p class="cta"><a href="https://apps.apple.com/app/apple-store/id6783352912?pt=128304040&amp;ct=web-tr&amp;mt=8">RouteRush'ı App Store'dan indir</a> — iPhone'da ücretsiz, iOS 18 ve üzeri.</p>
 
   <footer>
     <span>© 2026 RouteRush</span>

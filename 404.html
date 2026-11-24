@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- A 404 must never be indexed, and must never be mistaken for a real page. -->
 <meta name="robots" content="noindex, follow">
@@ -40,6 +40,7 @@
   .code { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--text-4); margin-bottom: 16px; }
   p { color: var(--text-2); margin-top: 14px; }
   .sub { color: var(--text-3); font-size: 15px; }
+  h1 { color: var(--text-2); margin-top: 14px; font-size: 16px; font-weight: 400; line-height: 1.6; }
 
   /* Every language is offered rather than guessed. Someone reaches a 404 from
      a broken link that could have pointed at any locale, and picking one for
@@ -59,7 +60,7 @@
 <div class="wrap">
   <p class="code">Error 404</p>
   <div class="wordmark"><a href="/">RouteRush</a></div>
-  <p>This page does not exist.</p>
+  <h1>This page does not exist.</h1>
   <p class="sub">Nothing here has been claimed yet. Pick a language and start from the map.</p>
 
   <nav aria-label="Language">

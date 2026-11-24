@@ -14,3 +14,11 @@
 /assets/vendor/*
   ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
+
+# HTML is served as bare "text/html" by default; name the charset in the
+# header too (every page also opens with <meta charset="utf-8">). Cloudflare
+# documents that _headers overrides the default headers of static asset
+# responses. Whether it also reaches the directory URLs ("/", "/tr/") that
+# workers/site.js answers through env.ASSETS.fetch is untested.
+/*.html
+  Content-Type: text/html; charset=utf-8

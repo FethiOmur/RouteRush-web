@@ -87,7 +87,7 @@ SKIP_RE = re.compile(
 # split across markup — translating the pieces separately would force the
 # translator to reproduce English word order.
 ATOMIC = [
-    '<h1 class="hero-h1 display" id="hero-title">Running is how<br>you take <em>ground.</em></h1>',
+    '<h1 class="hero-h1 display" id="hero-title">Running is how <br>you take <em>ground.</em></h1>',
 ]
 
 

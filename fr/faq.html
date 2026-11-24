@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<meta name="description" content="Ce qu'est RouteRush, comment on conquiert du territoire, les Points Rush, les ligues hebdomadaires, le coach IA Boldi, les tarifs, et ce qui le distingue d'une appli de course classique.">
+<meta name="description" content="Ce qu'est RouteRush, comment conquérir du territoire, les Points Rush, les ligues hebdo, le coach IA Boldi, les tarifs et la différence avec une appli de suivi.">
+<meta name="apple-itunes-app" content="app-id=6783352912">
 <!-- SVG first so the mark can follow the tab strip's colour scheme; the
      transparent PNG is the fallback for browsers without SVG favicons.
      apple-touch-icon stays opaque on purpose: iOS renders a transparent
@@ -32,7 +33,7 @@
 <meta property="og:locale" content="fr_FR">
 <meta property="og:site_name" content="RouteRush">
 <meta property="og:title" content="FAQ RouteRush — la conquête de territoire, mode d'emploi">
-<meta property="og:description" content="Comment on conquiert des rues, ce que sont les Points Rush, comment les ligues hebdomadaires font monter et descendre, et ce que fait vraiment le coach IA Boldi.">
+<meta property="og:description" content="Comment on conquiert des rues, ce que sont les Points Rush, qui monte et qui descend dans les ligues hebdomadaires, et ce que fait vraiment le coach IA Boldi.">
 <meta property="og:url" content="https://routerushapp.com/fr/faq.html">
 <meta property="og:image" content="https://routerushapp.com/assets/og-rome.jpg">
 <meta property="og:image:width" content="1200">
@@ -74,8 +75,11 @@
   a:hover { color: var(--accent); }
   .cta { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--hair); }
   .cta a { font-weight: 560; }
+  .cta + .cta { margin-top: 10px; padding-top: 0; border-top: 0; }
   footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair); font-size: 13px; color: var(--text-4); display: flex; gap: 18px; flex-wrap: wrap; }
-  footer a { color: var(--text-3); text-decoration: none; }
+  /* Taller tap target without moving the text: the padding grows the hit
+     area and the equal negative margin keeps the row where it was. */
+  footer a { color: var(--text-3); text-decoration: none; padding: 6px 0; margin: -6px 0; }
   .lang-row { margin-top: 14px; font-size: 13px; display: flex; gap: 14px; flex-wrap: wrap; }
   .lang-row a { color: var(--text-3); text-decoration: none; }
   .lang-row a[aria-current] { color: var(--text-2); pointer-events: none; }
@@ -123,6 +127,16 @@
       "@type": "Question",
       "name": "RouteRush est-il gratuit ?",
       "acceptedAnswer": { "@type": "Answer", "text": "RouteRush est gratuit à télécharger et gratuit à jouer : le suivi GPS, le territoire, les ligues, les clubs, les défis et tous les plans d'entraînement sont inclus. Deux abonnements facultatifs ajoutent davantage de Boldi, le coach IA — Pro apporte le chat écrit et une sortie coachée par mois, Ultra le coaching à chaque sortie — et tous deux ajoutent le badge vérifié et des changements de pseudo illimités." }
+    },
+    {
+      "@type": "Question",
+      "name": "RouteRush existe-t-il sur Android ou Apple Watch ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Non. RouteRush est une appli iPhone qui nécessite iOS 18 ou plus récent. Il n'y a pas de version Android ni d'appli Apple Watch : tes courses et sorties à vélo sont enregistrées sur ton iPhone, et RouteRush peut enregistrer tes entraînements terminés dans Apple Health." }
+    },
+    {
+      "@type": "Question",
+      "name": "RouteRush se connecte-t-il à Strava ?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Non, il n'y a pas de connexion avec Strava. Avec ton autorisation, RouteRush lit tes entraînements et tes données de forme dans Apple Health et peut y réécrire les entraînements terminés." }
     },
     {
       "@type": "Question",
@@ -186,6 +200,12 @@
   <h2>RouteRush est-il gratuit ?</h2>
   <p>RouteRush est gratuit à télécharger et gratuit à jouer : le suivi GPS, le territoire, les ligues, les clubs, les défis et tous les plans d'entraînement sont inclus. Deux abonnements facultatifs ajoutent davantage de Boldi, le coach IA — Pro apporte le chat écrit et une sortie coachée par mois, Ultra le coaching à chaque sortie — et tous deux ajoutent le badge vérifié et des changements de pseudo illimités.</p>
 
+  <h2>RouteRush existe-t-il sur Android ou Apple Watch ?</h2>
+  <p>Non. RouteRush est une appli iPhone qui nécessite iOS 18 ou plus récent. Il n'y a pas de version Android ni d'appli Apple Watch : tes courses et sorties à vélo sont enregistrées sur ton iPhone, et RouteRush peut enregistrer tes entraînements terminés dans Apple Health.</p>
+
+  <h2>RouteRush se connecte-t-il à Strava ?</h2>
+  <p>Non, il n'y a pas de connexion avec Strava. Avec ton autorisation, RouteRush lit tes entraînements et tes données de forme dans Apple Health et peut y réécrire les entraînements terminés.</p>
+
   <h2>RouteRush convient-il aux débutants ?</h2>
   <p>Oui. RouteRush propose des plans d'entraînement gratuits, à commencer par Se lancer — quatre semaines pensées pour tes premières courses — puis le 5 km, le 10 km, le semi-marathon et le marathon. Chaque plan organise tes courses semaine après semaine, les défis hebdomadaires et mensuels se trouvent dans le même onglet Plans, et la carte des territoires te donne une raison de passer la porte.</p>
 
@@ -205,6 +225,7 @@
   <p>RouteRush est développé par Fethi Omur, développeur indépendant installé à Turin, en Italie. C'est un projet solo : le design, le code, le moteur cartographique et le coach Boldi sont le travail d'une seule personne.</p>
 
   <p class="cta">Va voir la carte toi-même — <a href="/fr/">routerushapp.com</a></p>
+  <p class="cta"><a href="https://apps.apple.com/app/apple-store/id6783352912?pt=128304040&amp;ct=web-fr&amp;mt=8">Télécharger RouteRush sur l'App Store</a> — gratuit pour commencer sur iPhone, iOS 18 ou plus récent.</p>
 
   <footer>
     <span>© 2026 RouteRush</span>

@@ -3,9 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="description" content="Qué es RouteRush, cómo se conquista territorio, qué son los Puntos Rush, cómo van las ligas, quién es Boldi y en qué se diferencia de una app de running.">
+<meta name="apple-itunes-app" content="app-id=6783352912">
 <!-- SVG first so the mark can follow the tab strip's colour scheme; the
      transparent PNG is the fallback for browsers without SVG favicons.
      apple-touch-icon stays opaque on purpose: iOS renders a transparent
@@ -74,8 +75,11 @@
   a:hover { color: var(--accent); }
   .cta { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--hair); }
   .cta a { font-weight: 560; }
+  .cta + .cta { margin-top: 10px; padding-top: 0; border-top: 0; }
   footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair); font-size: 13px; color: var(--text-4); display: flex; gap: 18px; flex-wrap: wrap; }
-  footer a { color: var(--text-3); text-decoration: none; }
+  /* Taller tap target without moving the text: the padding grows the hit
+     area and the equal negative margin keeps the row where it was. */
+  footer a { color: var(--text-3); text-decoration: none; padding: 6px 0; margin: -6px 0; }
   .lang-row { margin-top: 14px; font-size: 13px; display: flex; gap: 14px; flex-wrap: wrap; }
   .lang-row a { color: var(--text-3); text-decoration: none; }
   .lang-row a[aria-current] { color: var(--text-2); pointer-events: none; }
@@ -123,6 +127,16 @@
       "@type": "Question",
       "name": "¿RouteRush es gratis?",
       "acceptedAnswer": { "@type": "Answer", "text": "RouteRush se descarga gratis y se juega gratis: el seguimiento por GPS, el territorio, las ligas, los clubes, los retos y todos los planes de entrenamiento están incluidos. Dos suscripciones opcionales añaden más de Boldi, el entrenador IA —Pro trae el chat de texto y una carrera con entrenador al mes; Ultra, entrenamiento en cada carrera— y las dos añaden la insignia verificada y cambios de nombre de usuario ilimitados." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿RouteRush está en Android o en Apple Watch?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. RouteRush es una app para iPhone y necesita iOS 18 o posterior. No hay versión para Android ni app para Apple Watch: las carreras y las salidas en bici se graban en tu iPhone, y RouteRush puede guardar tus entrenamientos completados en Apple Health." }
+    },
+    {
+      "@type": "Question",
+      "name": "¿RouteRush se conecta con Strava?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No, no hay conexión con Strava. Con tu permiso, RouteRush lee tus entrenamientos y tus datos de actividad física de Apple Health y puede volver a escribir allí los entrenamientos completados." }
     },
     {
       "@type": "Question",
@@ -186,6 +200,12 @@
   <h2>¿RouteRush es gratis?</h2>
   <p>RouteRush se descarga gratis y se juega gratis: el seguimiento por GPS, el territorio, las ligas, los clubes, los retos y todos los planes de entrenamiento están incluidos. Dos suscripciones opcionales añaden más de Boldi, el entrenador IA —Pro trae el chat de texto y una carrera con entrenador al mes; Ultra, entrenamiento en cada carrera— y las dos añaden la insignia verificada y cambios de nombre de usuario ilimitados.</p>
 
+  <h2>¿RouteRush está en Android o en Apple Watch?</h2>
+  <p>No. RouteRush es una app para iPhone y necesita iOS 18 o posterior. No hay versión para Android ni app para Apple Watch: las carreras y las salidas en bici se graban en tu iPhone, y RouteRush puede guardar tus entrenamientos completados en Apple Health.</p>
+
+  <h2>¿RouteRush se conecta con Strava?</h2>
+  <p>No, no hay conexión con Strava. Con tu permiso, RouteRush lee tus entrenamientos y tus datos de actividad física de Apple Health y puede volver a escribir allí los entrenamientos completados.</p>
+
   <h2>¿RouteRush sirve para principiantes?</h2>
   <p>Sí. RouteRush incluye planes de entrenamiento gratuitos, empezando por Empezar —cuatro semanas pensadas para tus primeras carreras— y siguiendo con 5K, 10K, media maratón y maratón. Cada plan organiza tus carreras semana a semana, los retos semanales y mensuales están en la misma pestaña Planes, y el mapa de territorio te da un motivo para salir por la puerta.</p>
 
@@ -205,6 +225,7 @@
   <p>RouteRush lo hace Fethi Omur, desarrollador independiente afincado en Turín (Italia). Es un proyecto en solitario: el diseño, el código, el motor del mapa y el entrenador Boldi son el trabajo de una sola persona.</p>
 
   <p class="cta">Compruébalo tú mismo — <a href="/es/">routerushapp.com</a></p>
+  <p class="cta"><a href="https://apps.apple.com/app/apple-store/id6783352912?pt=128304040&amp;ct=web-es&amp;mt=8">Descarga RouteRush en el App Store</a> — gratis en iPhone, iOS 18 o posterior.</p>
 
   <footer>
     <span>© 2026 RouteRush</span>

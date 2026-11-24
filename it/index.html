@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="RouteRush trasforma la corsa in conquista del territorio. Chiudi un giro e le strade dentro sono tue, sulla mappa 3D live della tua città. Gratis per iniziare, iOS 18+.">
+<meta name="description" content="App di corsa e bici per conquistare territori: chiudi un percorso ad anello e le strade dentro sono tue. Leghe settimanali, club, piani gratis. iPhone, iOS 18+.">
 <meta name="theme-color" content="#000000">
 <!-- Content policy. It ships in the document because that is where it started
      (GitHub Pages could not send custom headers). The site is now served by a
@@ -15,18 +15,20 @@
      data:/blob: images the refractive-glass maps are generated as, and what the
      live map needs: its tile workers run from blob: URLs, and it fetches
      style, tiles, glyphs and sprites from api.mapbox.com / *.tiles.mapbox.com
-     and sends billing pings to events.mapbox.com — the page's only third-party
-     requests (none at all in poster mode). Anything injected from another host
-     — a script tag, a tracking pixel, a font — is refused.
+     and sends billing pings to events.mapbox.com. The one other host allowed is
+     Cloudflare Web Analytics: the edge injects its cookieless beacon from
+     static.cloudflareinsights.com, and it reports to cloudflareinsights.com
+     (the directives Cloudflare documents for it). Anything else injected from
+     another host — a script tag, a tracking pixel, a font — is refused.
      Known limit: frame-ancestors is ignored in a meta policy, so clickjacking
      protection needs the policy moved into a `_headers` response header. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval';
+  script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://static.cloudflareinsights.com;
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: blob:;
   font-src 'self';
-  connect-src 'self' https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com;
+  connect-src 'self' https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://cloudflareinsights.com;
   worker-src blob:;
   child-src blob:;
   base-uri 'self';
@@ -34,7 +36,7 @@
   object-src 'none'">
 <!-- Cross-origin navigations leak only the origin, never the path. -->
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>RouteRush — App di corsa e conquista del territorio per iOS</title>
+<title>RouteRush — App di corsa: conquista territori correndo</title>
 <!-- SVG first so the mark can follow the tab strip's colour scheme; the
      transparent PNG is the fallback for browsers without SVG favicons.
      apple-touch-icon stays opaque on purpose: iOS renders a transparent
@@ -60,15 +62,15 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="it_IT">
 <meta property="og:site_name" content="RouteRush">
-<meta property="og:title" content="RouteRush — App di corsa e conquista del territorio per iOS">
-<meta property="og:description" content="Chiudi un giro correndo e le strade che restano dentro diventano il tuo territorio — sulla mappa notturna 3D live della tua città. Leghe settimanali, un AI coach, conquista vera.">
+<meta property="og:title" content="RouteRush — App di corsa: conquista territori correndo">
+<meta property="og:description" content="Chiudi un giro correndo e le strade dentro diventano il tuo territorio, sulla mappa notturna 3D della tua città. Leghe settimanali, AI coach, conquista vera.">
 <meta property="og:url" content="https://routerushapp.com/it/">
 <meta property="og:image" content="https://routerushapp.com/assets/og-rome.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Il logo RouteRush su una mappa di Roma coperta di territori conquistati, accanto alla mappa dei territori dell'app su iPhone">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="RouteRush — App di corsa e conquista del territorio per iOS">
+<meta name="twitter:title" content="RouteRush — App di corsa: conquista territori correndo">
 <meta name="twitter:description" content="Chiudi un giro correndo e le strade che restano dentro diventano il tuo territorio — sulla mappa notturna 3D live della tua città.">
 <meta name="twitter:image" content="https://routerushapp.com/assets/og-rome.jpg">
 <link rel="preconnect" href="https://api.mapbox.com" crossorigin>
@@ -1555,8 +1557,13 @@
       "@type": "Organization",
       "@id": "https://routerushapp.com/#org",
       "name": "RouteRush",
+      "alternateName": "RouteRush: Run & Conquer",
+      "description": "Sviluppatore di RouteRush, l'app di corsa per conquistare territori su iPhone.",
       "url": "https://routerushapp.com/",
       "logo": "https://routerushapp.com/assets/routerush-appicon.png",
+      "email": "support@routerushapp.com",
+      "founder": { "@id": "https://routerushapp.com/#founder" },
+      "foundingLocation": { "@type": "Place", "name": "Turin, Italy" },
       "sameAs": [
         "https://apps.apple.com/app/id6783352912",
         "https://www.instagram.com/routerushapp/",
@@ -1576,15 +1583,30 @@
       "@id": "https://routerushapp.com/#site",
       "url": "https://routerushapp.com/",
       "name": "RouteRush",
+      "inLanguage": ["en", "tr", "it", "de", "es", "fr"],
       "publisher": { "@id": "https://routerushapp.com/#org" }
     },
     {
       "@type": ["MobileApplication", "SoftwareApplication"],
       "@id": "https://routerushapp.com/#app",
       "name": "RouteRush",
+      "alternateName": ["RouteRush: Run & Conquer", "RouteRush: Laufen & Erobern"],
       "operatingSystem": "iOS 18.0 or later",
       "applicationCategory": "SportsApplication",
+      "availableOnDevice": "iPhone",
+      "image": "https://routerushapp.com/assets/routerush-appicon.png",
       "installUrl": "https://apps.apple.com/app/id6783352912",
+      "sameAs": ["https://apps.apple.com/app/id6783352912"],
+      "featureList": [
+        "GPS run and ride tracking",
+        "Territory claiming on a 3D map",
+        "Weekly leagues",
+        "Clubs and club battles",
+        "Free training plans from first run to marathon",
+        "AI running coach (Boldi)",
+        "Running and cycling events near you",
+        "Apple Health read and write"
+      ],
       "description": "RouteRush è un'app iOS che trasforma la corsa e la bici in conquista del territorio — chiudi un giro correndo e le strade che restano dentro diventano il tuo territorio.",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
       "inLanguage": ["en", "de", "es", "fr", "it", "tr"],
@@ -1806,7 +1828,7 @@
              the wordmark owns this space without doubling up. -->
         <p class="wordmark hero-wordmark">RouteRush</p>
 
-        <h1 class="hero-h1 display" id="hero-title">Corri.<br>Prenditi la <em>città.</em></h1>
+        <h1 class="hero-h1 display" id="hero-title">Corri. <br>Prenditi la <em>città.</em></h1>
 
         <!-- The sequence communicates ordered information, so the same three
              states also exist as readable text for assistive technology. This
@@ -1830,7 +1852,7 @@
           </div>
           <div class="state">
             <b>03 — Tienilo</b>
-            <p>Il territorio diventa Punti Rush, i Punti Rush diventano posizione, e la posizione si azzera ogni settimana. La mappa è tua solo finché continui a correre.</p>
+            <p>Il territorio diventa Punti Rush, i Punti Rush diventano posizione, e la posizione si azzera ogni settimana. Il tuo terreno resta tuo finché qualcuno non ci chiude sopra un giro.</p>
           </div>
         </div>
 
@@ -1875,7 +1897,12 @@
     <div class="wrap claim">
       <div>
         <p class="eyebrow" data-reveal>La differenza</p>
-        <h2 class="h2" id="claim-title" data-reveal style="--d:90ms; margin-top:18px">Un'app da corsa ti dice dove sei passato.<br>RouteRush ti dice cosa ti sei preso.</h2>
+        <h2 class="h2" id="claim-title" data-reveal style="--d:90ms; margin-top:18px">Un'app da corsa ti dice dove sei passato. <br>RouteRush ti dice cosa ti sei preso.</h2>
+        <!-- Answer-first definition: the press kit's one-liner, verbatim, plus
+             the facts an answer engine is asked for. It sits here rather than in
+             the hero so the hero layout stays untouched, as the first paragraph
+             of the first section, ahead of every section's body copy. -->
+        <p class="lede" data-reveal style="--d:150ms; max-width:52ch; margin-top:22px">RouteRush è un'app iOS che trasforma la corsa e la bici in conquista del territorio — chiudi un giro correndo e le strade che restano dentro diventano il tuo territorio. Gratis per iniziare su iPhone (iOS&nbsp;18 o successivo), con leghe settimanali, club, piani di allenamento gratuiti dalla prima corsa alla maratona e Boldi, un AI coach per la corsa.</p>
         <p class="lede" data-reveal style="--d:180ms; max-width:52ch; margin-top:22px">
           La stessa corsa, contata in un altro modo. Distanza e ritmo sono il resoconto. Il punteggio è la mappa —
           il registro permanente delle strade che hai percorso davvero, isolato dopo isolato, contro
@@ -2077,7 +2104,7 @@
     <div class="wrap frow flip">
       <div>
         <p class="eyebrow" data-reveal>Leghe</p>
-        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="leagues-title">Trenta runner.<br>Una settimana.<br>Cinque salgono.</h2>
+        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="leagues-title">Trenta runner. <br>Una settimana. <br>Cinque salgono.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:42ch">
           Ogni settimana entri in una lega al tuo livello, fino a trenta runner. Il sesto in alto sale e il
           sesto in basso scende — cinque per parte in una lega piena — e il lunedì si riparte tutti da zero.

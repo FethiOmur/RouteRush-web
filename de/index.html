@@ -15,18 +15,20 @@
      data:/blob: images the refractive-glass maps are generated as, and what the
      live map needs: its tile workers run from blob: URLs, and it fetches
      style, tiles, glyphs and sprites from api.mapbox.com / *.tiles.mapbox.com
-     and sends billing pings to events.mapbox.com — the page's only third-party
-     requests (none at all in poster mode). Anything injected from another host
-     — a script tag, a tracking pixel, a font — is refused.
+     and sends billing pings to events.mapbox.com. The one other host allowed is
+     Cloudflare Web Analytics: the edge injects its cookieless beacon from
+     static.cloudflareinsights.com, and it reports to cloudflareinsights.com
+     (the directives Cloudflare documents for it). Anything else injected from
+     another host — a script tag, a tracking pixel, a font — is refused.
      Known limit: frame-ancestors is ignored in a meta policy, so clickjacking
      protection needs the policy moved into a `_headers` response header. -->
 <meta http-equiv="Content-Security-Policy" content="
   default-src 'self';
-  script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval';
+  script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://static.cloudflareinsights.com;
   style-src 'self' 'unsafe-inline';
   img-src 'self' data: blob:;
   font-src 'self';
-  connect-src 'self' https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com;
+  connect-src 'self' https://api.mapbox.com https://*.tiles.mapbox.com https://events.mapbox.com https://cloudflareinsights.com;
   worker-src blob:;
   child-src blob:;
   base-uri 'self';
@@ -1555,8 +1557,13 @@
       "@type": "Organization",
       "@id": "https://routerushapp.com/#org",
       "name": "RouteRush",
+      "alternateName": "RouteRush: Run & Conquer",
+      "description": "Entwickler von RouteRush, der Lauf-App fürs iPhone, mit der du Gebiete eroberst.",
       "url": "https://routerushapp.com/",
       "logo": "https://routerushapp.com/assets/routerush-appicon.png",
+      "email": "support@routerushapp.com",
+      "founder": { "@id": "https://routerushapp.com/#founder" },
+      "foundingLocation": { "@type": "Place", "name": "Turin, Italy" },
       "sameAs": [
         "https://apps.apple.com/app/id6783352912",
         "https://www.instagram.com/routerushapp/",
@@ -1576,15 +1583,30 @@
       "@id": "https://routerushapp.com/#site",
       "url": "https://routerushapp.com/",
       "name": "RouteRush",
+      "inLanguage": ["en", "tr", "it", "de", "es", "fr"],
       "publisher": { "@id": "https://routerushapp.com/#org" }
     },
     {
       "@type": ["MobileApplication", "SoftwareApplication"],
       "@id": "https://routerushapp.com/#app",
       "name": "RouteRush",
+      "alternateName": ["RouteRush: Run & Conquer", "RouteRush: Laufen & Erobern"],
       "operatingSystem": "iOS 18.0 or later",
       "applicationCategory": "SportsApplication",
+      "availableOnDevice": "iPhone",
+      "image": "https://routerushapp.com/assets/routerush-appicon.png",
       "installUrl": "https://apps.apple.com/app/id6783352912",
+      "sameAs": ["https://apps.apple.com/app/id6783352912"],
+      "featureList": [
+        "GPS run and ride tracking",
+        "Territory claiming on a 3D map",
+        "Weekly leagues",
+        "Clubs and club battles",
+        "Free training plans from first run to marathon",
+        "AI running coach (Boldi)",
+        "Running and cycling events near you",
+        "Apple Health read and write"
+      ],
       "description": "RouteRush ist eine iOS-App, die Laufen und Radfahren zur Gebietseroberung macht — lauf eine Runde, und die Straßen darin werden dein Gebiet.",
       "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
       "inLanguage": ["en", "de", "es", "fr", "it", "tr"],
@@ -1806,7 +1828,7 @@
              the wordmark owns this space without doubling up. -->
         <p class="wordmark hero-wordmark">RouteRush</p>
 
-        <h1 class="hero-h1 display" id="hero-title">Wer läuft,<br><em>erobert.</em></h1>
+        <h1 class="hero-h1 display" id="hero-title">Wer läuft, <br><em>erobert.</em></h1>
 
         <!-- The sequence communicates ordered information, so the same three
              states also exist as readable text for assistive technology. This
@@ -1830,7 +1852,7 @@
           </div>
           <div class="state">
             <b>03 — Halten</b>
-            <p>Gebiet bringt Rush-Punkte, Rush-Punkte bringen Rang, und jede Woche fängt der Rang neu an. Die Karte gehört dir nur, solange du weiterläufst.</p>
+            <p>Gebiet bringt Rush-Punkte, Rush-Punkte bringen Rang, und jede Woche fängt der Rang neu an. Dein Gebiet bleibt deins, bis jemand eine Runde darüber schließt.</p>
           </div>
         </div>
 
@@ -1875,7 +1897,12 @@
     <div class="wrap claim">
       <div>
         <p class="eyebrow" data-reveal>Der Unterschied</p>
-        <h2 class="h2" id="claim-title" data-reveal style="--d:90ms; margin-top:18px">Ein Tracker zeigt dir, wo du warst.<br>RouteRush zeigt dir, was du erobert hast.</h2>
+        <h2 class="h2" id="claim-title" data-reveal style="--d:90ms; margin-top:18px">Ein Tracker zeigt dir, wo du warst. <br>RouteRush zeigt dir, was du erobert hast.</h2>
+        <!-- Answer-first definition: the press kit's one-liner, verbatim, plus
+             the facts an answer engine is asked for. It sits here rather than in
+             the hero so the hero layout stays untouched, as the first paragraph
+             of the first section, ahead of every section's body copy. -->
+        <p class="lede" data-reveal style="--d:150ms; max-width:52ch; margin-top:22px">RouteRush ist eine iOS-App, die Laufen und Radfahren zur Gebietseroberung macht — lauf eine Runde, und die Straßen darin werden dein Gebiet. Gratis starten auf dem iPhone (iOS&nbsp;18 oder neuer) — mit Wochenligen, Clubs, kostenlosen Trainingsplänen vom ersten Lauf bis zum Marathon und Boldi, einem KI-Laufcoach.</p>
         <p class="lede" data-reveal style="--d:180ms; max-width:52ch; margin-top:22px">
           Derselbe Lauf, anders gewertet. Distanz und Pace sind nur Statistik. Gewertet wird auf der Karte —
           ein dauerhaftes Verzeichnis der Straßen, die du wirklich gelaufen bist, Block für Block,
@@ -2077,7 +2104,7 @@
     <div class="wrap frow flip">
       <div>
         <p class="eyebrow" data-reveal>Ligen</p>
-        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="leagues-title">Dreißig Läufer.<br>Eine Woche.<br>Fünf steigen auf.</h2>
+        <h2 class="h2" data-reveal style="--d:60ms; margin-top:18px" id="leagues-title">Dreißig Läufer. <br>Eine Woche. <br>Fünf steigen auf.</h2>
         <p class="lede" data-reveal style="--d:110ms; margin-top:20px; max-width:42ch">
           Jede Woche landest du in einer Liga deiner Stufe, bis zu dreißig Läufer. Das obere Sechstel steigt auf,
           das untere Sechstel steigt ab — je fünf in einer vollen Liga — und montags fangen alle wieder bei null an.
