@@ -6,7 +6,6 @@
     "RouteRush turns running into territorial conquest. Close a loop and the streets inside it become yours, on a live 3D map of your city. Free to start, iOS 18+.": "RouteRush macht aus Laufen eine Eroberung. Lauf eine Runde, und die Straßen darin gehören dir — auf der 3D-Karte deiner Stadt. Gratis starten, iOS 18+.",
     "Close a loop on a run and the streets inside it become your territory — on a live 3D night map of your city. Weekly leagues, an AI coach, real conquest.": "Lauf eine Runde, und die Straßen darin werden dein Gebiet — live auf der 3D-Nachtkarte deiner Stadt. Wochenligen, ein KI-Coach, echte Eroberung.",
     "Close a loop on a run and the streets inside it become your territory — on a live 3D night map of your city.": "Lauf eine Runde, und die Straßen darin werden dein Gebiet — live auf der 3D-Nachtkarte deiner Stadt.",
-    "RouteRush wordmark over a night map of Turin covered in claimed territory": "RouteRush-Schriftzug über einer Nachtkarte von Turin, bedeckt mit erobertem Gebiet",
     "Skip to content": "Zum Inhalt springen",
     "Territory": "Gebiet",
     "Coach": "Coach",
@@ -160,7 +159,8 @@
     "Your plan and how far into it you are, with this week's and this month's challenges right under it.": "Dein Plan und wie weit du darin bist, direkt darunter die Challenges der Woche und des Monats.",
     "RouteRush Explore tab: a 10K event near you tomorrow leads the page, above the feed": "RouteRush Tab Entdecken: ein 10K-Event in deiner Nähe morgen ganz oben, darunter der Feed",
     "Race day, nearby": "Renntag in deiner Nähe",
-    "Explore opens with the event closest to you, with the rest a tap away.": "Entdecken beginnt mit dem Event, das dir am nächsten ist — die übrigen sind einen Tipp entfernt."
+    "Explore opens with the event closest to you, with the rest a tap away.": "Entdecken beginnt mit dem Event, das dir am nächsten ist — die übrigen sind einen Tipp entfernt.",
+    "RouteRush wordmark over a map of Rome covered in claimed territory, beside the app's territory map on an iPhone": "RouteRush-Schriftzug über einer Karte von Rom voller eroberter Gebiete, daneben die Gebietskarte der App auf einem iPhone"
   },
   "faq.html": {
     "RouteRush FAQ — How Territory Running Works": "RouteRush FAQ — so erobert man Gebiete beim Laufen",
