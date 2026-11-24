@@ -365,6 +365,10 @@
   .h3 { font-weight: 600; letter-spacing: -.022em; font-size: clamp(18px, 1.5vw, 21px); line-height: 1.25; }
   .lede { color: var(--text-2); font-size: clamp(15.5px, 1.35vw, 19px); line-height: 1.58; letter-spacing: -.011em; }
   .small { font-size: 14px; color: var(--text-3); line-height: 1.55; }
+  /* A quiet text link under a section's points (territory → the explainer). */
+  .more-link { margin-top: 24px; }
+  .more-link a { color: var(--text-2); text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: 4px; }
+  .more-link a:hover { color: #fff; text-decoration-color: var(--run-accent); }
   .num { font-variant-numeric: tabular-nums; }
 
   /* ---------- buttons: white capsule = primary (house pattern) ---------- */
@@ -1957,6 +1961,7 @@
             <p><b>Ça s'accumule.</b> Le territoire se garde d'une course à l'autre : un quartier, ça se construit sur des mois.</p>
           </div>
         </div>
+        <p class="small more-link" data-reveal style="--d:200ms"><a href="/fr/territory-running.html">Qu'est-ce que la conquête de territoire en courant ? Le principe</a></p>
       </div>
 
       <div class="frow-media glow-run" data-reveal style="--d:120ms">
@@ -2361,6 +2366,7 @@
           <li><a href="/fr/faq.html">FAQ</a></li>
           <li><a href="mailto:support@routerushapp.com">Assistance</a></li>
           <li><a href="/press.html">Kit presse</a></li>
+          <li><a href="/changelog.html">Nouveautés</a></li>
         </ul>
       </nav>
       <nav aria-label="Réseaux sociaux">

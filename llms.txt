@@ -2,19 +2,20 @@
 
 > RouteRush ("RouteRush: Run & Conquer" on the App Store) is an iOS app that turns running and cycling into territorial conquest — close a loop on a run and the streets inside it become your territory. Territory is drawn in the shape of the streets you ran on a 3D map of your city and earns Rush Points, which rank you in weekly leagues of up to thirty runners. Anyone who closes a loop over your ground takes the overlap; until then it stays yours.
 
-- Platform: iPhone only, iOS 18 or later. There is no Android version, no Apple Watch app and no Strava connection. With permission, RouteRush reads workouts from Apple Health and can write completed workouts back.
+- Platform: iPhone only, iOS 18 or later. There is no Android version, no Apple Watch app and no Strava connection. With permission it reads and writes Apple Health.
 - Free to download and play: GPS tracking, territory, leagues, clubs, challenges and every training plan.
 - Boldi, the AI running coach: Pro includes text chat with Boldi and one coached run a month; Ultra has him coach every run and adds voice conversations between runs.
 - Free training plans: Get Started (four weeks for first runs), then 5K, 10K, half marathon and marathon. Weekly and monthly challenges.
-- Clubs (optionally invite-only) and club battles; an Explore tab with running and cycling events near you.
-- Languages: English, German, Spanish, French, Italian, Turkish.
+- Clubs (optionally invite-only), club battles, and running and cycling events near you.
 - Made by an independent solo developer in Turin, Italy.
 
 ## Pages
 
-- [Home](https://routerushapp.com/): what the app does, feature overview
-- [FAQ](https://routerushapp.com/faq.html): territory, Rush Points, leagues, Boldi, what is free, platforms, beginners, clubs, events
-- [Press kit](https://routerushapp.com/press.html): fact sheet, boilerplate, logo, screenshots, video, contact
+- [Home](https://routerushapp.com/): what the app does
+- [What is territory running?](https://routerushapp.com/territory-running.html): how a closed loop becomes your ground
+- [FAQ](https://routerushapp.com/faq.html): Rush Points, leagues, Boldi, what is free, platforms, clubs
+- [Press kit](https://routerushapp.com/press.html): fact sheet, logo, screenshots, contact
+- [Changelog](https://routerushapp.com/changelog.html): every release, dated
 - [Privacy policy](https://routerushapp.com/privacy.html) and [Terms](https://routerushapp.com/terms.html)
 - [App Store](https://apps.apple.com/app/id6783352912)
-- Also in: [Türkçe](https://routerushapp.com/tr/), [Italiano](https://routerushapp.com/it/), [Deutsch](https://routerushapp.com/de/), [Español](https://routerushapp.com/es/), [Français](https://routerushapp.com/fr/)
+- App and site also in: [Türkçe](https://routerushapp.com/tr/), [Italiano](https://routerushapp.com/it/), [Deutsch](https://routerushapp.com/de/), [Español](https://routerushapp.com/es/), [Français](https://routerushapp.com/fr/)

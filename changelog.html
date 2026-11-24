@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Same posture as the main page: everything local, nothing phones home. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<link rel="icon" href="assets/favicon.svg?v=2" type="image/svg+xml">
+<link rel="icon" href="assets/favicon.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+<meta name="description" content="Every RouteRush release, newest first: what changed in the iPhone app, version by version, with the date each one reached the App Store.">
+<meta name="apple-itunes-app" content="app-id=6783352912">
+<link rel="canonical" href="https://routerushapp.com/changelog.html">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:site_name" content="RouteRush">
+<meta property="og:title" content="RouteRush Changelog — What's New in Each Version">
+<meta property="og:description" content="What changed in each RouteRush release, newest first, with App Store release dates.">
+<meta property="og:url" content="https://routerushapp.com/changelog.html">
+<meta property="og:image" content="https://routerushapp.com/assets/og-rome.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="RouteRush wordmark over a map of Rome covered in claimed territory, beside the app's territory map on an iPhone">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="RouteRush Changelog — What's New in Each Version">
+<meta name="twitter:description" content="What changed in each RouteRush release, newest first, with App Store release dates.">
+<meta name="twitter:image" content="https://routerushapp.com/assets/og-rome.jpg">
+<title>RouteRush Changelog — What's New in Each Version</title>
+<style>
+  /* The press.html utility template: same palette and type, none of the
+     scroll machinery. */
+  @font-face {
+    font-family: 'Splash';
+    src: url('assets/fonts/Splash-Subset.ttf') format('truetype');
+    /* the subset carries ONLY the glyphs of "RouteRush" — never set other text in it */
+    font-display: block;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --text-2: rgba(255,255,255,.78); --text-3: rgba(255,255,255,.55);
+    --text-4: rgba(255,255,255,.38); --hair: rgba(255,255,255,.10);
+    --accent: #00E0FF;
+  }
+  html { color-scheme: dark; }
+  body {
+    background: #000; color: #fff;
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 56px 24px 72px; }
+  .wordmark { font-family: 'Splash', cursive; font-size: 44px; font-weight: 400; }
+  .wordmark a { color: #fff; text-decoration: none; }
+  .eyebrow { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-4); margin-bottom: 14px; }
+  h1 { font-size: 15px; font-weight: 500; color: var(--text-3); margin-top: 10px; }
+  h2 { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-4); font-weight: 560; margin: 52px 0 14px; }
+  h2 b { color: #fff; font-weight: 620; letter-spacing: .06em; margin-right: 10px; }
+  p  { color: var(--text-2); max-width: 62ch; }
+  a  { color: #fff; }
+  a:hover { color: var(--accent); }
+  .note { font-size: 14px; color: var(--text-3); border-left: 2px solid var(--hair); padding-left: 16px; margin-top: 28px; }
+  .cta { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--hair); }
+  .cta a { font-weight: 560; }
+  footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair); font-size: 13px; color: var(--text-4); display: flex; gap: 18px; flex-wrap: wrap; }
+  /* Taller tap target without moving the text: the padding grows the hit
+     area and the equal negative margin keeps the row where it was. */
+  footer a { color: var(--text-3); text-decoration: none; padding: 6px 0; margin: -6px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- One entry per App Store release, newest first. Dates are the release
+       dates the App Store version history shows; never re-date an entry.
+       Text is written from the English "What's New" notes, leaving out any
+       line that breaks a house rule (yearly challenges, per-kilometre splits,
+       race estimates, decay). Add the next release on the day it ships. -->
+  <p class="eyebrow">Changelog</p>
+  <div class="wordmark"><a href="/">RouteRush</a></div>
+  <h1>What's new in RouteRush</h1>
+  <p class="note">RouteRush first came out on the App Store on 8 September 2026. Each entry is one release, newest first, with what changed for you.</p>
+
+  <h2 id="v1-4-1"><b>1.4.1</b> <time datetime="2026-11-24">24 November 2026</time></h2>
+  <p>The redesign reaches the rest of the app. The run summary now puts your three key numbers at the top, next to your reward. Territory details fit in one sheet you pull up for the runs, pace and elevation behind an area. Leaderboards, club pages, your profile and Settings are cleaner, clubs can crop a cover photo and logo before uploading, and Explore leads with the event nearest to you. Boldi's voice chat no longer ends when an answer takes a moment.</p>
+
+  <h2 id="v1-4-0"><b>1.4.0</b> <time datetime="2026-11-20">20 November 2026</time></h2>
+  <p>Profile stats have cleaner charts for steps, calories and distance: tap a bar to see that day. Your territory now shows your all-time distance, on your profile and on other runners' profiles, and your streak leads your highlights. Plans were redesigned so your active plan, its weekly view and your progress read at a glance, and weekly and monthly challenges moved to the Plans tab, right under your active plan. In Club, the second tab is now Battles, for matchups against other clubs.</p>
+
+  <h2 id="v1-3-1"><b>1.3.1</b> <time datetime="2026-11-18">18 November 2026</time></h2>
+  <p>The button that starts a voice conversation with Boldi now shows Boldi himself instead of a microphone: tap him in the message bar and start talking. Clubs can now be invite-only: pick Invite only in the club's settings and share the invite link. With location allowed, Boldi knows the area you are in and its weather when you chat, not only during a run. Scrolling your profile stats no longer gets stuck on the charts.</p>
+
+  <h2 id="v1-3-0"><b>1.3.0</b> <time datetime="2026-11-02">2 November 2026</time></h2>
+  <p>RouteRush now fits iPhone Duo, folded and unfolded: the map, sheets, the welcome, clubs and the Live Activity adapt to both displays. Without an account you now see the real territory map, and tapping an area invites you to sign in and claim it. If location access is off, the app explains what is missing and how to switch it on.</p>
+
+  <h2 id="v1-2-3"><b>1.2.3</b> <time datetime="2026-10-30">30 October 2026</time></h2>
+  <p>A new welcome starts on a live map of a real city, then pulls back to the whole Earth. Spin the globe and tap Istanbul, Paris, London, Barcelona, Rome, New York or Sydney to look around a sample week of runs and the ground they claimed. Older iPhones and Low Power Mode get the classic, lighter welcome.</p>
+
+  <h2 id="v1-2-2"><b>1.2.2</b> <time datetime="2026-10-26">26 October 2026</time></h2>
+  <p>Post to Instagram Stories in one tap from run cards, the run replay video, Explore and club posts, club and event cards and achievement celebrations, or share a run replay as an Instagram Reel. The replay camera now swings cleanly behind you on sharp turnarounds. If only part of a run's GPS points uploaded on a weak connection, RouteRush now recovers the rest instead of losing the run.</p>
+
+  <h2 id="v1-2-1"><b>1.2.1</b> <time datetime="2026-10-24">24 October 2026</time></h2>
+  <p>Clubs were rebuilt: search for a club and open a full club page with stats, recent activities, ranked members and events. Owners can hand over roles and ownership, and share the club with a link or a story card. A GPS badge shows when you can start, distance is more accurate, and your summary opens the moment you tap Finish, even offline. A failed post upload can now be retried, and you can report or block right from the comments.</p>
+
+  <h2 id="v1-2-0"><b>1.2.0</b> <time datetime="2026-10-17">17 October 2026</time></h2>
+  <p>Boldi got one screen for chat, history and plans. When you are sick, travelling or taking a break, tell him and the plan adjusts, with the change shown before and after. Seeing who owns any territory on the map became free for everyone, and Explore gained an Events tab.</p>
+
+  <h2 id="v1-1-1"><b>1.1.1</b> <time datetime="2026-10-03">3 October 2026</time></h2>
+  <p>Flyover videos now show a 3D Boldi running or riding your exact route, with a smooth camera, at a speed you pick from 1× to 4×. Boldi has a fresh look, with new moments when you start a plan, get promoted in your league and finish a run. Tapping Finish more than once while a run is saving no longer causes trouble.</p>
+
+  <h2 id="v1-1-0"><b>1.1.0</b> <time datetime="2026-09-26">26 September 2026</time></h2>
+  <p>Twenty animated achievement badges arrived, twelve of them new. Territory walls now trace the border of the area you own, and the territory sheet shows the runs that built it. You can share a run straight from the map, record a flyover of your route and pick from a new filter gallery. A new monthly challenge, Run 50K, joined the weekly challenges.</p>
+
+  <h2 id="v1-0-1"><b>1.0.1</b> <time datetime="2026-09-10">10 September 2026</time></h2>
+  <p>A new liquid orb shows when Boldi is thinking, and his voice waves during a run share the same look. His replies now flow onto the screen smoothly instead of jumping in. Sheets no longer turn see-through when the keyboard opens, and a false "Health access looks off" message is gone.</p>
+
+  <p class="cta"><a href="https://apps.apple.com/app/apple-store/id6783352912?pt=128304040&amp;ct=web-en&amp;mt=8">Get RouteRush on the App Store</a> — free on iPhone, iOS 18 or later.</p>
+
+  <footer>
+    <span>© 2026 RouteRush</span>
+    <a href="/">Home</a>
+    <a href="/faq.html">FAQ</a>
+    <a href="/territory-running.html">Territory running</a>
+    <a href="/press.html">Press kit</a>
+    <a href="/privacy.html">Privacy</a>
+    <a href="/terms.html">Terms</a>
+    <a href="/credits.html">Credits</a>
+  </footer>
+</div>
+</body>
+</html>

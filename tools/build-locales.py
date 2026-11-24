@@ -42,7 +42,9 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 I18N = ROOT / "i18n"
 ORIGIN = "https://routerushapp.com"
 
-PAGES = ["index.html", "faq.html", "credits.html"]
+PAGES = ["index.html", "faq.html", "credits.html", "territory-running.html"]
+# Served at the root only; listed in the sitemap without alternates.
+ENGLISH_ONLY = ("press.html", "privacy.html", "terms.html", "changelog.html")
 LOCALES = ["tr", "it", "de", "es", "fr"]
 # og:locale wants a full tag; hreflang and <html lang> want the short one.
 OG_LOCALE = {"en": "en_US", "tr": "tr_TR", "it": "it_IT",
@@ -321,18 +323,61 @@ def rewrite_head(html, lang, page):
     html = sub1(r'<meta property="og:locale" content="[^"]*">',
                 f'<meta property="og:locale" content="{OG_LOCALE[lang]}">',
                 html, "og:locale")
-    # The FAQ's own language, which is the page's. Deliberately NOT the app's
-    # `inLanguage` array on the MobileApplication node: that lists the six
-    # languages the product ships in and is the same claim on every page.
-    if page == "faq.html":
-        html = sub1(r'"inLanguage": "en"', f'"inLanguage": "{lang}"',
-                    html, "FAQPage inLanguage")
-        # Each translation is its own node. Sharing one @id across six pages
-        # would assert they are the same thing, which is exactly the claim
-        # hreflang exists to deny. isPartOf/about keep pointing at the site
-        # and app nodes, which genuinely are shared.
-        html = sub1(r'"@id": "https://routerushapp\.com/faq\.html#faq"',
-                    f'"@id": "{ORIGIN}/{lang}/faq.html#faq"', html, "FAQPage @id")
+    return rewrite_ldjson_identity(html, lang, page)
+
+
+def rewrite_ldjson_identity(html, lang, page):
+    """The page's own language and URL inside its JSON-LD, for every page.
+
+    `"inLanguage": "en"` written as a plain string is the page's language
+    (FAQPage, Article). Deliberately NOT the app's `inLanguage` array on the
+    MobileApplication node: that lists the six languages the product ships in
+    and is the same claim on every page, and an array never matches here.
+
+    Every `@id` or `url` naming this page's own English URL becomes the
+    locale's. Each translation is its own node: sharing one @id across six
+    pages would assert they are the same thing, which is exactly the claim
+    hreflang exists to deny. isPartOf/about/publisher keep pointing at the
+    site, app and organisation nodes, which genuinely are shared.
+
+    Confined to the JSON-LD blocks: the head's hreflang list names the same
+    English URL on purpose and must survive. The home page is skipped because
+    its own URL is the site root, which every shared node also uses.
+    """
+    if page == "index.html":
+        return html
+    own = re.compile(r'"(@id|url)": "' + re.escape(f"{ORIGIN}/{page}") +
+                     r'(#[^"]*)?"')
+    counts = {"lang": 0, "id": 0}
+
+    def fix_block(m):
+        block = m.group(0)
+        block, n = re.subn(r'"inLanguage": "en"', f'"inLanguage": "{lang}"', block)
+        counts["lang"] += n
+        block, n = own.subn(
+            lambda k: f'"{k.group(1)}": "{ORIGIN}/{lang}/{page}{k.group(2) or ""}"',
+            block)
+        counts["id"] += n
+        return block
+
+    html = re.sub(r'<script type="application/ld\+json">.*?</script>',
+                  fix_block, html, flags=re.S)
+    # Every rewrite asserts it matched (see sub1 above). A page with an
+    # FAQPage block must have had both its language and its @id moved; a
+    # leftover English value anywhere in the JSON-LD is the silent no-op this
+    # file refuses to ship.
+    if '"@type": "FAQPage"' in html:
+        if counts["lang"] < 1 or not re.search(
+                r'"@id": "' + re.escape(f"{ORIGIN}/{lang}/{page}") + r'#', html):
+            fail(f"{lang}/{page}: the FAQPage block has no `\"inLanguage\": "
+                 f"\"en\"` or no own-page @id to rewrite (matched "
+                 f"{counts['lang']} inLanguage, {counts['id']} @id/url). Fix "
+                 f"the source block or this function.")
+    for block in re.findall(r'<script type="application/ld\+json">.*?</script>',
+                            html, re.S):
+        if '"inLanguage": "en"' in block or own.search(block):
+            fail(f"{lang}/{page}: an English inLanguage or own-page URL survived "
+                 f"in the JSON-LD after the rewrite")
     return html
 
 
@@ -341,11 +386,17 @@ def rewrite_links(html, lang, page):
     the language switcher's current entry at itself."""
     # Assets are root-absolute so no per-depth arithmetic is needed.
     html = re.sub(r'(?<=["\'(])assets/', '/assets/', html)
-    # faq.html is translated, so stay inside the locale; press.html is not.
-    html = html.replace('href="faq.html"', f'href="/{lang}/faq.html"')
+    # A relative link to a translated page stays inside the locale (faq.html,
+    # credits.html — translated around a licence notice that stays English —
+    # territory-running.html, and whatever joins PAGES next).
+    for translated in PAGES:
+        if translated != "index.html":
+            html = html.replace(f'href="{translated}"',
+                                f'href="/{lang}/{translated}"')
+    # press.html is not translated. Other English-only pages (privacy, terms,
+    # changelog) are linked root-absolute in the English source, so they need
+    # no rewrite; a relative link to one would 404 from a locale directory.
     html = html.replace('href="press.html"', 'href="/press.html"')
-    # credits.html is translated around a licence notice that stays English.
-    html = html.replace('href="credits.html"', f'href="/{lang}/credits.html"')
     # App Store CTAs: each locale reports as its own App Analytics campaign,
     # so installs can be read per market (see the note above the nav CTA).
     html = html.replace('ct=web-en&amp;', f'ct=web-{lang}&amp;')
@@ -455,7 +506,9 @@ def render_sitemap(check, generated):
     # privacy/terms are English-only for a different reason: a translated
     # contract raises the question of which language governs, and the answer
     # "the English one" is worth more than the convenience of six copies.
-    for page in ("press.html", "privacy.html", "terms.html"):
+    # changelog.html is English-only because it mirrors the English App Store
+    # release notes, dated per release.
+    for page in ENGLISH_ONLY:
         lines.append("  <url>")
         lines.append(f"    <loc>{ORIGIN}/{page}</loc>")
         lines.append(f"    <lastmod>{lastmod(page)}</lastmod>")

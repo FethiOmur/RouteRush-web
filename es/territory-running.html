@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self'; font-src 'self'; script-src https://static.cloudflareinsights.com; connect-src 'self' https://cloudflareinsights.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="description" content="¿Qué es conquistar territorios corriendo? Cierra un circuito a pie o en bici y el terreno de dentro es tuyo, con la forma de las calles que recorriste.">
+<meta name="apple-itunes-app" content="app-id=6783352912">
+<link rel="icon" href="/assets/favicon.svg?v=2" type="image/svg+xml">
+<link rel="icon" href="/assets/favicon.png" sizes="512x512" type="image/png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://routerushapp.com/es/territory-running.html">
+<!-- Locale cluster for this page; the build copies it through and rewrites
+     only canonical/og:url per locale, as on faq.html. This page owns the
+     informational question ("what is territory running, how does it work");
+     the home page keeps "territory running app", the FAQ keeps the details. -->
+<link rel="alternate" hreflang="en" href="https://routerushapp.com/territory-running.html">
+<link rel="alternate" hreflang="tr" href="https://routerushapp.com/tr/territory-running.html">
+<link rel="alternate" hreflang="it" href="https://routerushapp.com/it/territory-running.html">
+<link rel="alternate" hreflang="de" href="https://routerushapp.com/de/territory-running.html">
+<link rel="alternate" hreflang="es" href="https://routerushapp.com/es/territory-running.html">
+<link rel="alternate" hreflang="fr" href="https://routerushapp.com/fr/territory-running.html">
+<link rel="alternate" hreflang="x-default" href="https://routerushapp.com/territory-running.html">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="es_ES">
+<meta property="og:site_name" content="RouteRush">
+<meta property="og:title" content="¿Qué es conquistar territorios corriendo? Las calles que corres son tuyas">
+<meta property="og:description" content="Cierra un circuito corriendo y el terreno de dentro pasa a ser tuyo. Así se convierte una carrera en territorio y así cambia de manos.">
+<meta property="og:url" content="https://routerushapp.com/es/territory-running.html">
+<meta property="og:image" content="https://routerushapp.com/assets/og-rome.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Logotipo de RouteRush sobre un mapa de Roma cubierto de territorios conquistados, junto al mapa de territorios de la app en un iPhone">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="¿Qué es conquistar territorios corriendo? Las calles que corres son tuyas">
+<meta name="twitter:description" content="Cierra un circuito corriendo y el terreno de dentro pasa a ser tuyo. Así se convierte una carrera en territorio y así cambia de manos.">
+<meta name="twitter:image" content="https://routerushapp.com/assets/og-rome.jpg">
+<title>¿Qué es conquistar territorios corriendo? — RouteRush</title>
+<style>
+  /* The faq.html utility template: the site's palette and type, none of the
+     scroll machinery. Prose, not Q&A: the FAQ holds the details. */
+  @font-face {
+    font-family: 'Splash';
+    src: url('/assets/fonts/Splash-Subset.ttf') format('truetype');
+    font-display: block;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --text-2: rgba(255,255,255,.78); --text-3: rgba(255,255,255,.55);
+    --text-4: rgba(255,255,255,.38); --hair: rgba(255,255,255,.10);
+    --accent: #00E0FF;
+  }
+  html { color-scheme: dark; }
+  body {
+    background: #000; color: #fff;
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 56px 24px 72px; }
+  .wordmark { font-family: 'Splash', cursive; font-size: 40px; font-weight: 400; }
+  .wordmark a { color: #fff; text-decoration: none; }
+  .eyebrow { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--text-4); margin-bottom: 14px; }
+  .updated { font-size: 12px; color: var(--text-4); margin-top: 10px; }
+  h1 { font-size: 15px; font-weight: 500; color: var(--text-3); margin-top: 10px; }
+  h2 { font-size: 19px; font-weight: 620; margin: 46px 0 12px; letter-spacing: -.01em; }
+  h3 { font-size: 16px; font-weight: 600; margin: 26px 0 6px; }
+  p  { color: var(--text-2); }
+  p + p { margin-top: 12px; }
+  a  { color: #fff; }
+  a:hover { color: var(--accent); }
+  .lead { font-size: 17px; color: #fff; margin-top: 34px; }
+  .shot { margin: 28px 0 4px; }
+  .shot img { display: block; width: 100%; max-width: 260px; height: auto; border-radius: 28px; border: 1px solid var(--hair); }
+  .more { margin-top: 40px; }
+  .cta { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--hair); }
+  .cta a { font-weight: 560; }
+  .cta + .cta { margin-top: 10px; padding-top: 0; border-top: 0; }
+  footer { margin-top: 40px; padding-top: 22px; border-top: 1px solid var(--hair); font-size: 13px; color: var(--text-4); display: flex; gap: 18px; flex-wrap: wrap; }
+  /* Taller tap target without moving the text: the padding grows the hit
+     area and the equal negative margin keeps the row where it was. */
+  footer a { color: var(--text-3); text-decoration: none; padding: 6px 0; margin: -6px 0; }
+  .lang-row { margin-top: 14px; font-size: 13px; display: flex; gap: 14px; flex-wrap: wrap; }
+  .lang-row a { color: var(--text-3); text-decoration: none; }
+  .lang-row a[aria-current] { color: var(--text-2); pointer-events: none; }
+</style>
+<!-- Every fact on this page is already stated on faq.html, index.html,
+     press.html or in the app's release notes. No thresholds (loop size,
+     distances, tolerances) are published until the owner confirms them.
+     The FAQPage answers must stay text-identical to the visible answers. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": "https://routerushapp.com/es/territory-running.html#article",
+      "url": "https://routerushapp.com/es/territory-running.html",
+      "headline": "¿Qué es conquistar territorios corriendo?",
+      "description": "¿Qué es conquistar territorios corriendo? Cierra un circuito a pie o en bici y el terreno de dentro es tuyo, con la forma de las calles que recorriste.",
+      "inLanguage": "es",
+      "datePublished": "2026-11-25",
+      "dateModified": "2026-11-25",
+      "image": "https://routerushapp.com/assets/screens/territory-night.webp",
+      "author": { "@id": "https://routerushapp.com/#org" },
+      "publisher": { "@id": "https://routerushapp.com/#org" },
+      "isPartOf": { "@id": "https://routerushapp.com/#site" },
+      "about": { "@id": "https://routerushapp.com/#app" }
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://routerushapp.com/es/territory-running.html#faq",
+      "inLanguage": "es",
+      "isPartOf": { "@id": "https://routerushapp.com/#site" },
+      "about": { "@id": "https://routerushapp.com/#app" },
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Tengo que correr un círculo perfecto?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Lo que importa es que tu recorrido cierre un circuito. El terreno de dentro toma la forma de las calles que de verdad has corrido, no la de un círculo dibujado a tu alrededor." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Alguien puede quitarme terreno solo con pasar corriendo?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Correr por tus calles no basta. Otro corredor tiene que cerrar un circuito que encierre tu terreno, y de tu conquista solo se recorta la parte solapada." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Pierdo mi territorio si dejo de correr un tiempo?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. El territorio no se desgasta mientras descansas. Tu terreno solo cambia de manos cuando otro corredor cierra un circuito sobre él." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Repetir el mismo circuito da más puntos?",
+          "acceptedAnswer": { "@type": "Answer", "text": "La distancia vuelve a sumar Puntos Rush, el terreno no. El terreno nuevo solo suma si es terreno que no tenías ya, así que el mismo circuito no se puede exprimir." }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Puedo ver de quién es una zona?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Sí. Ver de quién es cualquier territorio del mapa es gratis para todos, y la hoja de detalle del territorio muestra quién lo tiene, el área y las carreras que lo construyeron." }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Guía</p>
+  <div class="wordmark"><a href="/es/">RouteRush</a></div>
+  <h1>¿Qué es conquistar territorios corriendo?</h1>
+  <p class="updated">Actualizado el 25 de noviembre de 2026</p>
+
+  <p class="lead">RouteRush es una app de iOS que convierte correr y montar en bici en conquista territorial: cierra un circuito corriendo y las calles de dentro pasan a ser tu territorio.</p>
+  <p>Esa es la idea: el recorrido que grabas no es solo una línea en el mapa, es una reivindicación del terreno que esa línea encierra.</p>
+  <p>Otros corredores pueden quitarte ese terreno de la misma manera, así que el mapa de tu ciudad no deja de cambiar de manos, circuito a circuito.</p>
+
+  <h2>Cómo una carrera se convierte en territorio</h2>
+  <p>Grabas una carrera o una salida en bici con el GPS, como harías con cualquier app de seguimiento. La diferencia llega cuando tu recorrido cierra un circuito: todo lo de dentro pasa a ser tuyo. No es un círculo alrededor de tu posición. Tu territorio toma la forma real de las calles que has recorrido, dibujado sobre un mapa 3D de tu ciudad.</p>
+  <p>Toma otra ruta otro día y tu territorio cambia de forma con ella. El terreno que ganas se queda contigo de una carrera a otra: un barrio entero se gana a lo largo de meses, no en una sola salida.</p>
+  <figure class="shot">
+    <img src="/assets/screens/territory-night.webp" width="816" height="1775" loading="lazy" decoding="async"
+         alt="Mapa de territorio de RouteRush de noche: zonas conquistadas en los colores de los rivales, cada una con la forma de las calles recorridas">
+  </figure>
+
+  <h2>Cuando alguien cierra un circuito sobre tu terreno</h2>
+  <p>El terreno cambia de manos de una sola vez. Si el circuito de otro corredor abarca parte de tu territorio, esa parte compartida pasa a ser suya en cuanto se guarda su carrera, y el resto sigue siendo tuyo. El nuevo límite sigue la ruta que corrió de verdad, como geometría exacta del mapa.</p>
+  <p>Pasar corriendo por tus calles no te quita nada: un rival tiene que cerrar un circuito completo alrededor del terreno para ganarlo. La misma regla juega a tu favor: para recuperar una zona, cierra tú un circuito a su alrededor.</p>
+
+  <h2>Tu terreno sigue siendo tuyo hasta que alguien te lo quite</h2>
+  <p>Nadie te desgasta el territorio, y no se apaga con el tiempo. Solo dos cosas cambian tu mapa: un rival que cierre un circuito sobre tu terreno, o un circuito nuevo que cierres tú.</p>
+
+  <h2>El Atlas guarda cada circuito que has cerrado</h2>
+  <p>Tu territorio es lo que tienes hoy. El Atlas es el registro: guarda cada circuito que has cerrado, turquesa para carreras y verde para salidas en bici, incluso el terreno que un rival te haya quitado después. Está junto a las vistas Mapa de calor, Territorio y Rutas en los modos de mapa.</p>
+
+  <h2>Carreras y salidas en bici</h2>
+  <p>El territorio no es solo para corredores. Una salida en bici se graba con el GPS igual que una carrera, y una salida que cierra un circuito conquista terreno de la misma manera. En el Atlas cada una mantiene su color, así ves qué terreno tomaste a pie y cuál en bici.</p>
+
+  <h2>En qué se diferencia de una app de seguimiento</h2>
+  <p>Una app de seguimiento registra por dónde has ido: distancia, ritmo y una línea en el mapa. RouteRush también registra todo eso, pero aquí la línea es el recibo y el terreno es la puntuación. Tu distancia se cuenta en Puntos Rush, una racha multiplica esa puntuación y el terreno que no era tuyo antes de la carrera suma algo más encima. Después, los Puntos Rush deciden tu puesto en una liga semanal de hasta treinta corredores.</p>
+  <p>RouteRush puede leer tus entrenamientos de Apple Health y volver a escribir allí los completados, así que convive con todo lo que ya usas.</p>
+
+  <h2>Qué necesitas</h2>
+  <p>Un iPhone con iOS 18 o posterior. Instalar RouteRush y jugar no cuesta nada, y eso incluye el seguimiento por GPS, el territorio, las ligas, los clubes, los retos y todos los planes de entrenamiento. El seguimiento está hecho para aguantar cortes de GPS y quedarse sin red del todo: las actividades esperan en tu móvil y se sincronizan en cuanto vuelve la conexión.</p>
+
+  <h2>Preguntas frecuentes</h2>
+  <h3>¿Tengo que correr un círculo perfecto?</h3>
+  <p>No. Lo que importa es que tu recorrido cierre un circuito. El terreno de dentro toma la forma de las calles que de verdad has corrido, no la de un círculo dibujado a tu alrededor.</p>
+  <h3>¿Alguien puede quitarme terreno solo con pasar corriendo?</h3>
+  <p>No. Correr por tus calles no basta. Otro corredor tiene que cerrar un circuito que encierre tu terreno, y de tu conquista solo se recorta la parte solapada.</p>
+  <h3>¿Pierdo mi territorio si dejo de correr un tiempo?</h3>
+  <p>No. El territorio no se desgasta mientras descansas. Tu terreno solo cambia de manos cuando otro corredor cierra un circuito sobre él.</p>
+  <h3>¿Repetir el mismo circuito da más puntos?</h3>
+  <p>La distancia vuelve a sumar Puntos Rush, el terreno no. El terreno nuevo solo suma si es terreno que no tenías ya, así que el mismo circuito no se puede exprimir.</p>
+  <h3>¿Puedo ver de quién es una zona?</h3>
+  <p>Sí. Ver de quién es cualquier territorio del mapa es gratis para todos, y la hoja de detalle del territorio muestra quién lo tiene, el área y las carreras que lo construyeron.</p>
+
+  <p class="more">Ligas, Puntos Rush, el entrenador Boldi y qué es gratis: <a href="/es/faq.html">lee las FAQ de RouteRush</a></p>
+
+  <p class="cta">Compruébalo tú mismo — <a href="/es/">routerushapp.com</a></p>
+  <p class="cta"><a href="https://apps.apple.com/app/apple-store/id6783352912?pt=128304040&amp;ct=web-es&amp;mt=8">Descarga RouteRush en el App Store</a> — gratis en iPhone, iOS 18 o posterior.</p>
+
+  <footer>
+    <span>© 2026 RouteRush</span>
+    <a href="/es/">Inicio</a>
+    <a href="/es/faq.html">FAQ</a>
+    <a href="/changelog.html">Novedades</a>
+    <a href="/press.html">Kit de prensa</a>
+    <a href="/privacy.html">Privacidad</a>
+    <a href="/terms.html">Términos</a>
+    <a href="/es/credits.html">Créditos</a>
+  </footer>
+  <nav class="lang-row" aria-label="Idioma">
+    <a href="/territory-running.html" hreflang="en">English</a>
+    <a href="/tr/territory-running.html" hreflang="tr">Türkçe</a>
+    <a href="/it/territory-running.html" hreflang="it">Italiano</a>
+    <a href="/de/territory-running.html" hreflang="de">Deutsch</a>
+    <a href="/es/territory-running.html" hreflang="es" aria-current="page">Español</a>
+    <a href="/fr/territory-running.html" hreflang="fr">Français</a>
+  </nav>
+</div>
+</body>
+</html>
