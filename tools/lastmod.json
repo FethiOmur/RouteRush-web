@@ -16,8 +16,8 @@
     "sha256": "4fede33dcc2d447f8773f26a7f7a71d7fc0236ba8b706e839e38e4fce61e9dd4"
   },
   "de/index.html": {
-    "lastmod": "2026-11-25",
-    "sha256": "321690377132d72de1af17aefe73502f92fa0620e73bc7e908bc2f9d0e91e5c4"
+    "lastmod": "2026-11-26",
+    "sha256": "485d2dee3c717c6e0f8c27f55320389cd7c6b811009c481d9010fee477b1206b"
   },
   "de/territory-running.html": {
     "lastmod": "2026-11-25",
@@ -32,8 +32,8 @@
     "sha256": "199750fc27a0504f689a6bb97e35d816c76ce1d5c82be2459e989cf78220a491"
   },
   "es/index.html": {
-    "lastmod": "2026-11-25",
-    "sha256": "4b09a3771a7a084a874e6e5e352ec9ed09410a077efc92f68e2679b1d1ed7cc9"
+    "lastmod": "2026-11-26",
+    "sha256": "52da286c45e725314e981d14f91e04451c68d0a69c6d8e54f60bab964d343d39"
   },
   "es/territory-running.html": {
     "lastmod": "2026-11-25",
@@ -52,16 +52,16 @@
     "sha256": "17f8329903a416a2ad2a6868324523420968eb50324fd313452be0718f683703"
   },
   "fr/index.html": {
-    "lastmod": "2026-11-25",
-    "sha256": "c57a267125cea89ee4c04bc55955aa550c8d2f4a84a38f83094d9a20f472f74b"
+    "lastmod": "2026-11-26",
+    "sha256": "81ad3af8cb832c32d4187a990ccd2d14310fa2c73594c6bca48fde8221c1525d"
   },
   "fr/territory-running.html": {
     "lastmod": "2026-11-25",
     "sha256": "4612fa6acad22b8d5ea084444d867f30e6c57b6a22c89fa3c099e5ef3d2b5c1e"
   },
   "index.html": {
-    "lastmod": "2026-11-25",
-    "sha256": "0b63d528ed967a234440cedcd10c0887ff00d9da01ef6d9cf3d10253c699257d"
+    "lastmod": "2026-11-26",
+    "sha256": "7e505a76b3cf5b1e8ec29740faf836296a3a22aa1b8a8d6962e8b759ca643ff6"
   },
   "it/credits.html": {
     "lastmod": "2026-11-25",
@@ -72,16 +72,16 @@
     "sha256": "9a87f807c8719740e0aa7bbc7cd5d43162d8c203d429a71a8a54838d6dad7365"
   },
   "it/index.html": {
-    "lastmod": "2026-11-25",
-    "sha256": "5b9bedcb881e9a899d2f723866efa27abb905471f927600ff6e7fe67f9893ae6"
+    "lastmod": "2026-11-26",
+    "sha256": "975a7b5e65475f6f47108289a32f99b46b09ffbb5c949295b4a267093007f303"
   },
   "it/territory-running.html": {
     "lastmod": "2026-11-25",
     "sha256": "43bac7b48a7a88004488ced49d651edc2512ef3833daad439d23e0b667c1cd6a"
   },
   "press.html": {
-    "lastmod": "2026-11-25",
-    "sha256": "d009befe249ac6a1ad0e03cfd43fbf70d4624ca2beb3bc29d9c4ac33276eda34"
+    "lastmod": "2026-11-26",
+    "sha256": "2478aab503d4cb3866aa5cea744ad6b468a152ad1047575a2652deb69e86ed4a"
   },
   "privacy.html": {
     "lastmod": "2026-11-25",
@@ -104,8 +104,8 @@
     "sha256": "9d3458189201c1624731e4233609041f0755a68a51de354493e088e0147d3153"
   },
   "tr/index.html": {
-    "lastmod": "2026-11-25",
-    "sha256": "d1dfc7878fccfe2aa51e9a676e948cb47e04f63723035549a733591885ec3503"
+    "lastmod": "2026-11-26",
+    "sha256": "57e6e1ce3db32a3036161a2eee671e9645ac8713697accd08819a67d411a1624"
   },
   "tr/territory-running.html": {
     "lastmod": "2026-11-25",
