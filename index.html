@@ -3678,6 +3678,11 @@
   }
   function eligible() { return mapEl.classList.contains('is-live') && !!cut(); }
   function progress() { var r = seq.getBoundingClientRect(); return -r.top / (r.height - innerHeight); }
+  /* How much of the screen the stage still fills once it has let go. The film
+     used to need the scroll to rest within a few pixels of the end, which a
+     normal scroll never does; now it plays while most of the stage is in view. */
+  function shown() { return seq.getBoundingClientRect().bottom / innerHeight; }
+  function inPlace() { return progress() >= 0.97 && shown() >= 0.6; }
   function start() {
     if (state !== 'idle' || !eligible() || film.readyState < 2) return;
     state = 'playing'; film.currentTime = 0; film.classList.add('is-on');
@@ -3687,10 +3692,12 @@
   function stop() { state = 'idle'; film.pause(); film.classList.remove('is-on'); }
   addEventListener('scroll', function () {
     var p = progress(); clearTimeout(settle);
-    if (!loaded && p > 0.45 && p < 1.1 && eligible()) { loaded = true; film.preload = 'auto'; film.src = cut(); film.load(); }
-    if (state === 'idle' && p >= 0.99 && p <= 1.04) settle = setTimeout(start, 900);
-    else if (state === 'playing' && (p < 0.9 || p > 1.3)) stop();
+    if (!loaded && p > 0.45 && shown() > 0.4 && eligible()) { loaded = true; film.preload = 'auto'; film.src = cut(); film.load(); }
+    if (state === 'idle' && inPlace()) settle = setTimeout(start, 600);
+    else if (state === 'playing' && (p < 0.9 || shown() < 0.4)) stop();
   }, { passive: true });
+  /* The file can arrive after the scroll has already come to rest. */
+  film.addEventListener('canplay', function () { if (state === 'idle' && inPlace()) { clearTimeout(settle); settle = setTimeout(start, 300); } });
   film.addEventListener('ended', function () {
     state = 'done'; performance.mark('hero-film-end');
     setTimeout(function () { film.classList.remove('is-on'); }, 500);
