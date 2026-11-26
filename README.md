@@ -28,8 +28,8 @@ assets/territory-rome.geojson  street-snapped conquest loops around the
                       landing point, the Colosseum (422 claims; generator in
                       _agent-scratch/lab/rome-film/build-rome-territory.py).
                       territory.geojson is the old Turin set, no longer loaded
-assets/rome-film-v4.mp4  the map-to-reality film with its soundtrack, 16:9 (1080p, 18 s, 14.2 MB)
-assets/rome-film-v4-portrait.mp4  the same film, 9:16 (1080x1920, 7.8 MB)
+assets/rome-film-v5.mp4  the map-to-reality film, silent, 16:9 (1080p, 18 s, 13.9 MB)
+assets/rome-film-v5-portrait.mp4  the same film, 9:16 (1080x1920, 7.8 MB)
 assets/screens/       app screenshots used in the product sections
 ```
 
