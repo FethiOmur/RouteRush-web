@@ -17,7 +17,7 @@
   },
   "de/index.html": {
     "lastmod": "2026-11-26",
-    "sha256": "485d2dee3c717c6e0f8c27f55320389cd7c6b811009c481d9010fee477b1206b"
+    "sha256": "52b162dc505a839bd848d99c0021f587360f2d63ca138b8e8186cf6de129232f"
   },
   "de/territory-running.html": {
     "lastmod": "2026-11-25",
@@ -33,7 +33,7 @@
   },
   "es/index.html": {
     "lastmod": "2026-11-26",
-    "sha256": "52da286c45e725314e981d14f91e04451c68d0a69c6d8e54f60bab964d343d39"
+    "sha256": "718a5cc629e1f1f792f7348e475c30a7e635f9063f3735faef01bdcf4aa208b5"
   },
   "es/territory-running.html": {
     "lastmod": "2026-11-25",
@@ -53,7 +53,7 @@
   },
   "fr/index.html": {
     "lastmod": "2026-11-26",
-    "sha256": "81ad3af8cb832c32d4187a990ccd2d14310fa2c73594c6bca48fde8221c1525d"
+    "sha256": "4f79f00e741011907f589f854fc957ca6007b877483ace90bd98b9d5e5b766e8"
   },
   "fr/territory-running.html": {
     "lastmod": "2026-11-25",
@@ -61,7 +61,7 @@
   },
   "index.html": {
     "lastmod": "2026-11-26",
-    "sha256": "7e505a76b3cf5b1e8ec29740faf836296a3a22aa1b8a8d6962e8b759ca643ff6"
+    "sha256": "bb227091d15aacafea5497bddce748abf5372ecc16330f448c4b6d474ddc5e0f"
   },
   "it/credits.html": {
     "lastmod": "2026-11-25",
@@ -73,7 +73,7 @@
   },
   "it/index.html": {
     "lastmod": "2026-11-26",
-    "sha256": "975a7b5e65475f6f47108289a32f99b46b09ffbb5c949295b4a267093007f303"
+    "sha256": "1a1f250b61410ab2e4bf26c1ea1485b127a3d7388bed3b80949b48c4ceeac209"
   },
   "it/territory-running.html": {
     "lastmod": "2026-11-25",
@@ -81,7 +81,7 @@
   },
   "press.html": {
     "lastmod": "2026-11-26",
-    "sha256": "2478aab503d4cb3866aa5cea744ad6b468a152ad1047575a2652deb69e86ed4a"
+    "sha256": "2fc1d49c3f96e96bcf6424e03cfaabd3c9315fa9477b4cc2bf9b9488cc2e0d7c"
   },
   "privacy.html": {
     "lastmod": "2026-11-25",
@@ -105,7 +105,7 @@
   },
   "tr/index.html": {
     "lastmod": "2026-11-26",
-    "sha256": "57e6e1ce3db32a3036161a2eee671e9645ac8713697accd08819a67d411a1624"
+    "sha256": "dfb9d6ed75defa653aafa6bcfbd110d67e55086c8b2c1f8b1987d953af7859b4"
   },
   "tr/territory-running.html": {
     "lastmod": "2026-11-25",
